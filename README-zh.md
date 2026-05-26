@@ -1,6 +1,5 @@
 # MindBridge
 
-基于 YOLO + FastAPI 的 AI 推理服务。
 
 ## 目录结构
 

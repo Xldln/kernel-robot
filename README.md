@@ -1,6 +1,6 @@
 # MindBridge
 
-AI inference service built on YOLO, powered by FastAPI.
+
 
 ## Architecture
 
