@@ -1,1 +1,1 @@
-from .Controlcenter import *
+# 不导入任何子模块 — 各服务入口直接 from .xxx import 所需模块，避免跨域依赖。

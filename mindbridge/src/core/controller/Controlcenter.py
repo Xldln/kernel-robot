@@ -4,7 +4,8 @@ from pathlib import Path
 import cv2
 import numpy as np
 from fastapi import APIRouter
-from mindbridge.src.core.service.RealsenseService import RealsenseClient
+# Lazy import — only import RealsenseService when capture is actually used,
+# so that services (e.g. InstanceSeg) don't need pyrealsense2 installed.
 
 
 control_router = APIRouter(prefix="/control", tags=["Control Center"])
@@ -31,6 +32,7 @@ def run_capture_loop(
     global _capture_running
     _capture_running = True
 
+    from mindbridge.src.core.service.RealsenseService import RealsenseService as RealsenseClient
     with RealsenseClient(config_path) as cam:
         frame_count = 0
 

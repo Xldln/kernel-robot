@@ -6,7 +6,7 @@ sys.path.insert(0, "/workspace")
 from typing import Union
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from mindbridge.src.core.controller import *
+from mindbridge.src.core.controller.Controlcenter import control_router
 import uvicorn
 import logging
 from loguru import logger

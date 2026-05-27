@@ -1,9 +1,8 @@
-"""RealSense camera + FoundationStereo depth estimation."""
+"""RealSense camera + FoundationStereo depth estimation service."""
 
 from __future__ import annotations
 
 import os
-import time
 from pathlib import Path
 
 import cv2
@@ -16,6 +15,7 @@ os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 
 
 def _depth_float_m_to_uint16_mm(depth_m: np.ndarray) -> np.ndarray:
+    """Convert depth in meters to uint16 in millimeters."""
     depth = depth_m.copy()
     depth[~np.isfinite(depth)] = 0
     depth[depth < 0] = 0
@@ -25,21 +25,35 @@ def _depth_float_m_to_uint16_mm(depth_m: np.ndarray) -> np.ndarray:
 class RealsenseService:
     """RealSense stereo camera + FoundationStereo depth inference."""
 
-    def __init__(self, config_path: str | Path = "/workspace/mindbridge/src/core/config/realsense-config.yaml"):
-        
+    def __init__(
+        self,
+        config_path: str | Path = "/workspace/mindbridge/src/core/config/realsense-config.yaml",
+    ):
         cfg = OmegaConf.load(config_path)
         self.cfg = cfg
         self._frame_id = 0
 
-        # ── Model ──────────────────────────────────────────────────────────
+        self._load_model(cfg)
+        self._init_camera(cfg)
+
+    # ── Model loading ──────────────────────────────────────────────────────
+
+    def _load_model(self, cfg) -> None:
         ckpt_dir = cfg.model.ckpt_dir
         model_cfg = OmegaConf.load(f"{Path(ckpt_dir).parent}/cfg.yaml")
         model_cfg.setdefault("vit_size", "vitl")
-        for key in ("ckpt_dir", "out_dir", "width", "height", "fps",
-                     "scale", "z_far", "valid_iters", "remove_invisible"):
-            model_cfg[key] = cfg.model.get(key) or cfg.runtime.get(key) or cfg.camera.get(key) or cfg.paths.get(key) or model_cfg[key]
+        for key in (
+            "ckpt_dir", "out_dir", "width", "height", "fps",
+            "scale", "z_far", "valid_iters", "remove_invisible",
+        ):
+            model_cfg[key] = (
+                cfg.model.get(key)
+                or cfg.runtime.get(key)
+                or cfg.camera.get(key)
+                or cfg.paths.get(key)
+                or model_cfg[key]
+            )
 
-        # merge model_cfg keys explicitly from runtime/model sections
         model_cfg.ckpt_dir = ckpt_dir
         model_cfg.out_dir = cfg.paths.out_dir
         model_cfg.width = cfg.camera.width
@@ -57,18 +71,30 @@ class RealsenseService:
         self.model.cuda()
         self.model.eval()
 
-        # ── RealSense ──────────────────────────────────────────────────────
+        self.scale = float(cfg.runtime.scale)
+
+    # ── Camera initialization ──────────────────────────────────────────────
+
+    def _init_camera(self, cfg) -> None:
         self.image_size = (int(cfg.camera.width), int(cfg.camera.height))
         self.pipeline = rs.pipeline()
         rs_cfg = rs.config()
-        rs_cfg.enable_stream(rs.stream.infrared, 1, *self.image_size, rs.format.y8, int(cfg.camera.fps))
-        rs_cfg.enable_stream(rs.stream.infrared, 2, *self.image_size, rs.format.y8, int(cfg.camera.fps))
-        rs_cfg.enable_stream(rs.stream.color, *self.image_size, rs.format.bgr8, int(cfg.camera.fps))
+        rs_cfg.enable_stream(
+            rs.stream.infrared, 1, *self.image_size, rs.format.y8, int(cfg.camera.fps),
+        )
+        rs_cfg.enable_stream(
+            rs.stream.infrared, 2, *self.image_size, rs.format.y8, int(cfg.camera.fps),
+        )
+        rs_cfg.enable_stream(
+            rs.stream.color, *self.image_size, rs.format.bgr8, int(cfg.camera.fps),
+        )
         profile = self.pipeline.start(rs_cfg)
 
         depth_sensor = profile.get_device().first_depth_sensor()
         if depth_sensor.supports(rs.option.emitter_enabled):
-            depth_sensor.set_option(rs.option.emitter_enabled, int(cfg.camera.disable_emitter))
+            depth_sensor.set_option(
+                rs.option.emitter_enabled, int(cfg.camera.disable_emitter),
+            )
 
         # ── Camera intrinsics ──────────────────────────────────────────────
         left = profile.get_stream(rs.stream.infrared, 1).as_video_stream_profile()
@@ -91,11 +117,13 @@ class RealsenseService:
 
         self.color_intr = color.get_intrinsics()
 
-        self.scale = float(cfg.runtime.scale)
+    # ── Property ───────────────────────────────────────────────────────────
 
     @property
     def frame_id(self) -> int:
         return self._frame_id
+
+    # ── Capture ────────────────────────────────────────────────────────────
 
     def capture(self) -> dict:
         """Capture and process one stereo pair → depth map.
@@ -157,15 +185,21 @@ class RealsenseService:
 
         P_color = self.R_ext @ np.stack((X_ir, Y_ir, z_ir), axis=0) + self.T_ext[:, None]
 
-        x_c = np.round(P_color[0] / P_color[2] * self.color_intr.fx + self.color_intr.ppx).astype(int)
-        y_c = np.round(P_color[1] / P_color[2] * self.color_intr.fy + self.color_intr.ppy).astype(int)
+        x_c = np.round(
+            P_color[0] / P_color[2] * self.color_intr.fx + self.color_intr.ppx,
+        ).astype(int)
+        y_c = np.round(
+            P_color[1] / P_color[2] * self.color_intr.fy + self.color_intr.ppy,
+        ).astype(int)
         mask = (
-            (x_c >= 0) & (x_c < self.color_intr.width) &
-            (y_c >= 0) & (y_c < self.color_intr.height) &
-            (P_color[2] > 0)
+            (x_c >= 0) & (x_c < self.color_intr.width)
+            & (y_c >= 0) & (y_c < self.color_intr.height)
+            & (P_color[2] > 0)
         )
 
-        depth_aligned = np.zeros((self.color_intr.height, self.color_intr.width), dtype=np.float32)
+        depth_aligned = np.zeros(
+            (self.color_intr.height, self.color_intr.width), dtype=np.float32,
+        )
         order = np.argsort(P_color[2][mask])[::-1]
         depth_aligned[y_c[mask][order], x_c[mask][order]] = P_color[2][mask][order]
 
@@ -179,6 +213,8 @@ class RealsenseService:
             "baseline": self.baseline,
             "frame_id": self._frame_id,
         }
+
+    # ── Lifecycle ──────────────────────────────────────────────────────────
 
     def close(self):
         cv2.destroyAllWindows()
