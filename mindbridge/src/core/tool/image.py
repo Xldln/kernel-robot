@@ -34,3 +34,20 @@ def encode_bgr_to_base64_jpg(image_bgr: np.ndarray, quality: int = 90) -> str:
     if not success:
         raise RuntimeError("Failed to encode image to JPG.")
     return base64.b64encode(buf.tobytes()).decode("utf-8")
+
+
+
+
+def _draw_detections(bgr: np.ndarray, detections: list[dict]) -> np.ndarray:
+    canvas = bgr.copy()
+    for d in detections:
+        bbox = d.get("bbox", [])
+        if len(bbox) == 4:
+            x1, y1, x2, y2 = [int(v) for v in bbox]
+            cv2.rectangle(canvas, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            label = f"{d.get('label', '?')}: {d.get('score', 0):.2f}"
+            cv2.putText(
+                canvas, label, (x1, max(y1 - 5, 15)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1,
+            )
+    return canvas
