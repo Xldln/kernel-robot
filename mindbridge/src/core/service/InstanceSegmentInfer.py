@@ -1,232 +1,149 @@
+from __future__ import annotations
+
+import time
+from pathlib import Path
+
+import cv2
+import numpy as np
+import yaml
+from ultralytics import YOLO
+
+from mindbridge.src.core.schemas.YoloEntity import (
+    Detection,
+    PredictRequest,
+    PredictResponse,
+)
+from mindbridge.src.core.tool.image import (
+    decode_bgr_from_base64,
+    encode_bgr_to_base64_jpg,
+    encode_mask_to_base64_png,
+)
 
 
+def _load_config(config_path: str | Path) -> dict:
+    with open(config_path) as f:
+        return yaml.safe_load(f)
 
 
+class YOLOInfer:
 
-class InstanceSegmentInfer:
-    def __init__(self, config_path: str = "/workspace/config.yaml"):
-        self.cfg = load_config(config_path)
+    def __init__(self, config_path: str | Path = "/workspace/mindbridge/src/core/config/yolo-config.yaml"):
+        cfg = _load_config(config_path)
+        yolo_cfg = cfg.get("yolo", {})
 
-        server_cfg = self.cfg.get("server", {})
-        yolo_cfg = self.cfg.get("yolo", {})
-
-        self.host = server_cfg.get("host", "0.0.0.0")
-        self.port = int(server_cfg.get("port", 5555))
-
-        self.model_path = yolo_cfg.get("model_path", "results/drawer_cup.pt")
+        model_path = yolo_cfg.get("model_path")
         self.score_threshold = float(yolo_cfg.get("score_threshold", 0.4))
-        self.tracker = "bytetrack.yaml"
-        self.persist = True
-        self.return_masks = True
-        self.return_annotated_image = True
-        self.show_window = True
-        self.window_name = "YOLO Detections"
-        self._window_available = True
 
-        print("=" * 70)
-        print("YOLO ZeroMQ Server")
-        print("=" * 70)
-        log_info(f"version      : {SERVER_VERSION}")
-        log_info(f"config_path  : {config_path}")
-        log_info(f"host         : {self.host}")
-        log_info(f"port         : {self.port}")
-        log_info(f"model_path   : {self.model_path}")
-        log_info(f"score_thresh : {self.score_threshold}")
-        print("=" * 70)
-
-        log_info("Loading YOLO model, please wait...")
+        print(f"Loading YOLO model: {model_path},and set score_threshold={self.score_threshold}")
         t0 = time.time()
-        self.yolo = YOLO(self.model_path)
-        self.model_task = getattr(self.yolo, "task", "detect")
-        log_success(f"Model loaded in {time.time() - t0:.2f} s")
-        log_info(f"model_task   : {self.model_task}")
+        self.model = YOLO(str(model_path))
+        self.model_task = getattr(self.model, "task", "detect")
+        print(f"Model loaded ({time.time() - t0:.2f}s), task={self.model_task}")
 
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REP)
-        bind_host = "*" if self.host in ("0.0.0.0", "*") else self.host
-        self.socket.bind(f"tcp://{bind_host}:{self.port}")
-        log_success(f"ZeroMQ REP socket bound at tcp://{bind_host}:{self.port}")
-
-    def get_class_id(self, class_name):
-        """Get class id by class name from model names."""
-        if class_name is None:
-            return None
-        target = str(class_name).strip().lower()
-        if not target:
-            return None
-
-        names = getattr(self.yolo, "names", None)
-        if isinstance(names, dict):
-            for class_id, name in names.items():
-                if str(name).strip().lower() == target:
-                    return int(class_id)
-        elif isinstance(names, (list, tuple)):
-            for class_id, name in enumerate(names):
-                if str(name).strip().lower() == target:
-                    return int(class_id)
-        return None
-
-    def process_request(self, req: dict) -> dict:
-        request_total_start = time.time()
-
-        request_id = req.get("request_id", "")
-        _ = req.get("prompts", [])  # Keep request schema compatibility, but ignore prompt filtering.
-        _ = req.get("clear_previous", True)  # Keep same input interface as SAM3
-
-        if "bgr_image" in req:
-            bgr = decode_bgr_from_base64(req["bgr_image"])
-        elif "rgb_image" in req:
-            # Backward-compatible fallback for older clients.
-            bgr = decode_bgr_from_base64(req["rgb_image"])
-        else:
-            raise ValueError("Missing required field 'bgr_image' in request.")
-
-        conf = float(req.get("conf", self.score_threshold))
-        tracker = req.get("tracker", self.tracker)
-        persist = bool(req.get("persist", self.persist))
-        return_masks = bool(req.get("return_masks", self.return_masks))
-        return_annotated_image = bool(req.get("return_annotated_image", self.return_annotated_image))
-        show_window = bool(req.get("show_window", self.show_window))
-
-        if self.model_task == "classify":
-            results = self.yolo.predict(
-                bgr,
-                verbose=False,
-                conf=conf,
-            )
-        else:
-            results = self.yolo.track(
-                bgr,
-                persist=persist,
-                tracker=tracker,
-                verbose=False,
-                conf=conf,
-            )
-
-        detections = []
-        global_det_id = 1
-        annotated_image_b64 = None
-
-        result0 = results[0] if results else None
-        if result0 is not None:
-            annotated_bgr = result0.plot()
-        else:
-            annotated_bgr = bgr.copy()
-
-        if return_annotated_image:
-            annotated_image_b64 = encode_bgr_to_base64_jpg(annotated_bgr)
-
-        if show_window and self._window_available:
-            try:
-                cv2.imshow(self.window_name, annotated_bgr)
-                cv2.waitKey(1)
-            except Exception as e:
-                self._window_available = False
-                log_error(f"OpenCV window display disabled: {e}")
-
-        if self.model_task == "classify":
-            names = result0.names if (result0 is not None and hasattr(result0, "names")) else self.yolo.names
-            probs = result0.probs if result0 is not None else None
-            if probs is not None and hasattr(probs, "top5") and hasattr(probs, "top5conf"):
-                top5_ids = probs.top5
-                top5_confs = probs.top5conf.tolist()
-                for class_id, score in zip(top5_ids, top5_confs):
-                    class_id = int(class_id)
-                    label = (
-                        str(names[class_id])
-                        if isinstance(names, dict) and class_id in names
-                        else str(class_id)
-                    )
-                    detections.append(
-                        {
-                            "id": int(global_det_id),
-                            "label": label,
-                            "class": label,
-                            "class_id": class_id,
-                            "score": float(score),
-                            "bbox": [],
-                        }
-                    )
-                    global_det_id += 1
-        elif result0 is not None and result0.boxes is not None and len(result0.boxes) > 0:
-            boxes = result0.boxes
-            masks = result0.masks
-
-            xyxy = boxes.xyxy.cpu().numpy() if boxes.xyxy is not None else None
-            cls = boxes.cls.cpu().numpy() if boxes.cls is not None else None
-            scores = boxes.conf.cpu().numpy() if boxes.conf is not None else None
-            mask_data = masks.data.cpu().numpy() if (masks is not None and masks.data is not None) else None
-
-            names = result0.names if hasattr(result0, "names") else self.yolo.names
-
-            for i in range(len(boxes)):
-                class_id = int(cls[i]) if cls is not None else -1
-                score = float(scores[i]) if scores is not None else 0.0
-
-                label = str(names[class_id]) if isinstance(names, dict) and class_id in names else str(class_id)
-                det = {
-                    "id": int(global_det_id),
-                    "label": label,
-                    "class": label,
-                    "class_id": class_id,
-                    "score": score,
-                    "bbox": [float(v) for v in xyxy[i].tolist()] if xyxy is not None else [],
-                }
-
-                if return_masks and mask_data is not None and i < len(mask_data):
-                    binary_mask = (mask_data[i] > 0.5).astype(np.uint8) * 255
-                    det["mask_png_b64"] = encode_mask_to_base64_png(binary_mask)
-                elif return_masks and xyxy is not None:
-                    # Fallback for detect-only models without segmentation heads.
-                    x1, y1, x2, y2 = [int(round(v)) for v in xyxy[i].tolist()]
-                    h, w = bgr.shape[:2]
-                    x1 = max(0, min(x1, w - 1))
-                    x2 = max(0, min(x2, w))
-                    y1 = max(0, min(y1, h - 1))
-                    y2 = max(0, min(y2, h))
-                    if x2 > x1 and y2 > y1:
-                        binary_mask = np.zeros((h, w), dtype=np.uint8)
-                        binary_mask[y1:y2, x1:x2] = 255
-                        det["mask_png_b64"] = encode_mask_to_base64_png(binary_mask)
-
-                detections.append(det)
-                global_det_id += 1
-
-        total_request_time = time.time() - request_total_start
-        return {
-            "status": "ok",
-            "request_id": request_id,
-            "num_detections": len(detections),
-            "detections": detections,
-            "annotated_image_b64": annotated_image_b64,
-            "elapsed_sec": round(total_request_time, 4),
-        }
-
-    def serve_forever(self):
-        while True:
-            message = self.socket.recv_json()
-            request_id = message.get("request_id", "")
-            log_info(f"Received request_id={request_id}")
-
-            try:
-                resp = self.process_request(message)
-                self.socket.send_json(resp)
-                log_success(
-                    f"Response sent | request_id={request_id} | "
-                    f"num_detections={len(resp.get('detections', []))} | "
-                    f"elapsed={resp.get('elapsed_sec', 0):.4f}s"
+    def predict(self, req: PredictRequest) -> PredictResponse:
+        t_start = time.time()
+        request_id = req.request_id
+        try:
+            bgr = decode_bgr_from_base64(req.image_b64)
+            conf = req.conf if req.conf is not None else self.score_threshold
+            return_masks = req.return_masks if req.return_masks is not None else True
+            return_annotated = req.return_annotated_image if req.return_annotated_image is not None else True
+            if self.model_task == "classify":
+                results = self.model.predict(bgr, verbose=False, conf=conf)
+            else:
+                results = self.model.track(
+                    bgr,
+                    persist=req.persist if req.persist is not None else True,
+                    tracker=req.tracker or "bytetrack.yaml",
+                    verbose=False,
+                    conf=conf,
                 )
-            except Exception as e:
-                elapsed = 0.0
-                log_error(f"Request failed: {e}")
-                print(traceback.format_exc())
-                err = {
-                    "status": "error",
-                    "request_id": request_id,
-                    "message": str(e),
-                    "elapsed_sec": round(elapsed, 4),
-                }
-                try:
-                    self.socket.send_json(err)
-                except Exception:
-                    pass
+            result0 = results[0] if results else None
+            annotated_bgr = result0.plot() if result0 is not None else bgr.copy()
+            annotated_image_b64 = encode_bgr_to_base64_jpg(annotated_bgr) if return_annotated else None
+            detections: list[Detection] = []
+            det_id = 1
+            if self.model_task == "classify":
+                detections = self._parse_classify(result0)
+            elif result0 is not None and result0.boxes is not None:
+                detections = self._parse_detections(result0, bgr, return_masks)
+
+            elapsed = round(time.time() - t_start, 4)
+            return PredictResponse(
+                status="ok",
+                request_id=request_id,
+                num_detections=len(detections),
+                detections=detections,
+                annotated_image_b64=annotated_image_b64,
+                elapsed_sec=elapsed,
+            )
+
+        except Exception as e:
+            elapsed = round(time.time() - t_start, 4)
+            return PredictResponse(
+                status="error",
+                request_id=request_id,
+                message=str(e),
+                elapsed_sec=elapsed,
+            )
+
+
+    def _parse_classify(self, result0) -> list[Detection]:
+        detections: list[Detection] = []
+        names = result0.names if hasattr(result0, "names") else self.model.names
+        probs = result0.probs if result0 is not None else None
+        if probs is None or not hasattr(probs, "top5"):
+            return detections
+        for class_id, score in zip(probs.top5, probs.top5conf.tolist()):
+            class_id = int(class_id)
+            label = str(names[class_id]) if isinstance(names, dict) else str(class_id)
+            detections.append(Detection(
+                id=len(detections) + 1,
+                label=label,
+                class_name=label,
+                class_id=class_id,
+                score=float(score),
+            ))
+        return detections
+
+    def _parse_detections(self, result0, bgr: np.ndarray, return_masks: bool) -> list[Detection]:
+        detections: list[Detection] = []
+        boxes = result0.boxes
+        masks = result0.masks
+        names = result0.names if hasattr(result0, "names") else self.model.names
+
+        xyxy = boxes.xyxy.cpu().numpy() if boxes.xyxy is not None else None
+        cls = boxes.cls.cpu().numpy() if boxes.cls is not None else None
+        scores = boxes.conf.cpu().numpy() if boxes.conf is not None else None
+        mask_data = masks.data.cpu().numpy() if (masks is not None and masks.data is not None) else None
+
+        for i in range(len(boxes)):
+            class_id = int(cls[i]) if cls is not None else -1
+            score = float(scores[i]) if scores is not None else 0.0
+            label = str(names[class_id]) if isinstance(names, dict) else str(class_id)
+
+            mask_b64: str | None = None
+            if return_masks and mask_data is not None and i < len(mask_data):
+                binary = (mask_data[i] > 0.5).astype(np.uint8) * 255
+                mask_b64 = encode_mask_to_base64_png(binary)
+            elif return_masks and xyxy is not None:
+                x1, y1, x2, y2 = [int(round(v)) for v in xyxy[i].tolist()]
+                h, w = bgr.shape[:2]
+                x1, x2 = max(0, min(x1, w - 1)), max(0, min(x2, w))
+                y1, y2 = max(0, min(y1, h - 1)), max(0, min(y2, h))
+                if x2 > x1 and y2 > y1:
+                    binary = np.zeros((h, w), dtype=np.uint8)
+                    binary[y1:y2, x1:x2] = 255
+                    mask_b64 = encode_mask_to_base64_png(binary)
+
+            detections.append(Detection(
+                id=len(detections) + 1,
+                label=label,
+                class_name=label,
+                class_id=class_id,
+                score=score,
+                bbox=[float(v) for v in xyxy[i].tolist()] if xyxy is not None else [],
+                mask_png_b64=mask_b64,
+            ))
+
+        return detections

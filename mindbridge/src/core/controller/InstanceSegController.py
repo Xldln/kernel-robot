@@ -1,54 +1,53 @@
+
 from __future__ import annotations
 
-from pathlib import Path
+import base64
 
 import numpy as np
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from pydantic import BaseModel
 
-from mindbridge.src.core.client.InstanceSegment import InstanceSegmentClient
-from mindbridge.src.core.schemas.YoloEntity import PredictResponse
+from mindbridge.src.core.schemas.YoloEntity import PredictRequest, PredictResponse
+from mindbridge.src.core.service.InstanceSegmentInfer import YOLOInfer
 
-instance_router = APIRouter(
-    prefix="/instance",
-    tags=["Instance Segmentation API"],
-)
+infer_router = APIRouter(prefix="/infer", tags=["YOLO Inference"])
 
-SERVICE_URL = "http://127.0.0.1:8001"
+infer_engine: YOLOInfer | None = None
 
 
-class PredictFileInput(BaseModel):
-    conf: float | None = None
-    return_masks: bool = True
-    return_annotated_image: bool = True
+def init_engine(config_path: str = "/workspace/mindbridge/src/core/config/yolo-config.yaml"):
+    """启动时初始化 YOLO 模型。"""
+    global infer_engine
+    print(f"Loading YOLO model from config: {config_path}")
+    infer_engine = YOLOInfer(config_path)
+    return infer_engine
 
 
-@instance_router.post("/predict/file", response_model=PredictResponse)
-async def predict_from_file(
+@infer_router.post("/predict", response_model=PredictResponse)
+async def predict(body: PredictRequest):
+    """base64 图片推理。"""
+    if infer_engine is None:
+        raise HTTPException(status_code=503, detail="Engine not initialized")
+    return infer_engine.predict(body)
+
+
+@infer_router.post("/predict/file", response_model=PredictResponse)
+async def predict_file(
     file: UploadFile = File(...),
     conf: float | None = Form(None),
     return_masks: bool = Form(True),
     return_annotated_image: bool = Form(True),
 ):
-    """上传图片文件进行 YOLO 推理"""
+    """上传图片文件推理。"""
+    if infer_engine is None:
+        raise HTTPException(status_code=503, detail="Engine not initialized")
+
     image_bytes = await file.read()
-    bgr = np.frombuffer(image_bytes, dtype=np.uint8)
+    image_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
-    with InstanceSegmentClient(base_url=SERVICE_URL) as client:
-        resp = client.predict(
-            bgr,
-            conf=conf,
-            return_masks=return_masks,
-            return_annotated_image=return_annotated_image,
-        )
-
-    if resp.status == "error":
-        raise HTTPException(status_code=500, detail=resp.message)
-
-    return resp
-
-
-@instance_router.post("/predict", response_model=PredictResponse)
-async def predict(body: PredictFileInput):
-    """JSON 体推理（base64 图片传入）"""
-    raise HTTPException(status_code=501, detail="Not implemented: use /predict/file with multipart upload")
+    req = PredictRequest(
+        image_b64=image_b64,
+        conf=conf,
+        return_masks=return_masks,
+        return_annotated_image=return_annotated_image,
+    )
+    return infer_engine.predict(req)

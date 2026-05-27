@@ -1,12 +1,16 @@
+import sys
+import os
+
+sys.path.insert(0, "/workspace")
+
 from typing import Union
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from api import * 
+from mindbridge.src.core.controller import *
 import uvicorn
 import logging
 from loguru import logger
-import sys
-import os
+
 LOG_PATH = "../logs"
 if not os.path.exists(LOG_PATH):
     os.makedirs(LOG_PATH)
@@ -66,7 +70,7 @@ logger.info("日志系统初始化完成")
 
 app = FastAPI()
 
-app.include_router(laser_router)
+app.include_router(control_router)
 
 
 
