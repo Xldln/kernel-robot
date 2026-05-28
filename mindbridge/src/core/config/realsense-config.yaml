@@ -1,0 +1,17 @@
+paths:
+  out_dir: "./output"
+
+camera:
+  width: 640
+  height: 480
+  fps: 30
+  disable_emitter: 0   # 0=关闭红外发射器, 1=开启
+
+runtime:
+  scale: 1.0
+  z_far: 10.0
+  remove_invisible: 1
+
+
+visualization:
+  show: true

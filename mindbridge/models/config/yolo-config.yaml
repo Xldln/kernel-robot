@@ -1,0 +1,2 @@
+model_path: /workspace/mindbridge/models/weights/yolo/best.pt
+score_threshold: 0.4

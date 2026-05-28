@@ -1,0 +1,119 @@
+"""RealSense camera depth capture service (built-in depth, no external model)."""
+
+from __future__ import annotations
+
+import os
+
+import cv2
+import numpy as np
+import pyrealsense2 as rs
+import yaml
+
+from mindbridge.src.core.schemas.RealsenseEntity import CaptureData
+
+os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
+
+
+def _depth_float_m_to_uint16_mm(depth_m: np.ndarray) -> np.ndarray:
+    """Convert depth in meters to uint16 in millimeters."""
+    depth = depth_m.copy()
+    depth[~np.isfinite(depth)] = 0
+    depth[depth < 0] = 0
+    return np.clip(depth * 1000.0, 0, 65535).astype(np.uint16)
+
+
+class RealsenseService:
+    """RealSense camera depth capture using built-in hardware depth computation."""
+
+    def __init__(self, config_path: str = "/workspace/mindbridge/src/core/config/realsense-config.yaml"):
+        with open(config_path) as f:
+            cfg = yaml.safe_load(f)
+        self.cfg = cfg
+        self._frame_id = 0
+        self._init_camera(cfg)
+
+    # ── Camera initialization ──────────────────────────────────────────────
+
+    def _init_camera(self, cfg: dict) -> None:
+        w, h = int(cfg["camera"]["width"]), int(cfg["camera"]["height"])
+        fps = int(cfg["camera"]["fps"])
+        self.image_size = (w, h)
+
+        self.pipeline = rs.pipeline()
+        rs_cfg = rs.config()
+        rs_cfg.enable_stream(rs.stream.depth, w, h, rs.format.z16, fps)
+        rs_cfg.enable_stream(rs.stream.color, w, h, rs.format.bgr8, fps)
+        profile = self.pipeline.start(rs_cfg)
+
+        depth_sensor = profile.get_device().first_depth_sensor()
+        if depth_sensor.supports(rs.option.emitter_enabled):
+            depth_sensor.set_option(
+                rs.option.emitter_enabled, int(cfg["camera"]["disable_emitter"]),
+            )
+
+        # Align depth frames to color camera
+        self.align = rs.align(rs.stream.color)
+
+        # ── Camera intrinsics ──────────────────────────────────────────────
+        color = profile.get_stream(rs.stream.color).as_video_stream_profile()
+        self.color_intr = color.get_intrinsics()
+        self.K = np.array([
+            [self.color_intr.fx, 0, self.color_intr.ppx],
+            [0, self.color_intr.fy, self.color_intr.ppy],
+            [0, 0, 1],
+        ], dtype=np.float32)
+
+        # Stereo baseline (informational — no longer used for depth computation)
+        try:
+            self.baseline = abs(
+                profile.get_stream(rs.stream.depth)
+                .get_extrinsics_to(profile.get_stream(rs.stream.color))
+                .translation[0]
+            )
+        except Exception:
+            self.baseline = 0.0
+
+    # ── Property ───────────────────────────────────────────────────────────
+
+    @property
+    def frame_id(self) -> int:
+        return self._frame_id
+
+    # ── Capture ────────────────────────────────────────────────────────────
+
+    def capture(self) -> CaptureData:
+        """Capture and return one aligned depth-color frame pair."""
+        frames = self.pipeline.wait_for_frames()
+        aligned = self.align.process(frames)
+
+        depth_frame = aligned.get_depth_frame()
+        color_frame = aligned.get_color_frame()
+        if not depth_frame or not color_frame:
+            raise RuntimeError("Failed to get aligned frames")
+
+        # RealSense depth is in mm by default → convert to meters
+        depth_mm = np.asanyarray(depth_frame.get_data())
+        depth_m = depth_mm.astype(np.float32) / 1000.0
+        color = np.asanyarray(color_frame.get_data())
+
+        self._frame_id += 1
+
+        return CaptureData(
+            color_bgr=color,
+            depth_m=depth_m,
+            depth_u16=_depth_float_m_to_uint16_mm(depth_m),
+            K=self.K,
+            baseline=self.baseline,
+            frame_id=self._frame_id,
+        )
+
+
+    def close(self):
+        cv2.destroyAllWindows()
+        self.pipeline.stop()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()

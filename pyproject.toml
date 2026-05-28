@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mindbridge"
+version = "0.1.0"
+description = "Microservice architecture for YOLO instance segmentation + RealSense depth estimation"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Your Name", email = "your@email.com"},
+]
+keywords = ["yolo", "instance-segmentation", "realsense", "depth-estimation", "computer-vision"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "opencv-python>=4.5",
+    "numpy>=1.21",
+    "requests>=2.25",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "ultralytics>=8.0",
+    "fastapi>=0.100",
+    "uvicorn>=0.20",
+]
+
+[project.scripts]
+mindbridge = "mindbridge.src.main:main"
+
+[project.urls]
+Homepage = "https://github.com/your-username/MindBridge"
+Repository = "https://github.com/your-username/MindBridge"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mindbridge"]
+
+[tool.hatch.envs.default]
+type = "virtual"
+
+[tool.hatch.envs.default.scripts]
+test = "pytest tests/"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
