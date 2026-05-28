@@ -36,8 +36,6 @@ def encode_bgr_to_base64_jpg(image_bgr: np.ndarray, quality: int = 90) -> str:
     return base64.b64encode(buf.tobytes()).decode("utf-8")
 
 
-
-
 def _draw_detections(bgr: np.ndarray, detections: list[dict]) -> np.ndarray:
     canvas = bgr.copy()
     for d in detections:
