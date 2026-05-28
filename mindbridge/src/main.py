@@ -73,7 +73,6 @@ def run(
             color_jpg_b64: str = cap["color_jpg_b64"]
             frame_id: int = cap["frame_id"]
 
-            # ── Step 2: Inference by YOLO ──
             t_infer_start = time.time()
             try:
                 pred = client.predict(color_jpg_b64, request_id=str(frame_id))
@@ -82,7 +81,6 @@ def run(
                 pred = {"status": "error", "num_detections": 0, "detections": []}
             infer_ms = (time.time() - t_infer_start) * 1000
 
-            # ── Step 3: Display ──
             if show:
                 if pred.get("status") == "ok" and pred.get("annotated_image_b64"):
                     img_bytes = base64.b64decode(pred["annotated_image_b64"])

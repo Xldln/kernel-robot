@@ -10,6 +10,7 @@ class MindBridgeClient:
         self,
         realsense_url: str = "http://127.0.0.1:8000",
         yolo_url: str = "http://127.0.0.1:8001",
+
     ):
         self.realsense_url = realsense_url.rstrip("/")
         self.yolo_url = yolo_url.rstrip("/")
@@ -36,6 +37,7 @@ class MindBridgeClient:
             "return_masks": False,
             "return_annotated_image": True,
         }
+        
         r = requests.post(f"{self.yolo_url}/infer/predict", json=body, timeout=10)
         r.raise_for_status()
         return r.json()

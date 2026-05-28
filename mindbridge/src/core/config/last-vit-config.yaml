@@ -1,0 +1,4 @@
+model:
+  checkpoint: /workspace/mindbridge/models/weights/lastvit/checkpoint.pth
+  graph_info_file: /workspace/mindbridge/models/weights/lastvit/graph_info.json
+  topk: 5
