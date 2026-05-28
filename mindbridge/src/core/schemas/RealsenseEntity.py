@@ -4,7 +4,21 @@ from __future__ import annotations
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+import numpy as np
+from pydantic import BaseModel, ConfigDict, Field
+
+
+# ─── 内部数据模型（service 层返回）──────────────────────────────
+
+class CaptureData(BaseModel):
+    """单帧原始数据 — service 层返回给 controller，不含序列化。"""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    color_bgr: np.ndarray = Field(..., description="彩色图 (H,W,3) uint8")
+    depth_m: np.ndarray = Field(..., description="深度图 (H,W) float32，单位米，已对齐到彩色")
+    depth_u16: np.ndarray = Field(..., description="深度图 (H,W) uint16，单位毫米")
+    K: np.ndarray = Field(..., description="彩色相机内参 (3,3) float32")
+    baseline: float = Field(..., description="立体基线（米）")
+    frame_id: int = Field(..., description="帧编号")
 
 
 # ─── 请求体 ──────────────────────────────────────────────────────
