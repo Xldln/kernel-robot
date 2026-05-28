@@ -26,7 +26,6 @@ from mindbridge.src.core.tool.LastvitTools import (
     calculate_similarity,
     decode_image_b64_to_bgr,
     decode_image_b64_to_pil,
-    load_centers,
     parse_center_feature,
     upload_visualization_frame,
 )

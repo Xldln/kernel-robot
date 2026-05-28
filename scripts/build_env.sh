@@ -8,9 +8,15 @@ PYTHON_VER="3.12"
 TORCH_CUDA="https://download.pytorch.org/whl/cu128"
 MIRROR="https://pypi.tuna.tsinghua.edu.cn/simple"
 
+_env_exists() { conda info --envs | awk '{print $1}' | grep -qx "$1"; }
+
 build_yolo() {
     echo "========== Building yolo env =========="
-    conda create -n yolo python=$PYTHON_VER -y
+    if _env_exists yolo; then
+        echo "[SKIP] yolo already exists"
+    else
+        conda create -n yolo python=$PYTHON_VER -y
+    fi
     source "$(conda info --base)/etc/profile.d/conda.sh"
     conda activate yolo
 
@@ -31,12 +37,37 @@ build_yolo() {
     echo "========== yolo env ready =========="
 }
 
+
+build_lastvit() {
+    echo "========== Building lastvit env =========="
+    if _env_exists lastvit; then
+        echo "[SKIP] lastvit already exists"
+    else
+        conda create -n lastvit python=$PYTHON_VER -y
+    fi
+    source "$(conda info --base)/etc/profile.d/conda.sh"
+    conda activate lastvit
+
+    pip config set global.index-url $MIRROR
+    pip3 install torch torchvision --index-url $TORCH_CUDA
+
+    # 通用服务依赖
+    pip install opencv-python numpy pyyaml
+    pip install uvicorn fastapi pydantic python-multipart
+
+    echo "========== lastvit env ready =========="
+}
+
+
 build_realsense() {
     echo "========== Building realsense env =========="
-    # 系统依赖
     apt-get update && apt-get install -y --no-install-recommends libusb-1.0-0
 
-    conda create -n realsense python=$PYTHON_VER -y
+    if _env_exists realsense; then
+        echo "[SKIP] realsense already exists"
+    else
+        conda create -n realsense python=$PYTHON_VER -y
+    fi
     source "$(conda info --base)/etc/profile.d/conda.sh"
     conda activate realsense
 
@@ -61,9 +92,11 @@ build_realsense() {
 
 case "${1:-all}" in
     yolo)      build_yolo ;;
+    lastvit)   build_lastvit ;;
     realsense) build_realsense ;;
     all)
         build_yolo
+        build_lastvit
         build_realsense
         ;;
     *)
