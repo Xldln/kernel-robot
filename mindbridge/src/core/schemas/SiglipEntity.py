@@ -1,4 +1,4 @@
-"""LAST-ViT 特征匹配请求 / 响应模型"""
+"""SigLIP 特征匹配请求 / 响应模型"""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ class StateItem(BaseModel):
 # ─── 请求体 ──────────────────────────────────────────────────────
 
 class PredictRequest(BaseModel):
-    """LAST-ViT 特征推理请求"""
+    """SigLIP 特征推理请求"""
     request_id: str = Field(default="", description="请求 ID（唯一标识）")
     image_b64: str = Field(..., description="RGB 图像 base64 编码")
 
@@ -32,7 +32,7 @@ class PredictRequest(BaseModel):
 # ─── 响应体 ──────────────────────────────────────────────────────
 
 class PredictResponse(BaseModel):
-    """LAST-ViT 特征推理响应"""
+    """SigLIP 特征推理响应"""
     status: str = Field(..., description="状态，ok 或 error")
     request_id: str = Field(default="", description="对应请求 ID")
     ok: bool = Field(True, description="兼容旧字段，表示推理是否成功")

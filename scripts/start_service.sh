@@ -3,7 +3,8 @@
 # 用法:
 #   bash scripts/start_service.sh yolo       # 启动 YOLO (端口 8001)
 #   bash scripts/start_service.sh realsense  # 启动 RealSense (端口 8000)
-#   bash scripts/start_service.sh all        # 同时启动两个服务
+#   bash scripts/start_service.sh siglip     # 启动 SigLIP (端口 8002)
+#   bash scripts/start_service.sh all        # 同时启动所有服务
 #   bash scripts/start_service.sh stop       # 停止所有服务
 #   bash scripts/start_service.sh status     # 查看运行状态
 set -euo pipefail
@@ -56,7 +57,6 @@ start_service() {
     local pid_file="$PID_DIR/$name.pid"
     local log_file="$LOG_DIR/${name}.log"
 
-    # 检查是否已运行
     if [ -f "$pid_file" ]; then
         local old_pid
         old_pid=$(cat "$pid_file")
@@ -70,7 +70,6 @@ start_service() {
 
     echo "  [START] $name → $log_file"
 
-
     nohup bash -c "
         source \"\$(conda info --base)/etc/profile.d/conda.sh\" 2>/dev/null
         conda activate $env_name
@@ -80,7 +79,6 @@ start_service() {
     local pid=$!
     echo "$pid" > "$pid_file"
 
-    # 等待几秒检查是否存活
     sleep 2
     if kill -0 "$pid" 2>/dev/null; then
         echo "  [OK] $name started (PID $pid)"
@@ -102,10 +100,15 @@ case "${1:-help}" in
     realsense)
         start_service "realsense" "realsense" "mindbridge/src/core/launch/service_RealSense.py"
         ;;
+    siglip)
+        start_service "siglip" "siglip" "mindbridge/src/core/launch/service_Siglip.py"
+        ;;
     all)
+        start_service "realsense" "realsense" "mindbridge/src/core/launch/service_RealSense.py"
+        echo ""
         start_service "yolo" "yolo" "mindbridge/src/core/launch/service_InsenceSeg.py"
         echo ""
-        start_service "realsense" "realsense" "mindbridge/src/core/launch/service_RealSense.py"
+        start_service "siglip" "siglip" "mindbridge/src/core/launch/service_Siglip.py"
         ;;
     stop)
         cleanup
@@ -116,16 +119,20 @@ case "${1:-help}" in
     restart)
         cleanup
         sleep 1
-        start_service "yolo" "yolo" "mindbridge/src/core/launch/service_InsenceSeg.py"
         start_service "realsense" "realsense" "mindbridge/src/core/launch/service_RealSense.py"
+        echo ""
+        start_service "yolo" "yolo" "mindbridge/src/core/launch/service_InsenceSeg.py"
+        echo ""
+        start_service "siglip" "siglip" "mindbridge/src/core/launch/service_Siglip.py"
         ;;
     *)
         echo "MindBridge Service Manager"
         echo ""
         echo "Usage:"
-        echo "  bash $0 yolo        # YOLO 推理服务   → :8001"
-        echo "  bash $0 realsense   # RealSense 深度  → :8000"
-        echo "  bash $0 all         # 同时启动两个"
+        echo "  bash $0 yolo        # YOLO 推理服务    → :8001"
+        echo "  bash $0 realsense   # RealSense 深度   → :8000"
+        echo "  bash $0 siglip      # SigLIP 状态分类  → :8002"
+        echo "  bash $0 all         # 同时启动三个"
         echo "  bash $0 stop        # 停止所有"
         echo "  bash $0 status      # 查看状态"
         echo "  bash $0 restart     # 重启所有"

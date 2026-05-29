@@ -1,0 +1,5 @@
+model:
+  path: /workspace/model/siglip2-so400m-patch14-224
+  checkpoint: /workspace/model/model_siglip2_best_loss.pt
+  graph_info_file: /workspace/model/graph_info_best_loss.json
+  topk: 5

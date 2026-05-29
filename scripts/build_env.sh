@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # MindBridge conda 环境构建脚本
-# bash scripts/build_env.sh [yolo|realsense|all]
+# bash scripts/build_env.sh [yolo|siglip|realsense|all]
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -58,22 +58,22 @@ build_yolo() {
 }
 
 
-build_lastvit() {
+build_siglip() {
     set_base
-    echo "========== Building lastvit env =========="
-    if _env_exists lastvit; then
-        echo "[SKIP] lastvit already exists"
+    echo "========== Building siglip env =========="
+    if _env_exists siglip; then
+        echo "[SKIP] siglip already exists"
     else
-        conda create -n lastvit python=$PYTHON_VER -y
+        conda create -n siglip python=$PYTHON_VER -y
     fi
 
     source "$(conda info --base)/etc/profile.d/conda.sh"
-    conda activate lastvit
+    conda activate siglip
     pip config set global.index-url $MIRROR
     pip3 install torch torchvision -i $TORCH_CUDA
 
-    pip install opencv-python numpy pyyaml uvicorn fastapi pydantic python-multipart
-    echo "========== lastvit env ready =========="
+    pip install opencv-python numpy pyyaml uvicorn fastapi pydantic python-multipart transformers
+    echo "========== siglip env ready =========="
 }
 
 
@@ -100,15 +100,15 @@ build_realsense() {
 
 case "${1:-all}" in
     yolo)      build_yolo ;;
-    lastvit)   build_lastvit ;;
+    siglip)    build_siglip ;;
     realsense) build_realsense ;;
     all)
         build_yolo
-        build_lastvit
+        build_siglip
         build_realsense
         ;;
     *)
-        echo "Usage: $0 [yolo|realsense|all]"
+        echo "Usage: $0 [yolo|siglip|realsense|all]"
         exit 1
         ;;
 esac

@@ -1,4 +1,4 @@
-"""MindBridge Control Center — 从 RealSense 服务(8000) 持续采图并分发给 YOLO 服务(8001) 推理。
+"""MindBridge Control Center — 从 RealSense 服务(8000) 持续采图并分发给 YOLO 服务(8001) 推理和 SigLIP 服务(8002) 状态分类。
 
 用法:
   python mindbridge/src/main.py                          # 显示窗口，无限采集
@@ -23,21 +23,25 @@ from mindbridge.src.core.tool.image import _draw_detections
 def run(
     realsense_url: str = "http://127.0.0.1:8000",
     yolo_url: str = "http://127.0.0.1:8001",
+    siglip_url: str = "http://127.0.0.1:8002",
     show: bool = True,
     max_frames: Optional[int] = None,
     out_dir: Optional[str] = None,
     log_interval: int = 30,
 ) -> None:
-    client = MindBridgeClient(realsense_url, yolo_url)
+    client = MindBridgeClient(realsense_url, yolo_url, siglip_url)
 
     print("[ControlCenter] Waiting for services ...")
     for attempt in range(60):
         h = client.health()
         rs_ok = h.get("realsense", {}).get("status") == "ok"
         yolo_ok = h.get("yolo", {}).get("status") == "ok"
-        if rs_ok and yolo_ok:
-            print("[ControlCenter] Both services ready")
+        siglip_ok = h.get("siglip", {}).get("status") == "ok"
+        if rs_ok and yolo_ok and siglip_ok:
+            print("[ControlCenter] All services ready")
             break
+        if attempt % 10 == 0:
+            print(f"[ControlCenter] Waiting... rs={rs_ok} yolo={yolo_ok} siglip={siglip_ok}")
         time.sleep(1)
     else:
         print("[ControlCenter] WARNING: services not ready — will retry per frame")
@@ -48,11 +52,11 @@ def run(
     frame_count = 0
     running = True
 
-    print("[ControlCenter] Starting capture → inference loop ...")
+    print("[ControlCenter] Starting capture → inference → classification loop ...")
 
     if show:
-        cv2.namedWindow("Control Center — Color + YOLO", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Control Center — Color + YOLO", 640, 480)
+        cv2.namedWindow("Control Center — Color + YOLO + SigLIP", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Control Center — Color + YOLO + SigLIP", 640, 480)
 
     try:
         while running:
@@ -77,13 +81,24 @@ def run(
             color_jpg_b64: str = cap["color_jpg_b64"]
             frame_id: int = cap["frame_id"]
 
+            # ── Step 2: YOLO inference ──
             t_infer_start = time.time()
             try:
                 pred = client.predict(color_jpg_b64, request_id=str(frame_id))
             except Exception as e:
-                print(f"[ControlCenter] Inference failed: {e}")
+                print(f"[ControlCenter] YOLO inference failed: {e}")
                 pred = {"status": "error", "num_detections": 0, "detections": []}
             infer_ms = (time.time() - t_infer_start) * 1000
+
+            # ── Step 3: SigLIP state classification ──
+            t_siglip_start = time.time()
+            state_result = {}
+            try:
+                state_result = client.classify_state(color_jpg_b64, request_id=str(frame_id))
+            except Exception as e:
+                print(f"[ControlCenter] SigLIP classification failed: {e}")
+                state_result = {"status": "error", "best_category": "", "best_similarity": 0.0}
+            siglip_ms = (time.time() - t_siglip_start) * 1000
 
             if show:
                 if pred.get("status") == "ok" and pred.get("annotated_image_b64"):
@@ -99,7 +114,17 @@ def run(
                         pred.get("detections", []),
                     )
 
-                cv2.imshow("Control Center — Color + YOLO", display)
+                # Overlay SigLIP state classification on the display
+                if state_result.get("status") == "ok":
+                    best_cat = state_result.get("best_category", "unknown")
+                    best_sim = state_result.get("best_similarity", 0.0)
+                    h, w = display.shape[:2]
+                    overlay_y = h - 50 if h > 60 else 20
+                    cv2.putText(display, f"State: {best_cat} ({best_sim:.3f})",
+                                (10, overlay_y),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
+                cv2.imshow("Control Center — Color + YOLO + SigLIP", display)
                 if cv2.waitKey(5) & 0xFF == 27:
                     running = False
 
@@ -115,9 +140,11 @@ def run(
             if frame_count % log_interval == 0:
                 n_det = pred.get("num_detections", 0)
                 status = pred.get("status", "?")
+                state_cat = state_result.get("best_category", "-")
+                state_sim = state_result.get("best_similarity", 0.0)
                 print(
-                    f"[Frame {frame_id:05d}] {n_det} detections | "
-                    f"infer={infer_ms:.1f}ms | loop={loop_ms:.1f}ms | {status}"
+                    f"[Frame {frame_id:05d}] {n_det} detections | state={state_cat} ({state_sim:.3f}) | "
+                    f"infer={infer_ms:.1f}ms | siglip={siglip_ms:.1f}ms | loop={loop_ms:.1f}ms | {status}"
                 )
 
             frame_count += 1
@@ -132,7 +159,7 @@ def run(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="MindBridge Control Center — RealSense → YOLO pipeline",
+        description="MindBridge Control Center — RealSense → YOLO → SigLIP pipeline",
     )
     parser.add_argument(
         "--realsense-url", default="http://127.0.0.1:8000",
@@ -141,6 +168,10 @@ def main() -> None:
     parser.add_argument(
         "--yolo-url", default="http://127.0.0.1:8001",
         help="YOLO 服务地址（默认 :8001）",
+    )
+    parser.add_argument(
+        "--siglip-url", default="http://127.0.0.1:8002",
+        help="SigLIP 服务地址（默认 :8002）",
     )
     parser.add_argument(
         "--no-show", action="store_true",
@@ -164,6 +195,7 @@ def main() -> None:
     run(
         realsense_url=args.realsense_url,
         yolo_url=args.yolo_url,
+        siglip_url=args.siglip_url,
         show=not args.no_show,
         max_frames=args.max_frames,
         out_dir=args.out_dir,

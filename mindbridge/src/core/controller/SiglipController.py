@@ -1,26 +1,24 @@
-"""LAST-ViT FastAPI Controller"""
+"""SigLIP FastAPI Controller"""
 
 from __future__ import annotations
 
 import base64
 
-import numpy as np
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, UploadFile, File
 
-from mindbridge.src.core.schemas.LastvitEntity import PredictRequest, PredictResponse
-from mindbridge.src.core.service.LastvitInfer import LastvitInfer
-from mindbridge.src.core.tool.LastvitTools import decode_image_b64_to_bgr
+from mindbridge.src.core.schemas.SiglipEntity import PredictRequest, PredictResponse
+from mindbridge.src.core.service.SiglipInfer import SiglipInfer
 
-infer_router = APIRouter(prefix="/infer", tags=["LAST-ViT Inference"])
+infer_router = APIRouter(prefix="/infer", tags=["SigLIP Inference"])
 
-infer_engine: LastvitInfer | None = None
+infer_engine: SiglipInfer | None = None
 
 
-def init_engine(config_path: str = "/workspace/mindbridge/src/core/config/last-vit-config.yaml"):
-    """启动时初始化 LAST-ViT 模型。"""
+def init_engine(config_path: str = "/workspace/mindbridge/src/core/config/siglip-config.yaml"):
+    """启动时初始化 SigLIP 模型。"""
     global infer_engine
-    print(f"Loading LAST-ViT model from config: {config_path}")
-    infer_engine = LastvitInfer(config_path)
+    print(f"Loading SigLIP model from config: {config_path}")
+    infer_engine = SiglipInfer(config_path)
     return infer_engine
 
 
