@@ -18,7 +18,10 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$NAME"; then
     docker run -d --name mindbridge \
      --gpus all \
      --network host \
+     --privileged \
      -v "$(pwd):/workspace" \
+     -v /dev:/dev \
+     -v /run/udev:/run/udev:ro \
      -w /workspace \
      mindbridge \
      tail -f /dev/null
