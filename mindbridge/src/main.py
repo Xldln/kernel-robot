@@ -50,6 +50,10 @@ def run(
 
     print("[ControlCenter] Starting capture → inference loop ...")
 
+    if show:
+        cv2.namedWindow("Control Center — Color + YOLO", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Control Center — Color + YOLO", 640, 480)
+
     try:
         while running:
             if max_frames is not None and frame_count >= max_frames:
@@ -96,7 +100,7 @@ def run(
                     )
 
                 cv2.imshow("Control Center — Color + YOLO", display)
-                if cv2.waitKey(1) & 0xFF == 27:
+                if cv2.waitKey(5) & 0xFF == 27:
                     running = False
 
             # ── Step 4: Save ──

@@ -14,11 +14,15 @@ cat > "$CMD_PATH" <<'SCRIPT'
 #!/usr/bin/env bash
 NAME="mindbridge"
 if ! docker ps --format '{{.Names}}' | grep -qx "$NAME"; then
+  echo "==> 允许 X11 连接..."
+  xhost +local: 2>/dev/null || true
   echo "==> 启动容器..."
     docker run -d --name mindbridge \
      --gpus all \
      --network host \
      --privileged \
+     -e DISPLAY=$DISPLAY \
+     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
      -v "$(pwd):/workspace" \
      -v /dev:/dev \
      -v /run/udev:/run/udev:ro \

@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 class Detection(BaseModel):
     """单个检测目标"""
+    model_config = {"populate_by_name": True}
     id: int = Field(..., description="全局检测 ID")
     label: str = Field(..., description="类别名称")
     class_name: str = Field(..., alias="class", description="类别名称（兼容 JSON key 'class'）")

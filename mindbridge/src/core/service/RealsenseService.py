@@ -54,6 +54,11 @@ class RealsenseService:
         # Align depth frames to color camera
         self.align = rs.align(rs.stream.color)
 
+        # Warm up: discard frames until auto-exposure stabilises
+        warmup_frames = 30
+        for _ in range(warmup_frames):
+            self.pipeline.wait_for_frames()
+
         # ── Camera intrinsics ──────────────────────────────────────────────
         color = profile.get_stream(rs.stream.color).as_video_stream_profile()
         self.color_intr = color.get_intrinsics()

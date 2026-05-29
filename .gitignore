@@ -12,3 +12,4 @@ build/
 skills
 logs
 .crush
+output/
