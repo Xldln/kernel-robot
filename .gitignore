@@ -11,3 +11,4 @@ build/
 */models/weights/*
 skills
 logs
+.crush

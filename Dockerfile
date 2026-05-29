@@ -43,9 +43,13 @@ RUN conda init bash \
     && conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ \
     && conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ \
     && conda config --set show_channel_urls yes \
+    && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
+    && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r \
+    && conda install python=3.12 -y \
     && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
-    && pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-    && pip install uvicorn fastapi numpy opencv-python 
+    && pip install pillow uvicorn fastapi numpy opencv-python \
+    && pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128 
+
 
 WORKDIR /workspace
 COPY . /workspace
