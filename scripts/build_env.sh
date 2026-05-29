@@ -17,6 +17,17 @@ set_base(){
     CONDA_BASE="$(conda info --base)"
     mkdir -p "$CONDA_BASE/lib/python3.12/site-packages/cv2/qt/fonts" \
     && cp /usr/share/fonts/truetype/dejavu/*.ttf "$CONDA_BASE/lib/python3.12/site-packages/cv2/qt/fonts/"
+
+    chmod +x "$ROOT_DIR/bin/mind"
+    for _d in /usr/local/bin "$HOME/.local/bin" "$HOME/bin"; do
+        if echo ":$PATH:" | grep -q ":$_d:"; then
+            mkdir -p "$_d"
+            ln -sf "$ROOT_DIR/bin/mind" "$_d/mind"
+            echo "[INFO] mind command installed -> $_d/mind"
+            break
+        fi
+    done
+
 }
 
 _env_exists() { conda info --envs | awk '{print $1}' | grep -qx "$1"; }
