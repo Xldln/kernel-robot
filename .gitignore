@@ -20,7 +20,6 @@ output/
 # Model directories (16GB+)
 models/
 mindbridge/models/siglip/
-mindbridge/models/siglip2-so400m-patch14-224/
 mindbridge/models/weights/
 
 # VS Code
