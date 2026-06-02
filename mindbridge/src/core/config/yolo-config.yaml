@@ -1,6 +1,7 @@
 
 
 yolo:
-
+  # 使用 YOLO 预训练模型 (首次运行会自动下载)
+  # model_path: yolov11m.pt
   model_path: /workspace/mindbridge/models/weights/yolo/best_yolo11m_pencilbag.pt
   score_threshold: 0.4

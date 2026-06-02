@@ -74,6 +74,7 @@ start_service() {
         source \"\$(conda info --base)/etc/profile.d/conda.sh\" 2>/dev/null
         conda activate $env_name
         cd \"$ROOT_DIR\"
+        export PYTHONPATH=\"\$ROOT_DIR:\$PYTHONPATH\"
         exec python \"$script\"
     " > "$log_file" 2>&1 &
     local pid=$!

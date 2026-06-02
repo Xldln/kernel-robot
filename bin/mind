@@ -1,2 +1,54 @@
 #!/usr/bin/env bash
-exec python -m mindbridge.src.main "$@"
+# 获取脚本的真实路径（处理符号链接和Docker挂载）
+SCRIPT="$(readlink -f "$0" 2>/dev/null || echo "$0")"
+
+# 检测是否在 Docker 容器中
+if [ -f "/.dockerenv" ] || grep -q 'docker\|lxc' /proc/1/cgroup 2>/dev/null; then
+    # 在容器中，直接使用 /workspace
+    ROOT_DIR="/workspace"
+else
+    ROOT_DIR="$(cd "$(dirname "$SCRIPT")/.." && pwd)"
+fi
+
+case "${1:-all}" in
+    --yolo-only)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" yolo
+        exec python -m mindbridge.src.main "$@"
+        ;;
+    --siglip-only)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        exec python -m mindbridge.src.main "$@"
+        ;;
+    --rs-only|--realsense-only)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        exec python -m mindbridge.src.main "$@"
+        ;;
+    --no-siglip)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" yolo
+        exec python -m mindbridge.src.main "$@"
+        ;;
+    all|--all)
+        shift 2>/dev/null || true
+        bash "$ROOT_DIR/scripts/start_service.sh" yolo
+        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        exec python -m mindbridge.src.main "$@"
+        ;;
+    help|--help|-h)
+        echo "Usage: mind [OPTION]"
+        echo ""
+        echo "Options:"
+        echo "  (无参数)        启动所有服务 (yolo + siglip + realsense)，然后运行 Control Center"
+        echo "  --all           同上"
+        echo "  --yolo-only     只启动 YOLO 服务，然后运行 Control Center"
+        echo "  --siglip-only   只启动 SigLIP 服务，然后运行 Control Center"
+        echo "  --rs-only       只启动 RealSense 服务，然后运行 Control Center"
+        echo "  --no-siglip     启动 YOLO（不启动 SigLIP），然后运行 Control Center"
+        echo "  help, --help    显示此帮助"
+        exit 0
+        ;;
+esac

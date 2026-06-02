@@ -55,8 +55,12 @@ def run(
     print("[ControlCenter] Starting capture → inference → classification loop ...")
 
     if show:
-        cv2.namedWindow("Control Center — Color + YOLO + SigLIP", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Control Center — Color + YOLO + SigLIP", 640, 480)
+        # 创建两个窗口：一个显示 RGB+YOLO，一个显示 SigLIP 状态分析
+        cv2.namedWindow("RGB + YOLO Detection", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("RGB + YOLO Detection", 640, 480)
+
+        # cv2.namedWindow("SigLIP State Analysis", cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow("SigLIP State Analysis", 640, 480)
 
     try:
         while running:
@@ -101,30 +105,39 @@ def run(
             siglip_ms = (time.time() - t_siglip_start) * 1000
 
             if show:
+                # ── 获取原始 RGB 图片 ──
+                img_bytes = base64.b64decode(color_jpg_b64)
+                img_arr = np.frombuffer(img_bytes, dtype=np.uint8)
+                original_rgb = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+
+                # ── 窗口1: RGB + YOLO 检测 ──
                 if pred.get("status") == "ok" and pred.get("annotated_image_b64"):
                     img_bytes = base64.b64decode(pred["annotated_image_b64"])
                     img_arr = np.frombuffer(img_bytes, dtype=np.uint8)
-                    display = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+                    yolo_display = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
                 else:
-                    img_bytes = base64.b64decode(color_jpg_b64)
-                    img_arr = np.frombuffer(img_bytes, dtype=np.uint8)
-                    color_bgr = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
-                    display = _draw_detections(
-                        color_bgr,
+                    yolo_display = _draw_detections(
+                        original_rgb.copy(),
                         pred.get("detections", []),
                     )
 
-                # Overlay SigLIP state classification on the display
+                # 添加 SigLIP 简短信息到 YOLO 窗口（分两行显示）
                 if state_result.get("status") == "ok":
                     best_cat = state_result.get("best_category", "unknown")
                     best_sim = state_result.get("best_similarity", 0.0)
-                    h, w = display.shape[:2]
-                    overlay_y = h - 50 if h > 60 else 20
-                    cv2.putText(display, f"State: {best_cat} ({best_sim:.3f})",
-                                (10, overlay_y),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                    h, w = yolo_display.shape[:2]
+                    # 第一行：State 信息
+                    cv2.putText(yolo_display, f"State: {best_cat}",
+                                (10, h - 35),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                    # 第二行：Similarity 信息
+                    cv2.putText(yolo_display, f"Sim: {best_sim:.3f}",
+                                (10, h - 15),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-                cv2.imshow("Control Center — Color + YOLO + SigLIP", display)
+                # 显示单个窗口
+                cv2.imshow("RGB + YOLO Detection", yolo_display)
+
                 if cv2.waitKey(5) & 0xFF == 27:
                     running = False
 

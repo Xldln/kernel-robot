@@ -12,7 +12,7 @@ import numpy as np
 import torch
 import yaml
 from PIL import Image
-from transformers import AutoModel, AutoProcessor
+from transformers import SiglipModel, SiglipProcessor, AutoModel, AutoProcessor
 
 from mindbridge.src.core.schemas.SiglipEntity import (
     PredictRequest,
@@ -170,8 +170,29 @@ class SiglipInfer:
 
     def _load_model(self):
         """加载 SigLIP 基础模型 + 训练权重"""
-        model = AutoModel.from_pretrained(self.model_path)
-        processor = AutoProcessor.from_pretrained(self.model_path)
+        # 检查路径是否存在
+        model_path = Path(self.model_path)
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model path does not exist: {self.model_path}")
+
+        print(f"[SiglipInfer] Loading model from: {model_path}")
+
+        # 尝试多种加载方式
+        try:
+            # 方法1: 使用相对路径
+            model = SiglipModel.from_pretrained(str(model_path), local_files_only=True)
+            processor = SiglipProcessor.from_pretrained(str(model_path), local_files_only=True)
+        except Exception as e1:
+            print(f"[SiglipInfer] Method 1 failed: {e1}")
+            try:
+                # 方法2: 添加 trust_remote_code
+                model = SiglipModel.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
+                processor = SiglipProcessor.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
+            except Exception as e2:
+                print(f"[SiglipInfer] Method 2 failed: {e2}")
+                # 方法3: 使用 AutoModel
+                model = AutoModel.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
+                processor = AutoProcessor.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
 
         checkpoint = torch.load(self.checkpoint_path, map_location="cpu", weights_only=False)
         model_state = checkpoint.get("model_state_dict", checkpoint)

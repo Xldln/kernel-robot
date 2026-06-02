@@ -1,2 +1,2 @@
-model_path: /workspace/mindbridge/models/weights/yolo/best.pt
+model_path: /workspace/mindbridge/models/weights/yolo/best_yolo11m_pencilbag.pt
 score_threshold: 0.4

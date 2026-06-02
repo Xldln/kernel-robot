@@ -22,8 +22,11 @@ set_base(){
     for _d in /usr/local/bin "$HOME/.local/bin" "$HOME/bin"; do
         if echo ":$PATH:" | grep -q ":$_d:"; then
             mkdir -p "$_d"
-            ln -sf "$ROOT_DIR/bin/mind" "$_d/mind"
-            echo "[INFO] mind command installed -> $_d/mind"
+            if ! ln -sf "$ROOT_DIR/bin/mind" "$_d/mind" 2>/dev/null; then
+                echo "[SKIP] mind already exists at $_d/mind or same file"
+            else
+                echo "[INFO] mind command installed -> $_d/mind"
+            fi
             break
         fi
     done
