@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import base64
+import json as _json
 import time
 
 import cv2
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import Response
 
 from mindbridge.src.core.schemas.RealsenseEntity import (
     CameraInfoResponse,
@@ -15,6 +17,7 @@ from mindbridge.src.core.schemas.RealsenseEntity import (
     ShutdownResponse,
 )
 from mindbridge.src.core.service.RealsenseService import RealsenseService
+from mindbridge.src.core.tool.multipart import build_multipart_response
 
 realsense_router = APIRouter(prefix="/realsense", tags=["RealSense Depth"])
 
@@ -78,6 +81,67 @@ def capture():
             depth_u16_png_b64="",
             elapsed_sec=elapsed,
             message=str(e),
+        )
+
+
+@realsense_router.post("/capture/raw")
+def capture_raw():
+    """采集一帧，返回彩色、深度和红外图的原始编码字节。"""
+    if engine is None:
+        raise HTTPException(status_code=503, detail="Engine not initialized")
+
+    t_start = time.time()
+    try:
+        data: CaptureData = engine.capture()
+
+        ok_jpg, buf_jpg = cv2.imencode(".jpg", data.color_bgr, [cv2.IMWRITE_JPEG_QUALITY, 90])
+        if not ok_jpg:
+            raise RuntimeError("Failed to encode color image")
+
+        ok_depth, buf_depth = cv2.imencode(
+            ".png", data.depth_u16, [cv2.IMWRITE_PNG_COMPRESSION, 3],
+        )
+        if not ok_depth:
+            raise RuntimeError("Failed to encode depth image")
+
+        binary_parts = [
+            ("color_jpg", buf_jpg.tobytes(), "image/jpeg"),
+            ("depth_png", buf_depth.tobytes(), "image/png"),
+        ]
+
+        if data.ir_left is not None:
+            ok_ir_left, buf_ir_left = cv2.imencode(".jpg", data.ir_left, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            if ok_ir_left:
+                binary_parts.append(("ir_left_jpg", buf_ir_left.tobytes(), "image/jpeg"))
+
+        if data.ir_right is not None:
+            ok_ir_right, buf_ir_right = cv2.imencode(".jpg", data.ir_right, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            if ok_ir_right:
+                binary_parts.append(("ir_right_jpg", buf_ir_right.tobytes(), "image/jpeg"))
+
+        elapsed = round(time.time() - t_start, 4)
+        body, content_type = build_multipart_response(binary_parts=binary_parts)
+        headers = {
+            "X-Status": "ok",
+            "X-Frame-Id": str(data.frame_id),
+            "X-Baseline": str(data.baseline),
+            "X-K": _json.dumps(data.K.tolist()),
+            "X-Elapsed-Sec": str(elapsed),
+        }
+        return Response(content=body, media_type=content_type, headers=headers)
+
+    except Exception as e:
+        elapsed = round(time.time() - t_start, 4)
+        return Response(
+            content=b"",
+            media_type="text/plain",
+            headers={
+                "X-Status": "error",
+                "X-Frame-Id": "0",
+                "X-Error-Message": str(e),
+                "X-Elapsed-Sec": str(elapsed),
+            },
+            status_code=500,
         )
 
 

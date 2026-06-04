@@ -101,7 +101,8 @@ def parse_multipart_response(
     json_result: dict | None = None
     binary_parts: dict[str, bytes] = {}
 
-    msg = email.message_from_bytes(body, policy=email.policy.compat32)
+    header = f"Content-Type: {content_type}\r\n\r\n".encode("ascii")
+    msg = email.message_from_bytes(header + body, policy=email.policy.compat32)
     if not msg.is_multipart():
         return json_result, binary_parts
 
