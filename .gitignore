@@ -14,13 +14,14 @@ logs
 .crush
 output/
 
+mindbridge/models/*
+
+
 # Conda environments (22GB+)
 .conda_envs/
 
 # Model directories (16GB+)
-models/
-mindbridge/models/siglip/
-mindbridge/models/weights/
+
 
 # VS Code
 .vscode/

@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 # MindBridge 服务启动脚本
 # 用法:
-#   bash scripts/start_service.sh yolo       # 启动 YOLO (端口 8001)
-#   bash scripts/start_service.sh realsense  # 启动 RealSense (端口 8000)
-#   bash scripts/start_service.sh siglip     # 启动 SigLIP (端口 8002)
-#   bash scripts/start_service.sh all        # 同时启动所有服务
-#   bash scripts/start_service.sh stop       # 停止所有服务
-#   bash scripts/start_service.sh status     # 查看运行状态
+#   bash scripts/start_service.sh yolo            # 启动 YOLO (端口 8001)
+#   bash scripts/start_service.sh realsense       # 启动 RealSense (端口 8000)
+#   bash scripts/start_service.sh siglip          # 启动 SigLIP (端口 8002)
+#   bash scripts/start_service.sh fastfoundation  # 启动 FastFoundation (端口 8004)
+#   bash scripts/start_service.sh sam3            # 启动 SAM3 (端口 8005)
+#   bash scripts/start_service.sh flowpose        # 启动 FlowPose (端口 8006)
+#   bash scripts/start_service.sh all             # 同时启动所有服务
+#   bash scripts/start_service.sh stop            # 停止所有服务
+#   bash scripts/start_service.sh status          # 查看运行状态
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -104,12 +107,27 @@ case "${1:-help}" in
     siglip)
         start_service "siglip" "siglip" "mindbridge/src/core/launch/service_Siglip.py"
         ;;
+    fastfoundation)
+        start_service "fastfoundation" "fastfoundation" "mindbridge/src/core/launch/service_FastFoundation.py"
+        ;;
+    sam3)
+        start_service "sam3" "sam3" "mindbridge/src/core/launch/service_Sam3.py"
+        ;;
+    flowpose)
+        start_service "flowpose" "flowpose" "mindbridge/src/core/launch/service_FlowPose.py"
+        ;;
     all)
         start_service "realsense" "realsense" "mindbridge/src/core/launch/service_RealSense.py"
         echo ""
         start_service "yolo" "yolo" "mindbridge/src/core/launch/service_InsenceSeg.py"
         echo ""
         start_service "siglip" "siglip" "mindbridge/src/core/launch/service_Siglip.py"
+        echo ""
+        start_service "fastfoundation" "fastfoundation" "mindbridge/src/core/launch/service_FastFoundation.py"
+        echo ""
+        start_service "sam3" "sam3" "mindbridge/src/core/launch/service_Sam3.py"
+        echo ""
+        start_service "flowpose" "flowpose" "mindbridge/src/core/launch/service_FlowPose.py"
         ;;
     stop)
         cleanup
@@ -125,17 +143,26 @@ case "${1:-help}" in
         start_service "yolo" "yolo" "mindbridge/src/core/launch/service_InsenceSeg.py"
         echo ""
         start_service "siglip" "siglip" "mindbridge/src/core/launch/service_Siglip.py"
+        echo ""
+        start_service "fastfoundation" "fastfoundation" "mindbridge/src/core/launch/service_FastFoundation.py"
+        echo ""
+        start_service "sam3" "sam3" "mindbridge/src/core/launch/service_Sam3.py"
+        echo ""
+        start_service "flowpose" "flowpose" "mindbridge/src/core/launch/service_FlowPose.py"
         ;;
     *)
         echo "MindBridge Service Manager"
         echo ""
         echo "Usage:"
-        echo "  bash $0 yolo        # YOLO 推理服务    → :8001"
-        echo "  bash $0 realsense   # RealSense 深度   → :8000"
-        echo "  bash $0 siglip      # SigLIP 状态分类  → :8002"
-        echo "  bash $0 all         # 同时启动三个"
-        echo "  bash $0 stop        # 停止所有"
-        echo "  bash $0 status      # 查看状态"
-        echo "  bash $0 restart     # 重启所有"
+        echo "  bash $0 yolo            # YOLO 推理服务          → :8001"
+        echo "  bash $0 realsense       # RealSense 深度         → :8000"
+        echo "  bash $0 siglip          # SigLIP 状态分类        → :8002"
+        echo "  bash $0 fastfoundation  # FastFoundation 立体    → :8004"
+        echo "  bash $0 sam3            # SAM3 检测/分割         → :8005"
+        echo "  bash $0 flowpose        # FlowPose 6D 姿态       → :8006"
+        echo "  bash $0 all             # 同时启动所有"
+        echo "  bash $0 stop            # 停止所有"
+        echo "  bash $0 status          # 查看状态"
+        echo "  bash $0 restart         # 重启所有"
         ;;
 esac

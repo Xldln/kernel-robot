@@ -27,6 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libudev1 \
     udev \
     && rm -rf /var/lib/apt/lists/*
+    # 修复 --privileged 模式下宿主 GID 找不到组名的警告
+    RUN groupadd -g 110 render 2>/dev/null || true
 
 ENV CONDA_DIR=/opt/conda
 RUN wget -O /tmp/miniconda.sh \
@@ -48,8 +50,8 @@ RUN conda init bash \
     && conda install python=3.12 -y \
     && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
     && pip install pillow uvicorn fastapi numpy opencv-python \
-    && pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-
+    && pip install omegaconf imageio pyyaml \
+    && pip3 install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu128
 
 WORKDIR /workspace
 COPY . /workspace

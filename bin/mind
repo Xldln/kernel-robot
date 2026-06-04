@@ -1,16 +1,54 @@
 #!/usr/bin/env bash
+# MindBridge Control Center 启动器
 # 获取脚本的真实路径（处理符号链接和Docker挂载）
 SCRIPT="$(readlink -f "$0" 2>/dev/null || echo "$0")"
 
 # 检测是否在 Docker 容器中
 if [ -f "/.dockerenv" ] || grep -q 'docker\|lxc' /proc/1/cgroup 2>/dev/null; then
-    # 在容器中，直接使用 /workspace
     ROOT_DIR="/workspace"
 else
     ROOT_DIR="$(cd "$(dirname "$SCRIPT")/.." && pwd)"
 fi
 
-case "${1:-all}" in
+case "${1:-}" in
+    # ── 完整管线（默认 SAM3） ──
+    ""|--sam3)
+        shift 2>/dev/null || true
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        bash "$ROOT_DIR/scripts/start_service.sh" fastfoundation
+        bash "$ROOT_DIR/scripts/start_service.sh" sam3
+        bash "$ROOT_DIR/scripts/start_service.sh" flowpose
+        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        exec python -m mindbridge.src.main --detector sam3 --pipeline full "$@"
+        ;;
+
+    --yolo)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        bash "$ROOT_DIR/scripts/start_service.sh" fastfoundation
+        bash "$ROOT_DIR/scripts/start_service.sh" yolo
+        bash "$ROOT_DIR/scripts/start_service.sh" flowpose
+        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        exec python -m mindbridge.src.main --detector yolo --pipeline full "$@"
+        ;;
+
+    # ── 基础管线（不含 FastFoundation + FlowPose） ──
+    --basic-yolo)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" yolo
+        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        exec python -m mindbridge.src.main --detector yolo --pipeline basic "$@"
+        ;;
+    --basic-sam3)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" sam3
+        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        exec python -m mindbridge.src.main --detector sam3 --pipeline basic "$@"
+        ;;
+
+    # ── 单独服务 ──
     --yolo-only)
         shift
         bash "$ROOT_DIR/scripts/start_service.sh" yolo
@@ -31,24 +69,23 @@ case "${1:-all}" in
         bash "$ROOT_DIR/scripts/start_service.sh" yolo
         exec python -m mindbridge.src.main "$@"
         ;;
-    all|--all)
-        shift 2>/dev/null || true
-        bash "$ROOT_DIR/scripts/start_service.sh" yolo
-        bash "$ROOT_DIR/scripts/start_service.sh" siglip
-        bash "$ROOT_DIR/scripts/start_service.sh" realsense
-        exec python -m mindbridge.src.main "$@"
-        ;;
+
     help|--help|-h)
         echo "Usage: mind [OPTION]"
         echo ""
-        echo "Options:"
-        echo "  (无参数)        启动所有服务 (yolo + siglip + realsense)，然后运行 Control Center"
-        echo "  --all           同上"
-        echo "  --yolo-only     只启动 YOLO 服务，然后运行 Control Center"
-        echo "  --siglip-only   只启动 SigLIP 服务，然后运行 Control Center"
-        echo "  --rs-only       只启动 RealSense 服务，然后运行 Control Center"
-        echo "  --no-siglip     启动 YOLO（不启动 SigLIP），然后运行 Control Center"
-        echo "  help, --help    显示此帮助"
+        echo "管线（默认完整 SAM3 管线）:"
+        echo "  (无参数)/--sam3   完整 SAM3:  RealSense + FastFoundation + SAM3 + FlowPose + SigLIP"
+        echo "  --yolo            完整 YOLO:  RealSense + FastFoundation + YOLO + FlowPose + SigLIP"
+        echo "  --basic-sam3      基础 SAM3:  RealSense + SAM3 + SigLIP"
+        echo "  --basic-yolo      基础 YOLO:  RealSense + YOLO + SigLIP"
+        echo ""
+        echo "单独服务:"
+        echo "  --yolo-only       只启动 YOLO"
+        echo "  --siglip-only     只启动 SigLIP"
+        echo "  --rs-only         只启动 RealSense"
+        echo "  --no-siglip       YOLO + RealSense (无 SigLIP)"
+        echo ""
+        echo "  help, --help      显示此帮助"
         exit 0
         ;;
 esac

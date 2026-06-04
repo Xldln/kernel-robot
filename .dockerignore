@@ -1,0 +1,17 @@
+# 模型文件（运行时通过 volume mount 挂载）
+models/
+mindbridge/models/
+
+# Git 和日志
+.git/
+logs/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# 临时文件
+*.tmp
+*.log

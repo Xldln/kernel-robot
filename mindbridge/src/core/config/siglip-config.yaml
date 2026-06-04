@@ -1,7 +1,7 @@
 model:
   path: /workspace/mindbridge/models/siglip2-so400m-patch14-224
-  checkpoint: /workspace/mindbridge/models/siglip/model_siglip2_epoch_20.pt
-  graph_info_file: /workspace/mindbridge/models/siglip/graph_info_epoch20.json
+  checkpoint: /workspace/mindbridge/models/weights/siglip/model_siglip2_epoch_20.pt
+  graph_info_file: /workspace/mindbridge/models/weights/siglip/graph_info_epoch20.json
 
   topk: 5
  

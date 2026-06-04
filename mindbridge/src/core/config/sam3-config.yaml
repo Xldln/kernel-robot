@@ -1,0 +1,11 @@
+# SAM3 目标检测 / 分割 服务配置
+
+sam3:
+  # ── 代码库路径（sam3 项目根目录） ──
+  code_base: /workspace/mindbridge/models/sam3-main
+
+  # ── 模型权重路径 ──
+  checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3_quantized.pt
+
+  # ── 推理参数 ──
+  score_threshold: 0.4

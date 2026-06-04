@@ -1,0 +1,62 @@
+# FlowPose 6D 姿态估计服务配置
+
+flowpose:
+  # ── 路径配置 ──
+  paths:
+    py_runner_path: /workspace/mindbridge/models/flowpose_dino/FlowPose/py_runners
+    dinov2_code_path: /workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main
+    pretrained_flow_model_path: /workspace/mindbridge/models/weights/flowpose_dino/flowpose.pth
+    pretrained_scale_model_path: /workspace/mindbridge/models/weights/flowpose_dino/scalenet0423.pth
+
+  # ── 模型参数 ──
+  model:
+    flow_model_path: results/ckpts/FlowNet/rope_fixed_v2.pth
+    scale_model_path: results/ckpts/ScaleNet/scalenet.pth
+    dinov2_model_name: dinov2_vits14
+
+  # ── 推理参数 ──
+  inference:
+    device: cuda
+    tracking: true
+
+  img_size: 224
+  n_pts: 1024
+  frame_gap_threshold: 10
+  eval_repeat_num: 25
+  retain_ratio: 0.4
+  dropout: 0
+  use_edm_aug: false
+  use_pretrain: false
+  is_train: false
+  pose_mode: rot_matrix
+  optimizer: Adam
+  lr: 0.01
+  lr_decay: 0.98
+  num_points: 1024
+  scale_embedding: 180
+  ema_rate: 0.999
+  repeat_num: 20
+  clustering: 1
+  clustering_eps: 0.05
+  clustering_minpts: 0.1667
+
+  # ── 可视化 ──
+  visualize: false
+  vis_wait: 1
+  visualization:
+    fx: 606.9654541015625
+    fy: 606.133056640625
+    cx: 323.8822937011719
+    cy: 257.6228332519531
+    axis_len: 0.08
+    width: 640
+    height: 480
+
+  # ── 调试 ──
+  debug:
+    seed: 0
+    log_dir: debug
+    result_dir: results
+
+  save_response: false
+  response_save_path: latest_response.json

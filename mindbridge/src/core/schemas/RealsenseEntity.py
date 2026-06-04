@@ -16,6 +16,8 @@ class CaptureData(BaseModel):
     color_bgr: np.ndarray = Field(..., description="彩色图 (H,W,3) uint8")
     depth_m: np.ndarray = Field(..., description="深度图 (H,W) float32，单位米，已对齐到彩色")
     depth_u16: np.ndarray = Field(..., description="深度图 (H,W) uint16，单位毫米")
+    ir_left: Optional[np.ndarray] = Field(None, description="红外左图 (H,W) uint8，供 FastFoundation 立体深度")
+    ir_right: Optional[np.ndarray] = Field(None, description="红外右图 (H,W) uint8，供 FastFoundation 立体深度")
     K: np.ndarray = Field(..., description="彩色相机内参 (3,3) float32")
     baseline: float = Field(..., description="立体基线（米）")
     frame_id: int = Field(..., description="帧编号")
@@ -38,6 +40,8 @@ class CaptureResponse(BaseModel):
     K: list[list[float]] = Field(..., description="左 IR 相机内参矩阵 (3x3)")
     color_jpg_b64: str = Field(..., description="彩色图 JPEG base64")
     depth_u16_png_b64: str = Field(..., description="深度图（uint16 mm）PNG base64")
+    ir_left_b64: Optional[str] = Field(None, description="红外左图 JPEG base64，供 FastFoundation")
+    ir_right_b64: Optional[str] = Field(None, description="红外右图 JPEG base64，供 FastFoundation")
     elapsed_sec: float = Field(0.0, description="采集+推理耗时（秒）")
     message: Optional[str] = Field(None, description="错误时携带错误信息")
 
