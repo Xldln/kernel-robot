@@ -41,7 +41,7 @@ flowpose:
   clustering_minpts: 0.1667
 
   # ── 可视化 ──
-  visualize: false
+  visualize: true
   vis_wait: 1
   visualization:
     fx: 606.9654541015625

@@ -19,6 +19,9 @@ class CaptureData(BaseModel):
     ir_left: Optional[np.ndarray] = Field(None, description="红外左图 (H,W) uint8，供 FastFoundation 立体深度")
     ir_right: Optional[np.ndarray] = Field(None, description="红外右图 (H,W) uint8，供 FastFoundation 立体深度")
     K: np.ndarray = Field(..., description="彩色相机内参 (3,3) float32")
+    ir_left_K: np.ndarray = Field(..., description="左 IR 相机内参 (3,3) float32")
+    ir_to_color_R: np.ndarray = Field(..., description="左 IR 到彩色相机旋转矩阵 (3,3) float32")
+    ir_to_color_T: np.ndarray = Field(..., description="左 IR 到彩色相机平移向量 (3,) float32，单位米")
     baseline: float = Field(..., description="立体基线（米）")
     frame_id: int = Field(..., description="帧编号")
 

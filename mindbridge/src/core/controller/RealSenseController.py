@@ -126,6 +126,11 @@ def capture_raw():
             "X-Frame-Id": str(data.frame_id),
             "X-Baseline": str(data.baseline),
             "X-K": _json.dumps(data.K.tolist()),
+            "X-IR-Left-K": _json.dumps(data.ir_left_K.tolist()),
+            "X-IR-To-Color-R": _json.dumps(data.ir_to_color_R.tolist()),
+            "X-IR-To-Color-T": _json.dumps(data.ir_to_color_T.tolist()),
+            "X-Color-Width": str(data.color_bgr.shape[1]),
+            "X-Color-Height": str(data.color_bgr.shape[0]),
             "X-Elapsed-Sec": str(elapsed),
         }
         return Response(content=body, media_type=content_type, headers=headers)

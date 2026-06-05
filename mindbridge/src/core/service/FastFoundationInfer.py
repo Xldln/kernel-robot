@@ -126,6 +126,14 @@ class FastFoundationInfer:
         ppx: float | None = None,
         ppy: float | None = None,
         baseline: float | None = None,
+        color_fx: float | None = None,
+        color_fy: float | None = None,
+        color_ppx: float | None = None,
+        color_ppy: float | None = None,
+        color_width: int | None = None,
+        color_height: int | None = None,
+        ir_to_color_R: list | np.ndarray | None = None,
+        ir_to_color_T: list | np.ndarray | None = None,
         return_depth: bool = True,
         return_disparity: bool = False,
         return_color_jpg: bool = False,
@@ -198,6 +206,25 @@ class FastFoundationInfer:
                 baseline_m=float(_baseline),
                 z_far=_z_far,
             )
+
+            if (
+                color_fx is not None and color_fy is not None
+                and color_ppx is not None and color_ppy is not None
+                and color_width is not None and color_height is not None
+                and ir_to_color_R is not None and ir_to_color_T is not None
+            ):
+                depth_m = self._align_depth_to_color(
+                    depth_m,
+                    K_effective,
+                    color_fx=float(color_fx),
+                    color_fy=float(color_fy),
+                    color_ppx=float(color_ppx),
+                    color_ppy=float(color_ppy),
+                    color_width=int(color_width),
+                    color_height=int(color_height),
+                    ir_to_color_R=np.asarray(ir_to_color_R, dtype=np.float32),
+                    ir_to_color_T=np.asarray(ir_to_color_T, dtype=np.float32),
+                )
             depth_u16 = depth_float_m_to_uint16_mm(depth_m)
 
             # 构建输出
@@ -227,6 +254,54 @@ class FastFoundationInfer:
                 "elapsed_sec": elapsed,
             }
             return None, None, None, meta
+
+    @staticmethod
+    def _align_depth_to_color(
+        depth_m: np.ndarray,
+        ir_K: np.ndarray,
+        *,
+        color_fx: float,
+        color_fy: float,
+        color_ppx: float,
+        color_ppy: float,
+        color_width: int,
+        color_height: int,
+        ir_to_color_R: np.ndarray,
+        ir_to_color_T: np.ndarray,
+    ) -> np.ndarray:
+        """Reproject left-IR depth into the color camera image plane."""
+        if ir_to_color_R.shape != (3, 3):
+            raise ValueError(f"ir_to_color_R must be 3x3, got {ir_to_color_R.shape}")
+        ir_to_color_T = ir_to_color_T.reshape(3)
+
+        Z = depth_m
+        valid = (Z > 0) & np.isfinite(Z)
+        y_ir, x_ir = np.nonzero(valid)
+        if y_ir.size == 0:
+            return np.zeros((color_height, color_width), dtype=np.float32)
+
+        z_ir = Z[valid]
+        X_ir = (x_ir - ir_K[0, 2]) * z_ir / ir_K[0, 0]
+        Y_ir = (y_ir - ir_K[1, 2]) * z_ir / ir_K[1, 1]
+        P_ir = np.stack((X_ir, Y_ir, z_ir), axis=0)
+
+        P_color = ir_to_color_R @ P_ir + ir_to_color_T[:, None]
+        X_c, Y_c, Z_c = P_color[0], P_color[1], P_color[2]
+
+        x_c = np.round((X_c / Z_c) * color_fx + color_ppx).astype(int)
+        y_c = np.round((Y_c / Z_c) * color_fy + color_ppy).astype(int)
+
+        mask = (
+            (x_c >= 0) & (x_c < color_width)
+            & (y_c >= 0) & (y_c < color_height)
+            & (Z_c > 0)
+        )
+        x_c, y_c, Z_c = x_c[mask], y_c[mask], Z_c[mask]
+
+        depth_aligned = np.zeros((color_height, color_width), dtype=np.float32)
+        order = np.argsort(Z_c)[::-1]
+        depth_aligned[y_c[order], x_c[order]] = Z_c[order]
+        return depth_aligned
 
     # ── 核心推理（base64 版本，保留兼容） ────────────────────────
 

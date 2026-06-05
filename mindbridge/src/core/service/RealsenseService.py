@@ -67,22 +67,26 @@ class RealsenseService:
 
         # ── Camera intrinsics ──────────────────────────────────────────────
         color = profile.get_stream(rs.stream.color).as_video_stream_profile()
+        left_ir = profile.get_stream(rs.stream.infrared, 1).as_video_stream_profile()
+        right_ir = profile.get_stream(rs.stream.infrared, 2).as_video_stream_profile()
         self.color_intr = color.get_intrinsics()
+        self.left_ir_intr = left_ir.get_intrinsics()
         self.K = np.array([
             [self.color_intr.fx, 0, self.color_intr.ppx],
             [0, self.color_intr.fy, self.color_intr.ppy],
             [0, 0, 1],
         ], dtype=np.float32)
+        self.ir_left_K = np.array([
+            [self.left_ir_intr.fx, 0, self.left_ir_intr.ppx],
+            [0, self.left_ir_intr.fy, self.left_ir_intr.ppy],
+            [0, 0, 1],
+        ], dtype=np.float32)
 
-        # Stereo baseline (informational — no longer used for depth computation)
-        try:
-            self.baseline = abs(
-                profile.get_stream(rs.stream.depth)
-                .get_extrinsics_to(profile.get_stream(rs.stream.color))
-                .translation[0]
-            )
-        except Exception:
-            self.baseline = 0.0
+        stereo_extr = left_ir.get_extrinsics_to(right_ir)
+        ir_to_color_extr = left_ir.get_extrinsics_to(color)
+        self.baseline = abs(float(stereo_extr.translation[0]))
+        self.ir_to_color_R = np.array(ir_to_color_extr.rotation, dtype=np.float32).reshape(3, 3).T
+        self.ir_to_color_T = np.array(ir_to_color_extr.translation, dtype=np.float32)
 
     # ── Property ───────────────────────────────────────────────────────────
 
@@ -120,6 +124,9 @@ class RealsenseService:
             ir_left=ir_left,
             ir_right=ir_right,
             K=self.K,
+            ir_left_K=self.ir_left_K,
+            ir_to_color_R=self.ir_to_color_R,
+            ir_to_color_T=self.ir_to_color_T,
             baseline=self.baseline,
             frame_id=self._frame_id,
         )

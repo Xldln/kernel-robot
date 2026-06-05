@@ -40,6 +40,14 @@ async def predict_stereo_raw(
     ppx: float | None = Form(None),
     ppy: float | None = Form(None),
     baseline_m: float | None = Form(None),
+    color_fx: float | None = Form(None),
+    color_fy: float | None = Form(None),
+    color_ppx: float | None = Form(None),
+    color_ppy: float | None = Form(None),
+    color_width: int | None = Form(None),
+    color_height: int | None = Form(None),
+    ir_to_color_R: str | None = Form(None),
+    ir_to_color_T: str | None = Form(None),
     valid_iters: int | None = Form(None),
     z_far: float | None = Form(None),
     remove_invisible: bool | None = Form(None),
@@ -77,6 +85,14 @@ async def predict_stereo_raw(
     if right_bgr is None:
         raise HTTPException(status_code=400, detail="Failed to decode right image")
 
+    def _loads_array(value: str | None):
+        if not value:
+            return None
+        try:
+            return json.loads(value)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Invalid alignment JSON: {exc}") from exc
+
     # 推理
     depth_u16, disp_f32, vis_jpg, meta = infer_engine.predict_from_arrays(
         left_bgr, right_bgr,
@@ -90,6 +106,14 @@ async def predict_stereo_raw(
         ppx=ppx,
         ppy=ppy,
         baseline=baseline_m,
+        color_fx=color_fx,
+        color_fy=color_fy,
+        color_ppx=color_ppx,
+        color_ppy=color_ppy,
+        color_width=color_width,
+        color_height=color_height,
+        ir_to_color_R=_loads_array(ir_to_color_R),
+        ir_to_color_T=_loads_array(ir_to_color_T),
         return_depth=return_depth,
         return_disparity=return_disparity,
         return_color_jpg=return_color_jpg,

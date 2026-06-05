@@ -80,12 +80,29 @@ class MindBridgeClient:
             K = _json.loads(r.headers.get("X-K", "[]"))
         except Exception:
             K = []
+        try:
+            ir_left_K = _json.loads(r.headers.get("X-IR-Left-K", "[]"))
+        except Exception:
+            ir_left_K = []
+        try:
+            ir_to_color_R = _json.loads(r.headers.get("X-IR-To-Color-R", "[]"))
+        except Exception:
+            ir_to_color_R = []
+        try:
+            ir_to_color_T = _json.loads(r.headers.get("X-IR-To-Color-T", "[]"))
+        except Exception:
+            ir_to_color_T = []
 
         return {
             "status": "ok",
             "frame_id": int(r.headers.get("X-Frame-Id", 0)),
             "baseline": float(r.headers.get("X-Baseline", 0)),
             "K": K,
+            "ir_left_K": ir_left_K,
+            "ir_to_color_R": ir_to_color_R,
+            "ir_to_color_T": ir_to_color_T,
+            "color_width": int(r.headers.get("X-Color-Width", 0)),
+            "color_height": int(r.headers.get("X-Color-Height", 0)),
             "color_jpg": binary_parts.get("color_jpg"),
             "depth_png": binary_parts.get("depth_png"),
             "ir_left_jpg": binary_parts.get("ir_left_jpg"),
@@ -227,9 +244,12 @@ class MindBridgeClient:
             "return_disparity": str(return_disparity).lower(),
         }
         for key in ("fx", "fy", "ppx", "ppy", "baseline_m", "valid_iters",
-                     "z_far", "scale", "remove_invisible", "return_color_jpg", "jpg_quality"):
+                     "z_far", "scale", "remove_invisible", "return_color_jpg", "jpg_quality",
+                     "color_fx", "color_fy", "color_ppx", "color_ppy", "color_width",
+                     "color_height", "ir_to_color_R", "ir_to_color_T"):
             if key in kwargs and kwargs[key] is not None:
-                data[key] = str(kwargs[key])
+                value = kwargs[key]
+                data[key] = _json.dumps(value) if key in {"ir_to_color_R", "ir_to_color_T"} else str(value)
 
         r = requests.post(
             f"{self.fastfoundation_url}/infer/stereo/raw",

@@ -121,7 +121,21 @@ def run(
                     try:
                         ff_result = client.fastfoundation_depth_raw(
                             ir_left_jpg, ir_right_jpg,
-                            return_depth=True, request_id=str(frame_id),
+                            return_depth=True,
+                            request_id=str(frame_id),
+                            fx=cap["ir_left_K"][0][0] if cap.get("ir_left_K") else None,
+                            fy=cap["ir_left_K"][1][1] if cap.get("ir_left_K") else None,
+                            ppx=cap["ir_left_K"][0][2] if cap.get("ir_left_K") else None,
+                            ppy=cap["ir_left_K"][1][2] if cap.get("ir_left_K") else None,
+                            baseline_m=cap.get("baseline"),
+                            color_fx=cap["K"][0][0] if cap.get("K") else None,
+                            color_fy=cap["K"][1][1] if cap.get("K") else None,
+                            color_ppx=cap["K"][0][2] if cap.get("K") else None,
+                            color_ppy=cap["K"][1][2] if cap.get("K") else None,
+                            color_width=cap.get("color_width"),
+                            color_height=cap.get("color_height"),
+                            ir_to_color_R=cap.get("ir_to_color_R"),
+                            ir_to_color_T=cap.get("ir_to_color_T"),
                         )
                         if ff_result.get("status") == "ok" and ff_result.get("depth_png"):
                             depth_png_for_flowpose = ff_result["depth_png"]
