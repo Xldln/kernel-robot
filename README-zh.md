@@ -1,94 +1,151 @@
 # MindBridge
 
-YOLO 实例分割 + RealSense 深度估计的微服务架构。
+## 功能
 
-## 目录结构
-
-```
-MindBridge/
-├── mindbridge/                          # Python 包
-│   ├── main.py                          # 一体化 FastAPI (端口 6666, 整合控制+自动采集)
-│   │
-│   ├── src/core/
-│   │   ├── launch/                      # ══ 服务入口 ══
-│   │   │   ├── service_InsenceSeg.py    #   YOLO 推理服务      → :8001
-│   │   │   └── service_RealSense.py     #   RealSense 深度服务  → :8000
-│   │   │
-│   │   ├── controller/                  # ══ FastAPI 路由 ══
-│   │   │   ├── Controlcenter.py         #   相机采集启动/停止
-│   │   │   ├── InstanceSegController.py #   YOLO /predict, /predict/file
-│   │   │   └── RealSenseController.py   #   RealSense /capture, /info, /shutdown
-│   │   │
-│   │   ├── service/                     # ══ 业务逻辑 ══
-│   │   │   ├── InstanceSegmentInfer.py  #   YOLOInfer – 模型加载、推理
-│   │   │   └── RealsenseService.py      #   RealsenseService – 相机、立体深度
-│   │   │
-│   │   ├── schemas/                     # ══ Pydantic 模型 ══
-│   │   │   ├── YoloEntity.py            #   PredictRequest, PredictResponse, Detection
-│   │   │   └── RealsenseEntity.py       #   CaptureRequest/Response, CameraInfo, Shutdown
-│   │   │
-│   │   ├── tool/                        # ══ 通用工具 ══
-│   │   │   └── image.py                 #   base64 <-> numpy 编解码
-│   │   │
-│   │   └── config/                      # ══ YAML 配置文件 ══
-│   │       ├── yolo-config.yaml         #   YOLO 模型路径、置信度阈值
-│   │       ├── realsense-config.yaml    #   相机分辨率、FoundationStereo 参数
-│   │       └── last-vit-config.yaml     #   (遗留)
-│   │
-│   └── models/
-│       ├── config/                      # YOLO 数据集/模型 YAML
-│       ├── weights/yolo/                # 训练好的 .pt 权重文件
-│       └── pkg/yolo/                    # Ultralytics 源码 (pip install -e .)
-│
-├── scripts/                             # ══ 运维脚本 ══
-│   ├── build_env.sh                     #   创建 conda 环境 (yolo / realsense)
-│   └── start_service.sh                 #   启动 / 停止 / 查看服务状态
-│
-├── tests/                               # 测试占位
-├── logs/                                # 服务日志 (自动创建)
-│
-├── Dockerfile                           # CUDA 12.8 + Miniconda + libusb
-├── pyproject.toml                       # 项目元数据, ruff, pytest
-├── README.md
-└── README-zh.md
-```
-
-## 架构
-
-每个微服务是一个自包含的 FastAPI 应用，分为三层：
-
-| 层           | 职责                             |
-|--------------|----------------------------------|
-| `launch/`    | FastAPI 应用、生命周期、端口绑定 |
-| `controller/` | APIRouter、HTTP 接口、Schema 校验 |
-| `service/`   | 核心业务逻辑（模型推理、相机）   |
-
-**设计原则**：`launch/` → `controller/` → `service/` & `schemas/`，禁止反向依赖。包 `__init__.py` 刻意为空，避免拉入无关的设备级依赖。
-
-## 服务
-
-| 服务              | 端口 | Conda 环境    | 依赖                                          |
-|-------------------|------|---------------|-----------------------------------------------|
-| YOLO 实例分割     | 8001 | `yolo`        | torch, ultralytics, opencv, fastapi           |
-| RealSense 深度    | 8000 | `realsense`   | torch, pyrealsense2, omegaconf, opencv, fastapi |
+- RealSense RGB、硬件深度、左右 IR 采集。
+- YOLO 或 SAM3 检测 / 分割管线。
+- FastFoundation 双目深度估计。
+- FlowPose 6D 姿态估计。
+- SigLIP 场景 / 状态分类。
+- Docker 一键进入环境，脚本统一管理各个微服务。
 
 ## 快速开始
 
-```bash
+在仓库根目录执行：
 
-# 构建镜像并安装 CLI
-./build.sh
+```bash
+# 构建 Docker 镜像，并安装宿主机命令 mindtest
+bash build.sh
 
 # 进入容器
-mindbridge
+mindtest
 
-# 构建环境
-bash scripts/build_env.sh yolo       # 或 realsense / all
+# 在容器内构建全部 Conda 环境
+bash scripts/build_env.sh all
 
-# 启动服务
-bash scripts/start_service.sh yolo   # 或 realsense / all / stop / status
-
-# 测试
-curl http://localhost:8001/health
-curl http://localhost:8001/infer/predict -X POST -H "Content-Type: application/json" -d '{"image_b64":"..."}'
+# 启动默认完整 SAM3 管线
+mind
 ```
+
+`mind` 默认等价于：
+
+```text
+RealSense -> FastFoundation -> SAM3 -> FlowPose -> SigLIP
+```
+
+## 常用命令
+
+以下命令均在 `mindtest` 容器内执行。
+
+```bash
+# 完整管线
+mind                         # 等价于 mind --sam3
+mind --sam3                  # RealSense + FastFoundation + SAM3 + FlowPose + SigLIP
+mind --yolo                  # RealSense + FastFoundation + YOLO + FlowPose + SigLIP
+
+# 基础管线
+mind --basic-sam3            # RealSense + SAM3 + SigLIP
+mind --basic-yolo            # RealSense + YOLO + SigLIP
+
+# 无窗口 / 限制帧数
+mind --sam3 --no-show
+mind --basic-yolo --no-show --max-frames 10
+
+# SAM3 自定义提示词
+mind --sam3 --sam3-prompts "pen,pencilbag,zipper" --sam3-threshold 0.3
+
+# 查看帮助
+mind --help
+```
+
+## 服务
+
+| 服务 | 端口 | Conda 环境 | 功能 |
+| --- | ---: | --- | --- |
+| RealSense | 8000 | `realsense` | RGB、深度、左右 IR 采集 |
+| YOLO | 8001 | `yolo` | 目标检测 / 实例分割 |
+| SigLIP | 8002 | `siglip` | 场景 / 状态分类 |
+| FastFoundation | 8004 | `fastfoundation` | 双目 IR 深度估计 |
+| SAM3 | 8005 | `sam3` | 文本提示驱动的检测 / 分割 |
+| FlowPose | 8006 | `flowpose` | 6D 姿态估计 |
+
+单独管理服务：
+
+```bash
+bash scripts/start_service.sh all
+bash scripts/start_service.sh status
+bash scripts/start_service.sh stop
+bash scripts/start_service.sh restart
+
+bash scripts/start_service.sh realsense
+bash scripts/start_service.sh yolo
+bash scripts/start_service.sh siglip
+bash scripts/start_service.sh fastfoundation
+bash scripts/start_service.sh sam3
+bash scripts/start_service.sh flowpose
+```
+
+日志位于 `logs/*.log`，PID 文件位于 `/tmp/mindbridge`。
+
+## API
+
+所有服务都提供：
+
+```text
+GET /health
+GET /docs
+```
+
+主要推理接口：
+
+| 服务 | 接口 |
+| --- | --- |
+| RealSense | `POST /realsense/capture/raw` |
+| YOLO | `POST /infer/predict/raw` |
+| SigLIP | `POST /infer/predict/raw` |
+| FastFoundation | `POST /infer/stereo/raw` |
+| SAM3 | `POST /infer/detect/raw` |
+| FlowPose | `POST /infer/pose/raw` |
+
+RealSense、YOLO、FastFoundation 和 SAM3 也保留 base64 兼容接口。实际运行建议优先使用 raw 接口。
+
+## 目录结构
+
+```text## 更新代码
+
+项目代码会挂载到容器的 `/workspace`，普通代码更新通常不需要重新构建 Docker
+镜像。更新后重启服务即可：
+
+```bash
+bash scripts/start_service.sh stop
+bash scripts/start_service.sh all
+```
+
+只有 Docker 镜像或宿主机 `mindtest` 命令需要重建时，才重新执行 `bash build.sh`。
+Conda 环境缺失或依赖变更时，重新执行 `bash scripts/build_env.sh all`。
+.
+├── build.sh                    # 构建 Docker 镜像并安装 mindtest
+├── Dockerfile                  # CUDA + Miniconda 运行环境
+├── bin/mind                    # 容器内管线启动命令
+├── scripts/
+│   ├── build_env.sh            # 构建 Conda 环境
+│   └── start_service.sh        # 启停 FastAPI 服务
+├── mindbridge/
+│   ├── src/main.py             # Control Center 主循环
+│   ├── src/MindBridgeClient.py # 服务客户端
+│   └── src/core/               # config、launch、controller、service、schemas、tool
+└── logs/                       # 服务日志
+```
+
+## 更新代码
+
+项目代码会挂载到容器的 `/workspace`，普通代码更新通常不需要重新构建 Docker
+镜像。更新后重启服务即可：
+
+```bash
+bash scripts/start_service.sh stop
+bash scripts/start_service.sh all
+```
+
+只有 Docker 镜像或宿主机 `mindtest` 命令需要重建时，才重新执行 `bash build.sh`。
+Conda 环境缺失或依赖变更时，重新执行 `bash scripts/build_env.sh all`。
