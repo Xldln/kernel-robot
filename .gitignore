@@ -14,7 +14,12 @@ logs
 .crush
 output/
 
-mindbridge/models/*
+# mindbridge/models/* - removed to allow uploading model code/configs
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
 
 
 # Conda environments (22GB+)

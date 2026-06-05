@@ -164,28 +164,43 @@ def run(
             flowpose_result: dict = {}
             flowpose_ms = 0.0
             if _full and depth_png_for_flowpose:
-                # 从检测结果构建 mask
-                mask_bytes_for_flowpose: bytes | None = None
+                # 从检测结果构建合并 mask（多个物体的 mask 合并为一张图）
+                masks_to_combine: list[np.ndarray] = []
                 obj_ids_for_flowpose = []
                 class_names_for_flowpose = []
+
+                def _collect_masks(detections: list, mask_bytes_dict: dict, is_yolo: bool = False):
+                    for i, det in enumerate(detections):
+                        mask_file = det.get("mask_file", "")
+                        if mask_file:
+                            mask_data = mask_bytes_dict.get(mask_file)
+                            if mask_data:
+                                mask_arr = np.frombuffer(mask_data, dtype=np.uint8)
+                                mask_img = cv2.imdecode(mask_arr, cv2.IMREAD_GRAYSCALE)
+                                if mask_img is not None:
+                                    masks_to_combine.append(mask_img)
+                                obj_id = det.get("id", i + 1) if not is_yolo else (i + 1)
+                                obj_ids_for_flowpose.append([obj_id, obj_id])
+                                class_names_for_flowpose.append(
+                                    det.get("class_name", det.get("label", "object"))
+                                )
+
                 if _detector == "sam3" and sam3_result.get("status") == "ok":
-                    for det in sam3_result.get("detections", []):
-                        mask_file = det.get("mask_file", "")
-                        if mask_file:
-                            mask_data = sam3_result.get("mask_bytes", {}).get(mask_file)
-                            if mask_data:
-                                mask_bytes_for_flowpose = mask_data
-                                obj_ids_for_flowpose.append([det.get("id", 1), det.get("id", 1)])
-                                class_names_for_flowpose.append(det.get("label", "object"))
+                    _collect_masks(sam3_result.get("detections", []), sam3_result.get("mask_bytes", {}))
                 elif _detector == "yolo" and pred.get("status") == "ok":
-                    for i, det in enumerate(pred.get("detections", [])):
-                        mask_file = det.get("mask_file", "")
-                        if mask_file:
-                            mask_data = pred.get("mask_bytes", {}).get(mask_file)
-                            if mask_data:
-                                mask_bytes_for_flowpose = mask_data
-                                obj_ids_for_flowpose.append([i + 1, i + 1])
-                                class_names_for_flowpose.append(det.get("class_name", det.get("label", "object")))
+                    _collect_masks(pred.get("detections", []), pred.get("mask_bytes", {}), is_yolo=True)
+
+                # 合并所有 mask 为一张图，每个物体分配不同值（0=背景，1,2,3...=各物体）
+                # FlowPose 通过 obj_ids 中的 mask_value 区分不同物体
+                mask_bytes_for_flowpose: bytes | None = None
+                if masks_to_combine:
+                    combined_mask = np.zeros_like(masks_to_combine[0], dtype=np.uint8)
+                    for idx, m in enumerate(masks_to_combine):
+                        obj_val = idx + 1  # 物体 1、2、3... 对应 mask 值 1、2、3...
+                        combined_mask[m > 0] = obj_val
+                    ok, combined_png = cv2.imencode(".png", combined_mask, [cv2.IMWRITE_PNG_COMPRESSION, 3])
+                    if ok:
+                        mask_bytes_for_flowpose = combined_png.tobytes()
 
                 if mask_bytes_for_flowpose and depth_png_for_flowpose:
                     t_fp = time.time()

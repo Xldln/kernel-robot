@@ -104,7 +104,10 @@ async def predict_stereo_raw(
     }
 
     if meta["status"] == "error":
-        headers["X-Error-Message"] = meta.get("message", "unknown error")
+        # 错误消息中可能包含换行符等非法 HTTP header 字符，必须清理
+        raw_msg = meta.get("message", "unknown error")
+        sanitized = raw_msg.replace("\n", " | ").replace("\r", "").strip()
+        headers["X-Error-Message"] = sanitized[:500]
         return Response(content=b"", media_type="image/png", headers=headers)
 
     if depth_u16 is not None:

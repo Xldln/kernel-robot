@@ -58,8 +58,12 @@ class RealsenseService:
 
         # Warm up: discard frames until auto-exposure stabilises
         warmup_frames = 30
-        for _ in range(warmup_frames):
-            self.pipeline.wait_for_frames()
+        for i in range(warmup_frames):
+            try:
+                self.pipeline.wait_for_frames(timeout_ms=10000)
+            except RuntimeError:
+                print(f"Warmup frame {i+1}/{warmup_frames} timed out, retrying...")
+                continue
 
         # ── Camera intrinsics ──────────────────────────────────────────────
         color = profile.get_stream(rs.stream.color).as_video_stream_profile()
@@ -90,7 +94,7 @@ class RealsenseService:
 
     def capture(self) -> CaptureData:
         """Capture and return one aligned depth-color frame pair."""
-        frames = self.pipeline.wait_for_frames()
+        frames = self.pipeline.wait_for_frames(timeout_ms=10000)
         aligned = self.align.process(frames)
 
         depth_frame = aligned.get_depth_frame()

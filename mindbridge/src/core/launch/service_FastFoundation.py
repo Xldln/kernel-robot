@@ -3,6 +3,13 @@
 import os
 import sys
 
+# PyTorch inductor (torchtriton) 需要 C 编译器来编译 CUDA kernel
+# nohup 启动时 CC/CXX 环境变量可能未设置，在这里显式指定
+if "CC" not in os.environ:
+    os.environ["CC"] = "gcc"
+if "CXX" not in os.environ:
+    os.environ["CXX"] = "g++"
+
 sys.path.insert(0, "/workspace")
 
 from contextlib import asynccontextmanager
