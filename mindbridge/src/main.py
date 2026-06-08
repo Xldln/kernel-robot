@@ -284,15 +284,7 @@ def run(
 
                 # ── 叠加 FlowPose 6D 姿态文字 ──
                 if flowpose_result.get("status") == "ok":
-                    objects = flowpose_result.get("objects", [])
-                    y_offset = 60
-                    for obj in objects[:5]:
-                        name = obj.get("name", "?")
-                        length = obj.get("length", [0, 0, 0])
-                        text = f"{name}: {length[0]:.3f}x{length[1]:.3f}x{length[2]:.3f}m"
-                        cv2.putText(yolo_display, text, (10, y_offset),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 1)
-                        y_offset += 16
+                    pass
 
                 # 添加 SigLIP 简短信息到窗口
                 if state_result.get("status") == "ok":

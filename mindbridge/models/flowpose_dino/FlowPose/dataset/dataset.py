@@ -165,7 +165,7 @@ class OmniXInferDataset(object):
         
         """
         if isinstance(data, dict):
-            depth = load_depth(data.get("depth"))/1000
+            depth = (load_depth(data.get("depth"))/1000).astype(np.float32)  # convert mm to m
             color = load_color(data.get("color"))
             mask = load_mask(data.get("mask"))
         else:
