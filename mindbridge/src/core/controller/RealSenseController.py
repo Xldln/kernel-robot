@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import base64
 import json as _json
+import os
 import time
+import threading
 
 import cv2
 from fastapi import APIRouter, HTTPException
@@ -29,9 +31,30 @@ def init_engine(
 ) -> RealsenseService:
     """启动时初始化 RealSense 相机。"""
     global engine
+    if engine is not None:
+        engine.close()
     print(f"Initializing RealSense from config: {config_path}")
     engine = RealsenseService(config_path)
     return engine
+
+
+def close_engine() -> None:
+    """Release the RealSense device if it is currently open."""
+    global engine
+    if engine is not None:
+        engine.close()
+        engine = None
+
+
+def engine_status() -> dict:
+    """Return a lightweight readiness status for health checks."""
+    if engine is None:
+        return {"status": "engine_missing", "ready": False}
+    return {
+        "status": "ok",
+        "ready": True,
+        "frame_id": getattr(engine, "frame_id", 0),
+    }
 
 
 @realsense_router.post("/capture", response_model=CaptureResponse)
@@ -172,5 +195,6 @@ def shutdown():
     if engine is not None:
         engine.close()
         engine = None
+        threading.Timer(0.2, lambda: os._exit(0)).start()
         return ShutdownResponse(status="shutdown")
     return ShutdownResponse(status="already closed")

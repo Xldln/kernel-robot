@@ -1,0 +1,225 @@
+[INFO] [1781158860.909769702] [zmq2ros]: ZMQ SUB <- tcp://127.0.0.1:8899
+[INFO] [1781158860.909925605] [zmq2ros]: ZMQ topic filter <- /siglip2/result
+[INFO] [1781158860.910025653] [zmq2ros]: [Bridge ROS] publish to the same ROS topic as incoming ZMQ topic
+[INFO] [1781158865.954393600] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158871.009485633] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158876.064470855] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158881.120437456] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158881.746350664] [zmq2ros]: received zmq message #1 parts=1
+[INFO] [1781158881.746525182] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158881.748345553] [zmq2ros]: ROS String topic -> /siglip2/result
+[INFO] [1781158881.796425150] [zmq2ros]: received zmq message #2 parts=1
+[INFO] [1781158881.796603044] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158881.841488458] [zmq2ros]: received zmq message #3 parts=1
+[INFO] [1781158881.841653648] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.092212948] [zmq2ros]: received zmq message #4 parts=1
+[INFO] [1781158882.092378940] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.135489918] [zmq2ros]: received zmq message #5 parts=1
+[INFO] [1781158882.135641744] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.194457697] [zmq2ros]: received zmq message #6 parts=1
+[INFO] [1781158882.194617537] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.438268943] [zmq2ros]: received zmq message #7 parts=1
+[INFO] [1781158882.438421199] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.482885481] [zmq2ros]: received zmq message #8 parts=1
+[INFO] [1781158882.483028320] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.526700333] [zmq2ros]: received zmq message #9 parts=1
+[INFO] [1781158882.526846528] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.781935578] [zmq2ros]: received zmq message #10 parts=1
+[INFO] [1781158882.782087213] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.839527752] [zmq2ros]: received zmq message #11 parts=1
+[INFO] [1781158882.839687993] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158882.884813928] [zmq2ros]: received zmq message #12 parts=1
+[INFO] [1781158882.884964101] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.159702918] [zmq2ros]: received zmq message #13 parts=1
+[INFO] [1781158883.159866635] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.202206084] [zmq2ros]: received zmq message #14 parts=1
+[INFO] [1781158883.202430706] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.246194902] [zmq2ros]: received zmq message #15 parts=1
+[INFO] [1781158883.246381102] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.493209126] [zmq2ros]: received zmq message #16 parts=1
+[INFO] [1781158883.493365359] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.534807401] [zmq2ros]: received zmq message #17 parts=1
+[INFO] [1781158883.534952764] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.577420955] [zmq2ros]: received zmq message #18 parts=1
+[INFO] [1781158883.577559716] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.815798497] [zmq2ros]: received zmq message #19 parts=1
+[INFO] [1781158883.815954601] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.858244396] [zmq2ros]: received zmq message #20 parts=1
+[INFO] [1781158883.858386794] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158883.915009134] [zmq2ros]: received zmq message #21 parts=1
+[INFO] [1781158883.915166029] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.144955070] [zmq2ros]: received zmq message #22 parts=1
+[INFO] [1781158884.145125270] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.190185140] [zmq2ros]: received zmq message #23 parts=1
+[INFO] [1781158884.190349189] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.232264820] [zmq2ros]: received zmq message #24 parts=1
+[INFO] [1781158884.232459726] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.475448182] [zmq2ros]: received zmq message #25 parts=1
+[INFO] [1781158884.475604055] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.531435298] [zmq2ros]: received zmq message #26 parts=1
+[INFO] [1781158884.531595379] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.573575923] [zmq2ros]: received zmq message #27 parts=1
+[INFO] [1781158884.573819541] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.803721353] [zmq2ros]: received zmq message #28 parts=1
+[INFO] [1781158884.803931187] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.846631984] [zmq2ros]: received zmq message #29 parts=1
+[INFO] [1781158884.846838813] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158884.891328372] [zmq2ros]: received zmq message #30 parts=1
+[INFO] [1781158884.891475739] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.148160723] [zmq2ros]: received zmq message #31 parts=1
+[INFO] [1781158885.148328779] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.188816226] [zmq2ros]: received zmq message #32 parts=1
+[INFO] [1781158885.188969244] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.228835203] [zmq2ros]: received zmq message #33 parts=1
+[INFO] [1781158885.228987820] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.464749954] [zmq2ros]: received zmq message #34 parts=1
+[INFO] [1781158885.464900066] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.505809106] [zmq2ros]: received zmq message #35 parts=1
+[INFO] [1781158885.505958887] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.566779526] [zmq2ros]: received zmq message #36 parts=1
+[INFO] [1781158885.566929819] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.809007330] [zmq2ros]: received zmq message #37 parts=1
+[INFO] [1781158885.809211775] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.850568055] [zmq2ros]: received zmq message #38 parts=1
+[INFO] [1781158885.850728737] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158885.892442048] [zmq2ros]: received zmq message #39 parts=1
+[INFO] [1781158885.892658805] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.132117204] [zmq2ros]: received zmq message #40 parts=1
+[INFO] [1781158886.132282605] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.189699697] [zmq2ros]: received zmq message #41 parts=1
+[INFO] [1781158886.189855099] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.233388931] [zmq2ros]: received zmq message #42 parts=1
+[INFO] [1781158886.233547900] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.475963275] [zmq2ros]: received zmq message #43 parts=1
+[INFO] [1781158886.476128515] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.518962963] [zmq2ros]: received zmq message #44 parts=1
+[INFO] [1781158886.519105982] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.562126299] [zmq2ros]: received zmq message #45 parts=1
+[INFO] [1781158886.562249360] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.822313422] [zmq2ros]: received zmq message #46 parts=1
+[INFO] [1781158886.822478101] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.863713934] [zmq2ros]: received zmq message #47 parts=1
+[INFO] [1781158886.863870168] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158886.906073360] [zmq2ros]: received zmq message #48 parts=1
+[INFO] [1781158886.906223642] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.134357938] [zmq2ros]: received zmq message #49 parts=1
+[INFO] [1781158887.134514181] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.177058824] [zmq2ros]: received zmq message #50 parts=1
+[INFO] [1781158887.177228994] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.235282732] [zmq2ros]: received zmq message #51 parts=1
+[INFO] [1781158887.235432954] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.470701777] [zmq2ros]: received zmq message #52 parts=1
+[INFO] [1781158887.470853582] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.512993855] [zmq2ros]: received zmq message #53 parts=1
+[INFO] [1781158887.513145951] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.554433291] [zmq2ros]: received zmq message #54 parts=1
+[INFO] [1781158887.554595095] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.809713730] [zmq2ros]: received zmq message #55 parts=1
+[INFO] [1781158887.809880804] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.866612208] [zmq2ros]: received zmq message #56 parts=1
+[INFO] [1781158887.866768672] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158887.907736632] [zmq2ros]: received zmq message #57 parts=1
+[INFO] [1781158887.907897564] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.127449419] [zmq2ros]: received zmq message #58 parts=1
+[INFO] [1781158888.127619258] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.171615729] [zmq2ros]: received zmq message #59 parts=1
+[INFO] [1781158888.171805836] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.222807882] [zmq2ros]: received zmq message #60 parts=1
+[INFO] [1781158888.222971530] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.490198277] [zmq2ros]: received zmq message #61 parts=1
+[INFO] [1781158888.490367946] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.534604699] [zmq2ros]: received zmq message #62 parts=1
+[INFO] [1781158888.534797551] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.577627970] [zmq2ros]: received zmq message #63 parts=1
+[INFO] [1781158888.577796277] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.810512420] [zmq2ros]: received zmq message #64 parts=1
+[INFO] [1781158888.810707347] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.854290701] [zmq2ros]: received zmq message #65 parts=1
+[INFO] [1781158888.854439370] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158888.912436963] [zmq2ros]: received zmq message #66 parts=1
+[INFO] [1781158888.912583157] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.146969188] [zmq2ros]: received zmq message #67 parts=1
+[INFO] [1781158889.147187929] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.190409302] [zmq2ros]: received zmq message #68 parts=1
+[INFO] [1781158889.190566979] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.232268817] [zmq2ros]: received zmq message #69 parts=1
+[INFO] [1781158889.232422917] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.474752945] [zmq2ros]: received zmq message #70 parts=1
+[INFO] [1781158889.474906053] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.532999485] [zmq2ros]: received zmq message #71 parts=1
+[INFO] [1781158889.533152562] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.575615681] [zmq2ros]: received zmq message #72 parts=1
+[INFO] [1781158889.575774059] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.812501529] [zmq2ros]: received zmq message #73 parts=1
+[INFO] [1781158889.812734426] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.856238772] [zmq2ros]: received zmq message #74 parts=1
+[INFO] [1781158889.856378104] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158889.900783001] [zmq2ros]: received zmq message #75 parts=1
+[INFO] [1781158889.900980152] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.156331179] [zmq2ros]: received zmq message #76 parts=1
+[INFO] [1781158890.156488164] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.199768288] [zmq2ros]: received zmq message #77 parts=1
+[INFO] [1781158890.199924982] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.243890344] [zmq2ros]: received zmq message #78 parts=1
+[INFO] [1781158890.244065443] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.472738464] [zmq2ros]: received zmq message #79 parts=1
+[INFO] [1781158890.472909576] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.514393544] [zmq2ros]: received zmq message #80 parts=1
+[INFO] [1781158890.514551942] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.571978180] [zmq2ros]: received zmq message #81 parts=1
+[INFO] [1781158890.572242186] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.811118973] [zmq2ros]: received zmq message #82 parts=1
+[INFO] [1781158890.811282941] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.853296384] [zmq2ros]: received zmq message #83 parts=1
+[INFO] [1781158890.853419706] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158890.896131702] [zmq2ros]: received zmq message #84 parts=1
+[INFO] [1781158890.896275793] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.134910574] [zmq2ros]: received zmq message #85 parts=1
+[INFO] [1781158891.135065615] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.191479751] [zmq2ros]: received zmq message #86 parts=1
+[INFO] [1781158891.191651093] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.232195735] [zmq2ros]: received zmq message #87 parts=1
+[INFO] [1781158891.232352530] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.461116501] [zmq2ros]: received zmq message #88 parts=1
+[INFO] [1781158891.461382160] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.502416713] [zmq2ros]: received zmq message #89 parts=1
+[INFO] [1781158891.502562507] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.556115065] [zmq2ros]: received zmq message #90 parts=1
+[INFO] [1781158891.556365275] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.809291452] [zmq2ros]: received zmq message #91 parts=1
+[INFO] [1781158891.809446464] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.850759511] [zmq2ros]: received zmq message #92 parts=1
+[INFO] [1781158891.850922677] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158891.892444446] [zmq2ros]: received zmq message #93 parts=1
+[INFO] [1781158891.892599558] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.131541624] [zmq2ros]: received zmq message #94 parts=1
+[INFO] [1781158892.131709420] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.174754521] [zmq2ros]: received zmq message #95 parts=1
+[INFO] [1781158892.174906477] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.238310006] [zmq2ros]: received zmq message #96 parts=1
+[INFO] [1781158892.238476910] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.472514509] [zmq2ros]: received zmq message #97 parts=1
+[INFO] [1781158892.472671113] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.512685098] [zmq2ros]: received zmq message #98 parts=1
+[INFO] [1781158892.512831283] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.556580748] [zmq2ros]: received zmq message #99 parts=1
+[INFO] [1781158892.556782668] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.803674883] [zmq2ros]: received zmq message #100 parts=1
+[INFO] [1781158892.803857787] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.860271351] [zmq2ros]: received zmq message #101 parts=1
+[INFO] [1781158892.860421393] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158892.901115175] [zmq2ros]: received zmq message #102 parts=1
+[INFO] [1781158892.901257844] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158893.130850018] [zmq2ros]: received zmq message #103 parts=1
+[INFO] [1781158893.131009067] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158893.173886393] [zmq2ros]: received zmq message #104 parts=1
+[INFO] [1781158893.174041765] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158893.224599974] [zmq2ros]: received zmq message #105 parts=1
+[INFO] [1781158893.224754885] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158893.474128212] [zmq2ros]: received zmq message #106 parts=1
+[INFO] [1781158893.474286730] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158893.515284854] [zmq2ros]: received zmq message #107 parts=1
+[INFO] [1781158893.515422232] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [1781158893.559360301] [zmq2ros]: received zmq message #108 parts=1
+[INFO] [1781158893.559504472] [zmq2ros]: received zmq topic: /siglip2/result
+[INFO] [17

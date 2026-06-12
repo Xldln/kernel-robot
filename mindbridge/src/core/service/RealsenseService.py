@@ -134,7 +134,14 @@ class RealsenseService:
 
     def close(self):
         cv2.destroyAllWindows()
-        self.pipeline.stop()
+        pipeline = getattr(self, "pipeline", None)
+        if pipeline is not None:
+            try:
+                pipeline.stop()
+            except Exception as exc:
+                print(f"[RealSense] pipeline.stop ignored: {exc}")
+            finally:
+                self.pipeline = None
 
     def __enter__(self):
         return self

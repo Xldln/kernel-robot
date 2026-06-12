@@ -1,0 +1,28 @@
+[INFO] [1781165860.313473447] [keypoint_marker_publisher]: Keypoint marker publisher started.
+[INFO] [1781165882.800520316] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781165907.550453655] [keypoint_marker_publisher]: Keypoint release completed.
+[INFO] [1781165908.100371855] [keypoint_marker_publisher]: [home] request sent arm=right
+[INFO] [1781165938.500489946] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781165949.350620500] [keypoint_marker_publisher]: Keypoint expand completed.
+[INFO] [1781166638.950684325] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166649.850705551] [keypoint_marker_publisher]: Keypoint expand completed.
+[INFO] [1781166692.050221313] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166703.850260471] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166716.650170965] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166729.450272972] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166742.200377662] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166755.400828144] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166764.000278052] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166775.850607301] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166781.150203386] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166792.400626440] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166802.700628951] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166812.700604012] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166821.350187784] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166833.800897491] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781166842.550310584] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166854.150161210] [keypoint_marker_publisher]: [home] request sent arm=left
+[INFO] [1781166860.500459135] [keypoint_marker_publisher]: Keypoint release completed.
+[INFO] [1781166861.050339942] [keypoint_marker_publisher]: [home] request sent arm=right
+[INFO] [1781171196.000640208] [keypoint_marker_publisher]: Keypoint pick completed.
+[INFO] [1781171208.650786493] [keypoint_marker_publisher]: Keypoint pick_leftslide completed.

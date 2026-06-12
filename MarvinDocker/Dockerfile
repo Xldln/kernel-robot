@@ -44,15 +44,9 @@ RUN pip install --upgrade scipy && pip install "numpy<2"
 WORKDIR /ros2_ws
 RUN mkdir -p /ros2_ws/src /ros2_ws/build /ros2_ws/install /ros2_ws/log
 
-# 先复制源码
-COPY ros2_ws/src /ros2_ws/src
-
-# 再复制你的已有脚本
+# 复制构建脚本，运行时源码和 install 由宿主机挂载
 COPY scripts/build_ros.sh /ros2_ws/build_ros.sh
 RUN chmod +x /ros2_ws/build_ros.sh
-
-# build 阶段直接执行（强制在 /ros2_ws 下构建）
-RUN /bin/bash -lc "set -eo pipefail; source /opt/ros/humble/setup.bash; cd /ros2_ws; /ros2_ws/build_ros.sh"
 
 # 映射成系统命令
 RUN ln -sf /ros2_ws/build_ros.sh /usr/local/bin/marvin_home

@@ -51,6 +51,8 @@ flowpose:
     axis_len: 0.08
     width: 640
     height: 480
+    window_width: 640
+    window_height: 480
 
   # ── 调试 ──
   debug:

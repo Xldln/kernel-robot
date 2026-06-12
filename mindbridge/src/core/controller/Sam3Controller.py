@@ -35,7 +35,7 @@ def init_engine(config_path: str = "/workspace/mindbridge/src/core/config/sam3-c
 @infer_router.post("/detect/raw")
 async def detect_raw(
     image: UploadFile = File(..., description="RGB 图像文件（JPEG/PNG）"),
-    prompts: str = Form(default="object", description="文本提示，逗号分隔"),
+    prompts: str | None = Form(default=None, description="文本提示，逗号分隔；不传则使用配置默认值"),
     score_threshold: float | None = Form(None, ge=0.0, le=1.0),
     request_id: str = Form(default=""),
 ):
@@ -48,7 +48,7 @@ async def detect_raw(
 
     image_bytes = await image.read()
     pil_image = Image.open(BytesIO(image_bytes)).convert("RGB")
-    prompt_list = [p.strip() for p in prompts.split(",") if p.strip()]
+    prompt_list = [p.strip() for p in prompts.split(",") if p.strip()] if prompts else None
 
     result = infer_engine.predict_from_pil(
         pil_image,

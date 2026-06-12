@@ -14,55 +14,55 @@ case "${1:-}" in
     # ── 完整管线（默认 SAM3） ──
     ""|--sam3)
         shift 2>/dev/null || true
-        bash "$ROOT_DIR/scripts/start_service.sh" realsense
-        bash "$ROOT_DIR/scripts/start_service.sh" fastfoundation
-        bash "$ROOT_DIR/scripts/start_service.sh" sam3
-        bash "$ROOT_DIR/scripts/start_service.sh" flowpose
-        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        bash "$ROOT_DIR/scripts/start_service.sh" sam3-full
         exec python -m mindbridge.src.main --detector sam3 --pipeline full "$@"
         ;;
 
     --yolo)
         shift
-        bash "$ROOT_DIR/scripts/start_service.sh" realsense
-        bash "$ROOT_DIR/scripts/start_service.sh" fastfoundation
-        bash "$ROOT_DIR/scripts/start_service.sh" yolo
-        bash "$ROOT_DIR/scripts/start_service.sh" flowpose
-        bash "$ROOT_DIR/scripts/start_service.sh" siglip
+        bash "$ROOT_DIR/scripts/start_service.sh" yolo-full
         exec python -m mindbridge.src.main --detector yolo --pipeline full "$@"
         ;;
 
     # ── 基础管线（不含 FastFoundation + FlowPose） ──
     --basic-yolo)
         shift
-        bash "$ROOT_DIR/scripts/start_service.sh" yolo
-        bash "$ROOT_DIR/scripts/start_service.sh" siglip
-        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        bash "$ROOT_DIR/scripts/start_service.sh" basic-yolo
         exec python -m mindbridge.src.main --detector yolo --pipeline basic "$@"
         ;;
     --basic-sam3)
         shift
-        bash "$ROOT_DIR/scripts/start_service.sh" sam3
-        bash "$ROOT_DIR/scripts/start_service.sh" siglip
-        bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        bash "$ROOT_DIR/scripts/start_service.sh" basic-sam3
         exec python -m mindbridge.src.main --detector sam3 --pipeline basic "$@"
         ;;
 
     # ── 单独服务 ──
     --yolo-only)
         shift
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
         bash "$ROOT_DIR/scripts/start_service.sh" yolo
-        exec python -m mindbridge.src.main "$@"
+        exec python -m mindbridge.src.main --mode yolo-only --detector yolo --pipeline basic "$@"
         ;;
     --siglip-only)
         shift
+        bash "$ROOT_DIR/scripts/start_service.sh" realsense
         bash "$ROOT_DIR/scripts/start_service.sh" siglip
-        exec python -m mindbridge.src.main "$@"
+        exec python -m mindbridge.src.main --mode siglip-only --pipeline basic "$@"
         ;;
     --rs-only|--realsense-only)
         shift
+        exec bash "$ROOT_DIR/scripts/start_service.sh" realsense
+        ;;
+    --sam3-only)
+        shift
         bash "$ROOT_DIR/scripts/start_service.sh" realsense
-        exec python -m mindbridge.src.main "$@"
+        bash "$ROOT_DIR/scripts/start_service.sh" sam3
+        exec python -m mindbridge.src.main --mode sam3-only --detector sam3 --pipeline basic "$@"
+        ;;
+    --flowpose-only)
+        shift
+        bash "$ROOT_DIR/scripts/start_service.sh" flowpose-stack
+        exec python -m mindbridge.src.main --mode flowpose-only --pipeline full "$@"
         ;;
     --no-siglip)
         shift
@@ -81,9 +81,18 @@ case "${1:-}" in
         echo ""
         echo "单独服务:"
         echo "  --yolo-only       只启动 YOLO"
+        echo "  --sam3-only       只启动 SAM3"
         echo "  --siglip-only     只启动 SigLIP"
+        echo "  --flowpose-only   只启动 FlowPose 可视化"
         echo "  --rs-only         只启动 RealSense"
         echo "  --no-siglip       YOLO + RealSense (无 SigLIP)"
+        echo ""
+        echo "常用附加参数:"
+        echo "  --show            显示 OpenCV 本地窗口（默认）"
+        echo "  --no-show         无头模式"
+        echo "  --rgb-source usb  使用 USB RGB 摄像头"
+        echo "  --fusion-pub      发布 Fusion ZMQ 结果"
+        echo "  --fusion-ui-url http://127.0.0.1:8765"
         echo ""
         echo "  help, --help      显示此帮助"
         exit 0

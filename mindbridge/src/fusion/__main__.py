@@ -38,7 +38,12 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "serve-ui":
-        serve_ui(host=args.ui_host, port=args.ui_port, zmq_sub_addr=args.zmq_sub_addr)
+        serve_ui(
+            host=args.ui_host,
+            port=args.ui_port,
+            zmq_sub_addr=args.zmq_sub_addr,
+            control_enabled=args.control,
+        )
         return
 
     if args.command == "run":
@@ -51,6 +56,7 @@ def _add_ui_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--ui-port", type=int, default=8765)
     parser.add_argument("--zmq-pub-addr", default="tcp://0.0.0.0:8899")
     parser.add_argument("--zmq-sub-addr", default="tcp://127.0.0.1:8899")
+    parser.add_argument("--control", action="store_true", help="Enable browser buttons to start/stop pipelines")
 
 
 def _run_with_ui(args: argparse.Namespace) -> None:
@@ -62,6 +68,7 @@ def _run_with_ui(args: argparse.Namespace) -> None:
             "host": args.ui_host,
             "port": args.ui_port,
             "zmq_sub_addr": args.zmq_sub_addr,
+            "control_enabled": False,
         },
         daemon=True,
     )

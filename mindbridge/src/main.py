@@ -16,8 +16,10 @@ from typing import Optional
 from .MindBridgeClient import MindBridgeClient
 import cv2
 import numpy as np
+from mindbridge.src.core.service.FusionResultPublisher import FusionResultPublisher
+from mindbridge.src.core.service.RGBFrameSource import OpenCVRGBSource, RealSenseRGBSource
 from mindbridge.src.core.tool.image import _draw_detections
-
+from mindbridge.src.fusion.ui_client import FusionUiClient
 
 
 def run(
@@ -27,28 +29,69 @@ def run(
     sam3_url: str = "http://127.0.0.1:8005",
     fastfoundation_url: str = "http://127.0.0.1:8004",
     flowpose_url: str = "http://127.0.0.1:8006",
+    rgb_source: str = "realsense",
+    camera_index: int = 0,
+    camera_width: Optional[int] = None,
+    camera_height: Optional[int] = None,
+    camera_fps: Optional[int] = None,
     detector: str = "sam3",           # "sam3" | "yolo"
     pipeline: str = "full",           # "full" | "basic"
+    mode: str = "pipeline",           # "pipeline" | "yolo-only" | "sam3-only" | "siglip-only" | "flowpose-only"
     sam3_prompts: Optional[str] = None,
     sam3_threshold: Optional[float] = None,
     show: bool = True,
     max_frames: Optional[int] = None,
     out_dir: Optional[str] = None,
     log_interval: int = 30,
+    fastfoundation_interval: int = 3,
+    flowpose_interval: int = 3,
+    siglip_interval: int = 3,
+    fusion_pub: bool = False,
+    fusion_pub_addr: str = "tcp://0.0.0.0:8899",
+    fusion_ui_url: Optional[str] = None,
 ) -> None:
     client = MindBridgeClient(realsense_url, yolo_url, siglip_url, sam3_url, fastfoundation_url, flowpose_url)
     _sam3_prompts = [p.strip() for p in sam3_prompts.split(",")] if sam3_prompts else None
     _detector = detector.lower()
     _full = pipeline.lower() == "full"
+    _mode = mode.lower()
+    _rgb_source = rgb_source.lower()
     if _detector not in ("yolo", "sam3"):
         raise ValueError(f"detector must be 'yolo' or 'sam3', got '{detector}'")
+    if _mode not in ("pipeline", "yolo-only", "sam3-only", "siglip-only", "flowpose-only"):
+        raise ValueError(f"mode must be pipeline/yolo-only/sam3-only/siglip-only/flowpose-only, got '{mode}'")
+    if _rgb_source not in ("realsense", "usb"):
+        raise ValueError(f"rgb_source must be 'realsense' or 'usb', got '{rgb_source}'")
+    if _rgb_source == "usb" and _full:
+        print("[ControlCenter] USB RGB source does not provide stereo/depth; using BASIC pipeline")
+        _full = False
 
-    print(f"[ControlCenter] Pipeline: {'FULL' if _full else 'BASIC'} | Detector: {_detector.upper()}")
+    if _mode == "yolo-only":
+        _detector = "yolo"
+        _full = False
+    elif _mode == "sam3-only":
+        _detector = "sam3"
+        _full = False
+    elif _mode == "flowpose-only":
+        _full = True
+
+    print(f"[ControlCenter] Mode: {_mode} | Pipeline: {'FULL' if _full else 'BASIC'} | Detector: {_detector.upper()}")
+    if _rgb_source == "realsense":
+        frame_source = RealSenseRGBSource(client)
+        require_rs = True
+    else:
+        frame_source = OpenCVRGBSource(
+            camera_index,
+            width=camera_width,
+            height=camera_height,
+            fps=camera_fps,
+        )
+        require_rs = False
 
     print("[ControlCenter] Waiting for services ...")
     for attempt in range(60):
         h = client.health()
-        rs_ok = h.get("realsense", {}).get("status") == "ok"
+        rs_ok = h.get("realsense", {}).get("status") == "ok" if require_rs else True
         yolo_ok = h.get("yolo", {}).get("status") == "ok"
         siglip_ok = h.get("siglip", {}).get("status") == "ok"
         sam3_ok = h.get("sam3", {}).get("status") == "ok"
@@ -56,10 +99,22 @@ def run(
         ff_ok = h.get("fastfoundation", {}).get("status") == "ok" if _full else True
         fp_ok = h.get("flowpose", {}).get("status") == "ok" if _full else True
 
-        if _detector == "yolo" and rs_ok and yolo_ok and siglip_ok and ff_ok and fp_ok:
+        if _mode == "yolo-only" and rs_ok and yolo_ok:
+            print("[ControlCenter] All services ready (YOLO only)")
+            break
+        elif _mode == "sam3-only" and rs_ok and sam3_ok:
+            print("[ControlCenter] All services ready (SAM3 only)")
+            break
+        elif _mode == "siglip-only" and rs_ok and siglip_ok:
+            print("[ControlCenter] All services ready (SigLIP only)")
+            break
+        elif _mode == "flowpose-only" and rs_ok and ff_ok and fp_ok:
+            print("[ControlCenter] All services ready (FlowPose only)")
+            break
+        elif _mode == "pipeline" and _detector == "yolo" and rs_ok and yolo_ok and siglip_ok and ff_ok and fp_ok:
             print(f"[ControlCenter] All services ready (YOLO {'full' if _full else 'basic'} pipeline)")
             break
-        elif _detector == "sam3" and rs_ok and sam3_ok and siglip_ok and ff_ok and fp_ok:
+        elif _mode == "pipeline" and _detector == "sam3" and rs_ok and sam3_ok and siglip_ok and ff_ok and fp_ok:
             print(f"[ControlCenter] All services ready (SAM3 {'full' if _full else 'basic'} pipeline)")
             break
 
@@ -74,13 +129,39 @@ def run(
 
     frame_count = 0
     running = True
+    fastfoundation_interval = max(1, int(fastfoundation_interval))
+    flowpose_interval = max(1, int(flowpose_interval))
+    siglip_interval = max(1, int(siglip_interval))
+    last_depth_png: bytes | None = None
+    last_flowpose_result: dict = {}
+    last_state_result: dict = {}
 
     print("[ControlCenter] Starting capture → inference → classification loop ...")
+    if _full:
+        print(
+            "[ControlCenter] Full pipeline intervals: "
+            f"FastFoundation={fastfoundation_interval}, "
+            f"FlowPose={flowpose_interval}, SigLIP={siglip_interval}"
+        )
 
     if show:
-        win_title = f"RGB + {_detector.upper()} Detection"
-        cv2.namedWindow(win_title, cv2.WINDOW_NORMAL)
-        cv2.resizeWindow(win_title, 640, 480)
+        if not os.environ.get("DISPLAY"):
+            print("[ControlCenter] DISPLAY is not set; OpenCV window disabled")
+            show = False
+        else:
+            win_title = f"MindBridge {_mode if _mode != 'pipeline' else _detector.upper()}"
+            cv2.namedWindow(win_title, cv2.WINDOW_NORMAL)
+            cv2.resizeWindow(win_title, 640, 480)
+
+    fusion_publisher = None
+    if fusion_pub:
+        try:
+            fusion_publisher = FusionResultPublisher(fusion_pub_addr)
+            print(f"[ControlCenter] Fusion ZMQ publisher: {fusion_pub_addr}")
+        except Exception as e:
+            print(f"[ControlCenter] Fusion ZMQ publisher disabled: {e}")
+
+    fusion_ui_client = FusionUiClient(fusion_ui_url) if fusion_ui_url else None
 
     try:
         while running:
@@ -91,7 +172,7 @@ def run(
 
             # ── Step 1: Capture from RealSense (raw bytes) ──
             try:
-                cap = client.capture()
+                cap = frame_source.capture()
             except Exception as e:
                 print(f"[ControlCenter] Capture failed: {e}")
                 time.sleep(0.2)
@@ -108,6 +189,8 @@ def run(
                 time.sleep(0.1)
                 continue
             frame_id: int = cap.get("frame_id", 0)
+            color_arr = np.frombuffer(color_jpg, dtype=np.uint8)
+            original_rgb = cv2.imdecode(color_arr, cv2.IMREAD_COLOR)
 
             # ── Step 2 (full only): FastFoundation stereo depth ──
             ff_result: dict = {}
@@ -116,7 +199,8 @@ def run(
             if _full:
                 ir_left_jpg = cap.get("ir_left_jpg")
                 ir_right_jpg = cap.get("ir_right_jpg")
-                if ir_left_jpg and ir_right_jpg:
+                run_ff = frame_count == 0 or frame_count % fastfoundation_interval == 0 or last_depth_png is None
+                if ir_left_jpg and ir_right_jpg and run_ff:
                     t_ff = time.time()
                     try:
                         ff_result = client.fastfoundation_depth_raw(
@@ -139,9 +223,12 @@ def run(
                         )
                         if ff_result.get("status") == "ok" and ff_result.get("depth_png"):
                             depth_png_for_flowpose = ff_result["depth_png"]
+                            last_depth_png = depth_png_for_flowpose
                     except Exception as e:
                         print(f"[ControlCenter] FastFoundation failed: {e}")
                     ff_ms = (time.time() - t_ff) * 1000
+                elif last_depth_png is not None:
+                    depth_png_for_flowpose = last_depth_png
 
             # ── Step 3: Detection (YOLO or SAM3, mutually exclusive) ──
             pred: dict = {"status": "ok", "num_detections": 0, "detections": [],
@@ -150,7 +237,7 @@ def run(
             infer_ms = 0.0
             sam3_ms = 0.0
 
-            if _detector == "yolo":
+            if _mode in ("pipeline", "yolo-only") and _detector == "yolo":
                 t_infer_start = time.time()
                 try:
                     pred = client.predict(color_jpg, request_id=str(frame_id))
@@ -160,7 +247,7 @@ def run(
                             "annotated_image": None, "mask_bytes": {}}
                 infer_ms = (time.time() - t_infer_start) * 1000
 
-            elif _detector == "sam3":
+            elif _mode in ("pipeline", "sam3-only") and _detector == "sam3":
                 t_sam3_start = time.time()
                 try:
                     sam3_result = client.sam3_detect(
@@ -175,9 +262,14 @@ def run(
                 sam3_ms = (time.time() - t_sam3_start) * 1000
 
             # ── Step 4 (full only): FlowPose 6D pose estimation ──
-            flowpose_result: dict = {}
+            flowpose_result: dict = last_flowpose_result if _full else {}
             flowpose_ms = 0.0
-            if _full and depth_png_for_flowpose:
+            run_flowpose = (
+                _full
+                and depth_png_for_flowpose
+                and (frame_count == 0 or frame_count % flowpose_interval == 0 or not last_flowpose_result)
+            )
+            if run_flowpose:
                 # 从检测结果构建合并 mask（多个物体的 mask 合并为一张图）
                 masks_to_combine: list[np.ndarray] = []
                 obj_ids_for_flowpose = []
@@ -199,15 +291,22 @@ def run(
                                     det.get("class_name", det.get("label", "object"))
                                 )
 
-                if _detector == "sam3" and sam3_result.get("status") == "ok":
+                mask_bytes_for_flowpose: bytes | None = None
+                if _mode == "flowpose-only" and original_rgb is not None:
+                    mask = np.ones(original_rgb.shape[:2], dtype=np.uint8)
+                    ok, whole_mask_png = cv2.imencode(".png", mask, [cv2.IMWRITE_PNG_COMPRESSION, 3])
+                    if ok:
+                        mask_bytes_for_flowpose = whole_mask_png.tobytes()
+                        obj_ids_for_flowpose.append([1, 1])
+                        class_names_for_flowpose.append("object")
+                elif _detector == "sam3" and sam3_result.get("status") == "ok":
                     _collect_masks(sam3_result.get("detections", []), sam3_result.get("mask_bytes", {}))
                 elif _detector == "yolo" and pred.get("status") == "ok":
                     _collect_masks(pred.get("detections", []), pred.get("mask_bytes", {}), is_yolo=True)
 
                 # 合并所有 mask 为一张图，每个物体分配不同值（0=背景，1,2,3...=各物体）
                 # FlowPose 通过 obj_ids 中的 mask_value 区分不同物体
-                mask_bytes_for_flowpose: bytes | None = None
-                if masks_to_combine:
+                if mask_bytes_for_flowpose is None and masks_to_combine:
                     combined_mask = np.zeros_like(masks_to_combine[0], dtype=np.uint8)
                     for idx, m in enumerate(masks_to_combine):
                         obj_val = idx + 1  # 物体 1、2、3... 对应 mask 值 1、2、3...
@@ -225,37 +324,47 @@ def run(
                             class_names=class_names_for_flowpose,
                             request_id=str(frame_id),
                         )
+                        last_flowpose_result = flowpose_result
                     except Exception as e:
                         print(f"[ControlCenter] FlowPose failed: {e}")
                     flowpose_ms = (time.time() - t_fp) * 1000
 
             # ── Step 5: SigLIP state classification ──
-            t_siglip_start = time.time()
-            state_result = {}
-            try:
-                state_result = client.classify_state(color_jpg, request_id=str(frame_id))
-            except Exception as e:
-                print(f"[ControlCenter] SigLIP classification failed: {e}")
-                state_result = {"status": "error", "best_category": "", "best_similarity": 0.0}
-            siglip_ms = (time.time() - t_siglip_start) * 1000
+            state_result = last_state_result if _mode == "pipeline" else {}
+            siglip_ms = 0.0
+            run_siglip = (
+                _mode == "siglip-only"
+                or (
+                    _mode == "pipeline"
+                    and (frame_count == 0 or frame_count % siglip_interval == 0 or not last_state_result)
+                )
+            )
+            if run_siglip:
+                t_siglip_start = time.time()
+                try:
+                    state_result = client.classify_state(color_jpg, request_id=str(frame_id))
+                    if _mode == "pipeline":
+                        last_state_result = state_result
+                except Exception as e:
+                    print(f"[ControlCenter] SigLIP classification failed: {e}")
+                    state_result = {"status": "error", "best_category": "", "best_similarity": 0.0}
+                siglip_ms = (time.time() - t_siglip_start) * 1000
 
-            if show:
-                # ── 解码原始 RGB 图片 ──
-                color_arr = np.frombuffer(color_jpg, dtype=np.uint8)
-                original_rgb = cv2.imdecode(color_arr, cv2.IMREAD_COLOR)
+            yolo_display = None
 
-                # ── 窗口1: RGB + 检测结果 ──
+            if show or fusion_ui_client:
+                if original_rgb is not None:
+                    yolo_display = original_rgb.copy()
                 if pred.get("status") == "ok" and pred.get("annotated_image"):
                     ann_arr = np.frombuffer(pred["annotated_image"], dtype=np.uint8)
                     yolo_display = cv2.imdecode(ann_arr, cv2.IMREAD_COLOR)
-                else:
+                elif original_rgb is not None:
                     yolo_display = _draw_detections(
                         original_rgb.copy(),
                         pred.get("detections", []),
                     )
 
-                # ── 叠加 SAM3 检测结果（蓝色 bbox + 半透明 mask） ──
-                if sam3_result.get("status") == "ok":
+                if yolo_display is not None and sam3_result.get("status") == "ok":
                     for det in sam3_result.get("detections", []):
                         bbox = det.get("bbox", [])
                         label = det.get("label", "")
@@ -277,20 +386,15 @@ def run(
                                     mask_img = cv2.imdecode(mask_arr, cv2.IMREAD_GRAYSCALE)
                                     if mask_img is not None and mask_img.shape[:2] == yolo_display.shape[:2]:
                                         colored = np.zeros_like(yolo_display)
-                                        colored[:, :, 0] = mask_img  # 蓝色通道
+                                        colored[:, :, 0] = mask_img
                                         yolo_display = cv2.addWeighted(yolo_display, 1.0, colored, 0.35, 0)
                             except Exception:
                                 pass
 
-                # ── 叠加 FlowPose 6D 姿态文字 ──
-                if flowpose_result.get("status") == "ok":
-                    pass
-
-                # 添加 SigLIP 简短信息到窗口
-                if state_result.get("status") == "ok":
+                if yolo_display is not None and state_result.get("status") == "ok":
                     best_cat = state_result.get("best_category", "unknown")
                     best_sim = state_result.get("best_similarity", 0.0)
-                    h, w = yolo_display.shape[:2]
+                    h, _w = yolo_display.shape[:2]
                     cv2.putText(yolo_display, f"State: {best_cat}",
                                 (10, h - 35),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
@@ -298,11 +402,45 @@ def run(
                                 (10, h - 15),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
 
-                # 显示窗口
-                cv2.imshow(win_title, yolo_display)
+                if yolo_display is not None and _mode == "flowpose-only":
+                    n_poses = len(flowpose_result.get("objects", []))
+                    msg = flowpose_result.get("message") or f"poses={n_poses}"
+                    cv2.putText(yolo_display, f"FlowPose: {msg}",
+                                (10, 30),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 180, 255), 2)
 
-                if cv2.waitKey(5) & 0xFF == 27:
-                    running = False
+            if fusion_publisher:
+                try:
+                    fusion_publisher.publish(
+                        frame_id=frame_id,
+                        state_result=state_result,
+                        flowpose_result=flowpose_result,
+                    )
+                except Exception as e:
+                    print(f"[ControlCenter] Fusion publish failed: {e}")
+
+            if fusion_ui_client and yolo_display is not None:
+                try:
+                    ok, jpg = cv2.imencode(".jpg", yolo_display, [cv2.IMWRITE_JPEG_QUALITY, 85])
+                    if ok:
+                        fusion_ui_client.post_video_frame(
+                            jpg.tobytes(),
+                            title=f"{_rgb_source.upper()} + {_detector.upper()}",
+                            metadata={
+                                "frame_id": frame_id,
+                                "detector": _detector,
+                                "pipeline": "full" if _full else "basic",
+                                "mode": _mode,
+                            },
+                        )
+                except Exception:
+                    pass
+
+            if show:
+                if yolo_display is not None:
+                    cv2.imshow(win_title, yolo_display)
+                    if cv2.waitKey(5) & 0xFF == 27:
+                        running = False
 
             # ── Save ──
             if out_dir and pred.get("status") == "ok" and pred.get("annotated_image"):
@@ -317,7 +455,15 @@ def run(
                 status = pred.get("status", "?")
                 state_cat = state_result.get("best_category", "-")
                 state_sim = state_result.get("best_similarity", 0.0)
-                if _detector == "yolo":
+                if _mode == "siglip-only":
+                    det_tag = "SigLIP"
+                    det_ms = ""
+                    status = state_result.get("status", "?")
+                elif _mode == "flowpose-only":
+                    det_tag = f"FlowPose={len(flowpose_result.get('objects', []))}"
+                    det_ms = ""
+                    status = flowpose_result.get("status", "?")
+                elif _detector == "yolo":
                     det_tag = f"YOLO={n_det}"
                     det_ms = f"yolo={infer_ms:.1f}ms"
                 else:
@@ -337,7 +483,11 @@ def run(
     except KeyboardInterrupt:
         print("\n[ControlCenter] Interrupted by user")
     finally:
-        cv2.destroyAllWindows()
+        frame_source.close()
+        if fusion_publisher:
+            fusion_publisher.close()
+        if show:
+            cv2.destroyAllWindows()
         print(f"[ControlCenter] Done. Processed {frame_count} frames.")
 
 
@@ -379,6 +529,13 @@ def main() -> None:
         help="管线模式: full(默认，含 FastFoundation+FlowPose) 或 basic(仅 detection+siglip)",
     )
     parser.add_argument(
+        "--mode",
+        type=str,
+        default="pipeline",
+        choices=["pipeline", "yolo-only", "sam3-only", "siglip-only", "flowpose-only"],
+        help="运行模式: pipeline 或单模型可视化模式",
+    )
+    parser.add_argument(
         "--fastfoundation-url", default="http://127.0.0.1:8004",
         help="FastFoundation 服务地址（默认 :8004）",
     )
@@ -387,8 +544,33 @@ def main() -> None:
         help="FlowPose 服务地址（默认 :8006）",
     )
     parser.add_argument(
+        "--rgb-source", choices=["realsense", "usb"], default="realsense",
+        help="RGB 来源: realsense(默认) 或 usb",
+    )
+    parser.add_argument("--camera-index", type=int, default=0, help="USB 摄像头编号")
+    parser.add_argument("--camera-width", type=int, default=None, help="USB 摄像头宽度")
+    parser.add_argument("--camera-height", type=int, default=None, help="USB 摄像头高度")
+    parser.add_argument("--camera-fps", type=int, default=None, help="USB 摄像头 FPS")
+    show_group = parser.add_mutually_exclusive_group()
+    show_group.add_argument(
+        "--show", action="store_true",
+        help="显示 OpenCV 窗口",
+    )
+    show_group.add_argument(
         "--no-show", action="store_true",
         help="不显示 OpenCV 窗口（无头模式）",
+    )
+    parser.add_argument(
+        "--fusion-pub", action="store_true",
+        help="发布 Fusion ZMQ 结果",
+    )
+    parser.add_argument(
+        "--fusion-pub-addr", default="tcp://0.0.0.0:8899",
+        help="Fusion ZMQ PUB 地址",
+    )
+    parser.add_argument(
+        "--fusion-ui-url", default=None,
+        help="Fusion UI 地址，用于推送视频帧",
     )
     parser.add_argument(
         "--max-frames", type=int, default=None,
@@ -402,6 +584,18 @@ def main() -> None:
         "--log-interval", type=int, default=30,
         help="日志输出间隔（帧数），默认 30",
     )
+    parser.add_argument(
+        "--fastfoundation-interval", type=int, default=3,
+        help="Full 模式下 FastFoundation 运行间隔帧数，默认 3",
+    )
+    parser.add_argument(
+        "--flowpose-interval", type=int, default=3,
+        help="Full 模式下 FlowPose 运行间隔帧数，默认 3",
+    )
+    parser.add_argument(
+        "--siglip-interval", type=int, default=5,
+        help="Pipeline 模式下 SigLIP 运行间隔帧数，默认 5",
+    )
 
     args = parser.parse_args()
 
@@ -412,14 +606,26 @@ def main() -> None:
         sam3_url=args.sam3_url,
         fastfoundation_url=args.fastfoundation_url,
         flowpose_url=args.flowpose_url,
+        rgb_source=args.rgb_source,
+        camera_index=args.camera_index,
+        camera_width=args.camera_width,
+        camera_height=args.camera_height,
+        camera_fps=args.camera_fps,
         detector=args.detector,
         pipeline=args.pipeline,
+        mode=args.mode,
         sam3_prompts=args.sam3_prompts,
         sam3_threshold=args.sam3_threshold,
         show=not args.no_show,
         max_frames=args.max_frames,
         out_dir=args.out_dir,
         log_interval=args.log_interval,
+        fastfoundation_interval=args.fastfoundation_interval,
+        flowpose_interval=args.flowpose_interval,
+        siglip_interval=args.siglip_interval,
+        fusion_pub=args.fusion_pub,
+        fusion_pub_addr=args.fusion_pub_addr,
+        fusion_ui_url=args.fusion_ui_url,
     )
 
 

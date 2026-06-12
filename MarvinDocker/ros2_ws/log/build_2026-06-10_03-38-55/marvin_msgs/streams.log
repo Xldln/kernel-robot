@@ -1,0 +1,498 @@
+[0.003s] Invoking command in '/ros2_ws/build/marvin_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /ros2_ws/src/marvin_msgs -DCMAKE_INSTALL_PREFIX=/ros2_ws/install/marvin_msgs
+[0.031s] -- The C compiler identification is GNU 11.4.0
+[0.053s] -- The CXX compiler identification is GNU 11.4.0
+[0.056s] -- Detecting C compiler ABI info
+[0.082s] -- Detecting C compiler ABI info - done
+[0.085s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.085s] -- Detecting C compile features
+[0.085s] -- Detecting C compile features - done
+[0.086s] -- Detecting CXX compiler ABI info
+[0.116s] -- Detecting CXX compiler ABI info - done
+[0.119s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.119s] -- Detecting CXX compile features
+[0.119s] -- Detecting CXX compile features - done
+[0.120s] -- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.181s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.216s] -- Found rosidl_default_generators: 1.2.1 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.217s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.220s] -- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.235s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.248s] -- Found std_msgs: 4.9.1 (/opt/ros/humble/share/std_msgs/cmake)
+[0.258s] -- Found geometry_msgs: 4.9.1 (/opt/ros/humble/share/geometry_msgs/cmake)
+[0.394s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[0.493s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.627s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.635s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[0.636s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[0.646s] -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[0.646s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.646s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[0.646s] -- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+[0.654s] -- Found PythonExtra: .so  
+[0.712s] -- Found ament_lint_auto: 0.12.15 (/opt/ros/humble/share/ament_lint_auto/cmake)
+[0.720s] -- Added test 'lint_cmake' to check CMake code style
+[0.721s] -- Added test 'xmllint' to check XML markup files
+[0.722s] -- Configuring done
+[0.739s] -- Generating done
+[0.743s] -- Build files have been written to: /ros2_ws/build/marvin_msgs
+[0.748s] Invoked command in '/ros2_ws/build/marvin_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /ros2_ws/src/marvin_msgs -DCMAKE_INSTALL_PREFIX=/ros2_ws/install/marvin_msgs
+[0.748s] Invoking command in '/ros2_ws/build/marvin_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /ros2_ws/build/marvin_msgs -- -j32 -l32
+[0.765s] [  1%] Generating C code for ROS interfaces
+[0.769s] [  2%] Generating Rust code for ROS interfaces
+[0.769s] [  3%] Generating C++ code for ROS interfaces
+[0.772s] [  3%] Built target ament_cmake_python_copy_marvin_msgs
+[0.847s] running egg_info
+[0.847s] creating marvin_msgs.egg-info
+[0.847s] writing marvin_msgs.egg-info/PKG-INFO
+[0.848s] writing dependency_links to marvin_msgs.egg-info/dependency_links.txt
+[0.848s] writing top-level names to marvin_msgs.egg-info/top_level.txt
+[0.848s] writing manifest file 'marvin_msgs.egg-info/SOURCES.txt'
+[0.848s] reading manifest file 'marvin_msgs.egg-info/SOURCES.txt'
+[0.849s] writing manifest file 'marvin_msgs.egg-info/SOURCES.txt'
+[0.860s] [  3%] Built target ament_cmake_python_build_marvin_msgs_egg
+[0.948s] [  3%] Built target marvin_msgs__rs
+[1.071s] [  3%] Built target marvin_msgs__cpp
+[1.077s] [  5%] Generating C++ introspection for ROS interfaces
+[1.077s] [  5%] Generating C++ type support for eProsima Fast-RTPS
+[1.078s] [  6%] Generating C++ type support dispatch for ROS interfaces
+[1.088s] [  8%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/srv/detail/motor_err_code__functions.c.o
+[1.088s] [  9%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/msg/detail/jointfeedback__functions.c.o
+[1.088s] [  9%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/msg/detail/jointcmd__functions.c.o
+[1.088s] [ 10%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/srv/detail/velratio__functions.c.o
+[1.088s] [ 12%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/msg/detail/keypoint_pose__functions.c.o
+[1.088s] [ 12%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/srv/detail/int__functions.c.o
+[1.088s] [ 13%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/msg/detail/collimarker__functions.c.o
+[1.089s] [ 14%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/msg/detail/keypoint_pose_array__functions.c.o
+[1.090s] [ 15%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_c.dir/rosidl_generator_c/marvin_msgs/msg/detail/extforce__functions.c.o
+[1.119s] [ 16%] Linking C shared library libmarvin_msgs__rosidl_generator_c.so
+[1.136s] [ 16%] Built target marvin_msgs__rosidl_generator_c
+[1.141s] [ 19%] Generating C introspection for ROS interfaces
+[1.141s] [ 19%] Generating C type support dispatch for ROS interfaces
+[1.141s] [ 19%] Generating C type support for eProsima Fast-RTPS
+[1.339s] [ 20%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/srv/int__type_support.cpp.o
+[1.339s] [ 22%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/srv/velratio__type_support.cpp.o
+[1.339s] [ 22%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/msg/jointcmd__type_support.cpp.o
+[1.345s] [ 23%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/srv/motor_err_code__type_support.cpp.o
+[1.345s] [ 25%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/msg/jointfeedback__type_support.cpp.o
+[1.345s] [ 27%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/msg/keypoint_pose_array__type_support.cpp.o
+[1.345s] [ 27%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/msg/keypoint_pose__type_support.cpp.o
+[1.348s] [ 28%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/msg/collimarker__type_support.cpp.o
+[1.364s] [ 29%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/marvin_msgs/msg/extforce__type_support.cpp.o
+[1.461s] [ 30%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/srv/detail/int__type_support.cpp.o
+[1.473s] [ 31%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/msg/detail/jointcmd__type_support.cpp.o
+[1.474s] [ 32%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/srv/detail/motor_err_code__type_support.cpp.o
+[1.474s] [ 33%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/srv/detail/velratio__type_support.cpp.o
+[1.474s] [ 34%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/msg/detail/jointfeedback__type_support.cpp.o
+[1.474s] [ 35%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/msg/detail/collimarker__type_support.cpp.o
+[1.477s] [ 36%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/msg/detail/keypoint_pose__type_support.cpp.o
+[1.502s] [ 37%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/srv/int__type_support.cpp.o
+[1.503s] [ 38%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/msg/detail/keypoint_pose_array__type_support.cpp.o
+[1.506s] [ 39%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/srv/motor_err_code__type_support.cpp.o
+[1.512s] [ 40%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/srv/velratio__type_support.cpp.o
+[1.517s] [ 41%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/msg/jointcmd__type_support.cpp.o
+[1.517s] [ 42%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/msg/jointfeedback__type_support.cpp.o
+[1.517s] [ 43%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/msg/keypoint_pose__type_support.cpp.o
+[1.517s] [ 44%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/msg/collimarker__type_support.cpp.o
+[1.517s] [ 45%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/marvin_msgs/msg/detail/extforce__type_support.cpp.o
+[1.524s] [ 46%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/msg/keypoint_pose_array__type_support.cpp.o
+[1.531s] [ 47%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/marvin_msgs/msg/extforce__type_support.cpp.o
+[1.534s] [ 48%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/srv/detail/dds_fastrtps/motor_err_code__type_support.cpp.o
+[1.537s] [ 50%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/msg/detail/dds_fastrtps/jointcmd__type_support.cpp.o
+[1.537s] [ 51%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/srv/detail/dds_fastrtps/velratio__type_support.cpp.o
+[1.539s] [ 52%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/srv/detail/dds_fastrtps/int__type_support.cpp.o
+[1.549s] [ 53%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/msg/detail/dds_fastrtps/jointfeedback__type_support.cpp.o
+[1.563s] [ 54%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/msg/detail/dds_fastrtps/collimarker__type_support.cpp.o
+[1.563s] [ 55%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/msg/detail/dds_fastrtps/keypoint_pose__type_support.cpp.o
+[1.566s] [ 56%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/msg/detail/dds_fastrtps/extforce__type_support.cpp.o
+[1.568s] [ 57%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/marvin_msgs/msg/detail/dds_fastrtps/keypoint_pose_array__type_support.cpp.o
+[1.572s] [ 58%] Linking CXX shared library libmarvin_msgs__rosidl_typesupport_c.so
+[1.603s] [ 60%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/srv/detail/motor_err_code__type_support_c.cpp.o
+[1.603s] [ 60%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/srv/detail/int__type_support_c.cpp.o
+[1.603s] [ 61%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/srv/detail/velratio__type_support_c.cpp.o
+[1.605s] [ 62%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/msg/detail/extforce__type_support_c.cpp.o
+[1.607s] [ 66%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/msg/detail/collimarker__type_support_c.cpp.o
+[1.607s] [ 66%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/msg/detail/keypoint_pose__type_support_c.cpp.o
+[1.608s] [ 66%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/msg/detail/jointfeedback__type_support_c.cpp.o
+[1.608s] [ 67%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/msg/detail/keypoint_pose_array__type_support_c.cpp.o
+[1.609s] [ 67%] Building CXX object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/marvin_msgs/msg/detail/jointcmd__type_support_c.cpp.o
+[1.614s] [ 67%] Built target marvin_msgs__rosidl_typesupport_c
+[1.632s] [ 68%] Linking CXX shared library libmarvin_msgs__rosidl_typesupport_cpp.so
+[1.668s] [ 68%] Built target marvin_msgs__rosidl_typesupport_cpp
+[1.673s] [ 69%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/srv/detail/int__type_support.c.o
+[1.676s] [ 70%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/srv/detail/velratio__type_support.c.o
+[1.679s] [ 71%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/msg/detail/jointfeedback__type_support.c.o
+[1.679s] [ 72%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/msg/detail/jointcmd__type_support.c.o
+[1.682s] [ 73%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/srv/detail/motor_err_code__type_support.c.o
+[1.712s] [ 75%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/msg/detail/collimarker__type_support.c.o
+[1.719s] [ 76%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/msg/detail/keypoint_pose__type_support.c.o
+[1.727s] [ 77%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/msg/detail/extforce__type_support.c.o
+[1.728s] [ 78%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/marvin_msgs/msg/detail/keypoint_pose_array__type_support.c.o
+[1.768s] [ 79%] Linking C shared library libmarvin_msgs__rosidl_typesupport_introspection_c.so
+[1.794s] [ 79%] Built target marvin_msgs__rosidl_typesupport_introspection_c
+[1.834s] [ 80%] Linking CXX shared library libmarvin_msgs__rosidl_typesupport_introspection_cpp.so
+[1.876s] [ 81%] Linking CXX shared library libmarvin_msgs__rosidl_typesupport_fastrtps_c.so
+[1.876s] [ 81%] Built target marvin_msgs__rosidl_typesupport_introspection_cpp
+[1.893s] [ 82%] Linking CXX shared library libmarvin_msgs__rosidl_typesupport_fastrtps_cpp.so
+[1.908s] [ 82%] Built target marvin_msgs__rosidl_typesupport_fastrtps_c
+[1.927s] [ 82%] Built target marvin_msgs__rosidl_typesupport_fastrtps_cpp
+[1.934s] [ 82%] Built target marvin_msgs
+[1.941s] [ 83%] Generating Python code for ROS interfaces
+[2.454s] [ 83%] Built target marvin_msgs__py
+[2.461s] [ 84%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/srv/_int_s.c.o
+[2.461s] [ 86%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/srv/_velratio_s.c.o
+[2.462s] [ 86%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/srv/_motor_err_code_s.c.o
+[2.462s] [ 87%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/msg/_jointfeedback_s.c.o
+[2.462s] [ 88%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/msg/_jointcmd_s.c.o
+[2.462s] [ 89%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/msg/_collimarker_s.c.o
+[2.462s] [ 91%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/msg/_keypoint_pose_array_s.c.o
+[2.462s] [ 91%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/msg/_extforce_s.c.o
+[2.462s] [ 92%] Building C object CMakeFiles/marvin_msgs__rosidl_generator_py.dir/rosidl_generator_py/marvin_msgs/msg/_keypoint_pose_s.c.o
+[2.513s] [ 93%] Linking C shared library rosidl_generator_py/marvin_msgs/libmarvin_msgs__rosidl_generator_py.so
+[2.534s] [ 93%] Built target marvin_msgs__rosidl_generator_py
+[2.543s] [ 94%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/marvin_msgs/_marvin_msgs_s.ep.rosidl_typesupport_introspection_c.c.o
+[2.543s] [ 96%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/marvin_msgs/_marvin_msgs_s.ep.rosidl_typesupport_c.c.o
+[2.543s] [ 96%] Building C object CMakeFiles/marvin_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/marvin_msgs/_marvin_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o
+[2.597s] [ 98%] Linking C shared library rosidl_generator_py/marvin_msgs/marvin_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[2.597s] [ 98%] Linking C shared library rosidl_generator_py/marvin_msgs/marvin_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[2.599s] [100%] Linking C shared library rosidl_generator_py/marvin_msgs/marvin_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[2.614s] [100%] Built target marvin_msgs__rosidl_typesupport_introspection_c__pyext
+[2.615s] [100%] Built target marvin_msgs__rosidl_typesupport_fastrtps_c__pyext
+[2.615s] [100%] Built target marvin_msgs__rosidl_typesupport_c__pyext
+[2.620s] Invoked command in '/ros2_ws/build/marvin_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /ros2_ws/build/marvin_msgs -- -j32 -l32
+[2.620s] Invoking command in '/ros2_ws/build/marvin_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /ros2_ws/build/marvin_msgs
+[2.625s] -- Install configuration: ""
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/share/ament_index/resource_index/rosidl_interfaces/marvin_msgs
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__type_support.h
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__functions.c
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__struct.h
+[2.625s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/motor_err_code.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/velratio.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/int.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/jointfeedback.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/jointcmd.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/rosidl_generator_c__visibility_control.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__functions.c
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__type_support.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__functions.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__struct.h
+[2.626s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__functions.c
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__struct.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/extforce.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/keypoint_pose_array.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/keypoint_pose.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/collimarker.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/library_path.sh
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/library_path.dsv
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_generator_c.so
+[2.627s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_generator_c.so" to ""
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__rosidl_typesupport_fastrtps_c.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[2.627s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_fastrtps_c.so
+[2.627s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv
+[2.627s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__rosidl_typesupport_introspection_c.h
+[2.628s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[2.628s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__rosidl_typesupport_introspection_c.h
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__type_support.c
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_introspection_c.so
+[2.628s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_introspection_c.so" to ""
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_c.so
+[2.628s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_c.so" to ""
+[2.628s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs
+[2.628s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv
+[2.628s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__builder.hpp
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__traits.hpp
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__traits.hpp
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__struct.hpp
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__builder.hpp
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__type_support.hpp
+[2.628s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__traits.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__builder.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__struct.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__struct.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/int.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/motor_err_code.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/velratio.hpp
+[2.629s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/jointcmd.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/keypoint_pose_array.hpp
+[2.629s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__builder.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__struct.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__traits.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__traits.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__builder.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__traits.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__struct.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__builder.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__struct.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__builder.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__type_support.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__builder.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__traits.hpp
+[2.629s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__struct.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__traits.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__type_support.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__builder.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__struct.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__traits.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__struct.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/keypoint_pose.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/collimarker.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/jointfeedback.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/extforce.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/dds_fastrtps
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/dds_fastrtps
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__rosidl_typesupport_fastrtps_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_fastrtps_cpp.so
+[2.630s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__type_support.cpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__rosidl_typesupport_introspection_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__rosidl_typesupport_introspection_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/int__rosidl_typesupport_introspection_cpp.hpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/motor_err_code__type_support.cpp
+[2.630s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/srv/detail/velratio__type_support.cpp
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg
+[2.630s] -- Up-to-date: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__rosidl_typesupport_introspection_cpp.hpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__type_support.cpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__type_support.cpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__rosidl_typesupport_introspection_cpp.hpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__type_support.cpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__type_support.cpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/extforce__rosidl_typesupport_introspection_cpp.hpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointcmd__type_support.cpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/collimarker__rosidl_typesupport_introspection_cpp.hpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose_array__rosidl_typesupport_introspection_cpp.hpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/keypoint_pose__type_support.cpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/include/marvin_msgs/marvin_msgs/msg/detail/jointfeedback__rosidl_typesupport_introspection_cpp.hpp
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_introspection_cpp.so
+[2.631s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_cpp.so
+[2.631s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_typesupport_cpp.so" to ""
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/pythonpath.sh
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/pythonpath.dsv
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs-0.0.0-py3.10.egg-info
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs-0.0.0-py3.10.egg-info/top_level.txt
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs-0.0.0-py3.10.egg-info/SOURCES.txt
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs-0.0.0-py3.10.egg-info/PKG-INFO
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs-0.0.0-py3.10.egg-info/dependency_links.txt
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/__init__.py
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/__init__.py
+[2.631s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_velratio.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_velratio_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_int.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_int_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_motor_err_code_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_motor_err_code.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/_marvin_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/_marvin_msgs_s.ep.rosidl_typesupport_c.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/libmarvin_msgs__rosidl_generator_py.so
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/_marvin_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_collimarker_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_keypoint_pose_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/__init__.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_keypoint_pose_array_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_keypoint_pose.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_jointfeedback_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_jointfeedback.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_jointcmd_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_jointcmd.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_extforce.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_extforce_s.c
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_collimarker.py
+[2.632s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_keypoint_pose_array.py
+[2.652s] Listing '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs'...
+[2.652s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/__init__.py'...
+[2.652s] Listing '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg'...
+[2.652s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/__init__.py'...
+[2.652s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_collimarker.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_extforce.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_jointcmd.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_jointfeedback.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_keypoint_pose.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/msg/_keypoint_pose_array.py'...
+[2.653s] Listing '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/__init__.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_int.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_motor_err_code.py'...
+[2.653s] Compiling '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/srv/_velratio.py'...
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so
+[2.655s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so" to ""
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so
+[2.655s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so" to ""
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so
+[2.655s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages/marvin_msgs/marvin_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so" to ""
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_generator_py.so
+[2.655s] -- Set runtime path of "/ros2_ws/install/marvin_msgs/lib/libmarvin_msgs__rosidl_generator_py.so" to ""
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/ament_index/resource_index/rust_packages/marvin_msgs
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/srv.rs
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/msg.rs
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/srv
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/srv/rmw.rs
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/lib.rs
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/msg
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/src/msg/rmw.rs
+[2.655s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/build.rs
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/rust/Cargo.toml
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Int.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Velratio.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/MotorErrCode.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Jointcmd.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Jointfeedback.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Collimarker.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/KeypointPose.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/KeypointPoseArray.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Extforce.idl
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Int.srv
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Int_Request.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Int_Response.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Velratio.srv
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Velratio_Request.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/Velratio_Response.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/MotorErrCode.srv
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/MotorErrCode_Request.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/srv/MotorErrCode_Response.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Jointcmd.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Jointfeedback.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Collimarker.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/KeypointPose.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/KeypointPoseArray.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/msg/Extforce.msg
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/ament_index/resource_index/package_run_dependencies/marvin_msgs
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/ament_index/resource_index/parent_prefix_path/marvin_msgs
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/ament_prefix_path.sh
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/ament_prefix_path.dsv
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/path.sh
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/environment/path.dsv
+[2.656s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/local_setup.bash
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/local_setup.sh
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/local_setup.zsh
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/local_setup.dsv
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/package.dsv
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/ament_index/resource_index/packages/marvin_msgs
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_generator_cExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_generator_cExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_introspection_cExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_cExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_generator_cppExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_cppExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_generator_pyExport.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/export_marvin_msgs__rosidl_generator_pyExport-noconfig.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/rosidl_cmake-extras.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.657s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[2.658s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[2.658s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[2.658s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[2.658s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgsConfig.cmake
+[2.658s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake/marvin_msgsConfig-version.cmake
+[2.658s] -- Installing: /ros2_ws/install/marvin_msgs/share/marvin_msgs/package.xml
+[2.659s] Invoked command in '/ros2_ws/build/marvin_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /ros2_ws/build/marvin_msgs

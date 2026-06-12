@@ -1,0 +1,46 @@
+CMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:2201 (message):
+  No header defined for python310; skipping header check (note: header-only
+  libraries have no designated component)
+Call Stack (most recent call first):
+  /opt/ros/humble/lib/x86_64-linux-gnu/cmake/eigenpy/boost.cmake:148 (find_package)
+  /opt/ros/humble/lib/x86_64-linux-gnu/cmake/eigenpy/eigenpyConfig.cmake:149 (SEARCH_FOR_BOOST_PYTHON)
+  /usr/share/cmake-3.22/Modules/CMakeFindDependencyMacro.cmake:47 (find_package)
+  /opt/ros/humble/lib/x86_64-linux-gnu/cmake/pinocchio/pinocchioConfig.cmake:161 (find_dependency)
+  CMakeLists.txt:27 (find_package)
+
+
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    CPU_ARCH
+
+
+In file included from /ros2_ws/src/marvin_fabric/src/fabric_functions.cpp:2:
+/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h: In function ‘Eigen::MatrixXd floor_avoidance_task_jacobian(const VectorXd&)’:
+/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h:110:28: warning: unused parameter ‘x’ [-Wunused-parameter]
+  110 |     const Eigen::VectorXd &x)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~^
+/ros2_ws/src/marvin_fabric/src/robot_env.cpp: In member function ‘void RobotEnv::init_collision_objects(const string&, const string&)’:
+/ros2_ws/src/marvin_fabric/src/robot_env.cpp:201:58: warning: unused parameter ‘srdf_path’ [-Wunused-parameter]
+  201 |                                       const std::string& srdf_path)
+      |                                       ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+In file included from /ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:15:
+/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h: In function ‘Eigen::MatrixXd floor_avoidance_task_jacobian(const VectorXd&)’:
+/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h:110:28: warning: unused parameter ‘x’ [-Wunused-parameter]
+  110 |     const Eigen::VectorXd &x)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~^
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp: In member function ‘void FabricNode::timer_callback()’:
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:433:30: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘int’ [-Wsign-compare]
+  433 |         for (size_t i = 0; i < env_->sphere_num; ++i)
+      |                            ~~^~~~~~~~~~~~~~~~~~
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp: In member function ‘void FabricNode::update_target_direction_frames()’:
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:824:29: warning: variable ‘base_left’ set but not used [-Wunused-but-set-variable]
+  824 |             Eigen::Vector3d base_left = frame_fks[eef_left_id].oMf.translation();
+      |                             ^~~~~~~~~
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:836:29: warning: variable ‘base_right’ set but not used [-Wunused-but-set-variable]
+  836 |             Eigen::Vector3d base_right = frame_fks[eef_right_id].oMf.translation();
+      |                             ^~~~~~~~~~
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp: In member function ‘void FabricNode::collision_fabric()’:
+/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:941:17: warning: unused variable ‘nq’ [-Wunused-variable]
+  941 |             int nq = env_->model.nv; // generalized coordinates DOF
+      |                 ^~

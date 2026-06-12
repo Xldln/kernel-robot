@@ -41,10 +41,16 @@ class Sam3Infer:
         # ── 模型参数 ──
         self.checkpoint_path = sam3_cfg["checkpoint_path"]
         self.score_threshold = float(sam3_cfg.get("score_threshold", 0.4))
+        self.default_prompts = [
+            str(prompt).strip()
+            for prompt in sam3_cfg.get("prompts", ["object"])
+            if str(prompt).strip()
+        ] or ["object"]
 
         # ── 加载模型 ──
         print(f"[Sam3Infer] 代码库: {code_base}")
         print(f"[Sam3Infer] 模型路径: {self.checkpoint_path}")
+        print(f"[Sam3Infer] 默认提示词: {self.default_prompts}")
         print(f"[Sam3Infer] 置信度阈值: {self.score_threshold}")
 
         t0 = time.time()
@@ -129,8 +135,8 @@ class Sam3Infer:
         import cv2
         t_start = time.time()
 
-        if prompts is None:
-            prompts = ["object"]
+        if not prompts:
+            prompts = self.default_prompts
 
         try:
             _threshold = score_threshold if score_threshold is not None else self.score_threshold

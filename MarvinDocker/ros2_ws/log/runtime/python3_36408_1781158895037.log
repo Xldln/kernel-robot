@@ -1,0 +1,134 @@
+[INFO] [1781158895.130843828] [zmq2ros]: ZMQ SUB <- tcp://127.0.0.1:8899
+[INFO] [1781158895.131019899] [zmq2ros]: ZMQ topic filter <- /tf
+[INFO] [1781158895.131143491] [zmq2ros]: [Bridge ROS] publish to the same ROS topic as incoming ZMQ topic
+[INFO] [1781158895.142432605] [zmq2ros]: received zmq message #1 parts=1
+[INFO] [1781158895.142541921] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.144416724] [zmq2ros]: ROS TF topic -> /tf
+[INFO] [1781158895.183877038] [zmq2ros]: received zmq message #2 parts=1
+[INFO] [1781158895.184028983] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.224900188] [zmq2ros]: received zmq message #3 parts=1
+[INFO] [1781158895.225123478] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.463233093] [zmq2ros]: received zmq message #4 parts=1
+[INFO] [1781158895.463369229] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.505426523] [zmq2ros]: received zmq message #5 parts=1
+[INFO] [1781158895.505618494] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.573063006] [zmq2ros]: received zmq message #6 parts=1
+[INFO] [1781158895.573186297] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.822441347] [zmq2ros]: received zmq message #7 parts=1
+[INFO] [1781158895.822607209] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.863573192] [zmq2ros]: received zmq message #8 parts=1
+[INFO] [1781158895.863689321] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158895.905291299] [zmq2ros]: received zmq message #9 parts=1
+[INFO] [1781158895.905410884] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.136489235] [zmq2ros]: received zmq message #10 parts=1
+[INFO] [1781158896.136680565] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.191895714] [zmq2ros]: received zmq message #11 parts=1
+[INFO] [1781158896.192057649] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.236264402] [zmq2ros]: received zmq message #12 parts=1
+[INFO] [1781158896.236438148] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.481243314] [zmq2ros]: received zmq message #13 parts=1
+[INFO] [1781158896.481384599] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.523276372] [zmq2ros]: received zmq message #14 parts=1
+[INFO] [1781158896.523436193] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.566528571] [zmq2ros]: received zmq message #15 parts=1
+[INFO] [1781158896.566773141] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.817442657] [zmq2ros]: received zmq message #16 parts=1
+[INFO] [1781158896.817590495] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.858701240] [zmq2ros]: received zmq message #17 parts=1
+[INFO] [1781158896.858884153] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158896.900650701] [zmq2ros]: received zmq message #18 parts=1
+[INFO] [1781158896.900885091] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.156650362] [zmq2ros]: received zmq message #19 parts=1
+[INFO] [1781158897.156807748] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.200436364] [zmq2ros]: received zmq message #20 parts=1
+[INFO] [1781158897.200633775] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.259651780] [zmq2ros]: received zmq message #21 parts=1
+[INFO] [1781158897.259819606] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.480454149] [zmq2ros]: received zmq message #22 parts=1
+[INFO] [1781158897.480619028] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.522719573] [zmq2ros]: received zmq message #23 parts=1
+[INFO] [1781158897.522934707] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.565818223] [zmq2ros]: received zmq message #24 parts=1
+[INFO] [1781158897.566040982] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.822285853] [zmq2ros]: received zmq message #25 parts=1
+[INFO] [1781158897.822453839] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.878849226] [zmq2ros]: received zmq message #26 parts=1
+[INFO] [1781158897.879017312] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158897.921763750] [zmq2ros]: received zmq message #27 parts=1
+[INFO] [1781158897.921939190] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.150059488] [zmq2ros]: received zmq message #28 parts=1
+[INFO] [1781158898.150273541] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.193493699] [zmq2ros]: received zmq message #29 parts=1
+[INFO] [1781158898.193651656] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.251260984] [zmq2ros]: received zmq message #30 parts=1
+[INFO] [1781158898.251496156] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.508224423] [zmq2ros]: received zmq message #31 parts=1
+[INFO] [1781158898.508483540] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.551020004] [zmq2ros]: received zmq message #32 parts=1
+[INFO] [1781158898.551156129] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.593953834] [zmq2ros]: received zmq message #33 parts=1
+[INFO] [1781158898.594112201] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.825796316] [zmq2ros]: received zmq message #34 parts=1
+[INFO] [1781158898.825979400] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.870889174] [zmq2ros]: received zmq message #35 parts=1
+[INFO] [1781158898.871036841] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158898.926520545] [zmq2ros]: received zmq message #36 parts=1
+[INFO] [1781158898.926676909] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158899.152549091] [zmq2ros]: received zmq message #37 parts=1
+[INFO] [1781158899.152743055] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158899.195816498] [zmq2ros]: received zmq message #38 parts=1
+[INFO] [1781158899.196002878] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158899.238661491] [zmq2ros]: received zmq message #39 parts=1
+[INFO] [1781158899.238823545] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158899.483729074] [zmq2ros]: received zmq message #40 parts=1
+[INFO] [1781158899.483877693] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158899.541280252] [zmq2ros]: received zmq message #41 parts=1
+[INFO] [1781158899.541435383] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158899.582860588] [zmq2ros]: received zmq message #42 parts=1
+[INFO] [1781158899.583059622] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158904.628389354] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158909.683380706] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158914.738385832] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158919.793392580] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158924.848475572] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158929.903819306] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158934.958513656] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158940.013440910] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158945.068602353] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158950.123382450] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158955.178382322] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158960.233730683] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158965.288734894] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158970.343379017] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158975.398451233] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158980.453742462] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158985.508385888] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158990.563377784] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158995.618379154] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159000.673371946] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159005.728372092] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159010.783835361] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159015.838365289] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159020.893692270] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159025.948375879] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159031.003670053] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159036.058367195] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159041.113488255] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159046.169548222] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159051.224373203] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159056.279377598] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159061.334376831] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159066.389372857] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159071.445137647] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159076.500865240] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159081.556439648] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159086.611416760] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159091.666362298] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159096.721386613] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159101.776748911] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159106.831512326] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159111.886451613] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159116.941760767] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159121.996400760] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159127.051634704] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781159132.106736136] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899

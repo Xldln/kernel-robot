@@ -13,9 +13,9 @@ mkdir -p "$HOME/.local/bin"
 cat > "$CMD_PATH" <<'SCRIPT'
 #!/usr/bin/env bash
 NAME="mindtest"
+echo "==> 允许 Docker root 用户连接 X11..."
+xhost +local:root 2>/dev/null || true
 if ! docker ps --format '{{.Names}}' | grep -qx "$NAME"; then
-  echo "==> 允许 X11 连接..."
-  xhost +local: 2>/dev/null || true
   echo "==> 启动容器..."
     docker run -d --name mindtest \
      --gpus all \

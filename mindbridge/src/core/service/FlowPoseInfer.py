@@ -65,14 +65,18 @@ class FlowPoseInfer:
         # ── 可视化配置 ──
         vis_cfg = fp_cfg.get("visualization", {})
         self.visualize = bool(fp_cfg.get("visualize", False))
-        self.vis_wait = int(fp_cfg.get("vis_wait", 1))
+        self.vis_wait = max(30, int(fp_cfg.get("vis_wait", 30)))
         self.fx = float(vis_cfg.get("fx", 606.965))
         self.fy = float(vis_cfg.get("fy", 606.133))
         self.cx = float(vis_cfg.get("cx", 323.882))
         self.cy = float(vis_cfg.get("cy", 257.623))
         self.width = int(vis_cfg.get("width", 640))
         self.height = int(vis_cfg.get("height", 480))
+        self.window_width = int(vis_cfg.get("window_width", 640))
+        self.window_height = int(vis_cfg.get("window_height", 480))
         self.axis_len = float(vis_cfg.get("axis_len", 0.08))
+        self._vis_window = "FlowPose Visualization"
+        self._vis_window_created = False
 
         # ── 调试 ──
         self.save_response = bool(fp_cfg.get("save_response", False))
@@ -233,8 +237,23 @@ class FlowPoseInfer:
                         (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.8,
                         (255, 255, 255), 2, cv2.LINE_AA,
                     )
-                    cv2.imshow("FlowPose Visualization", vis)
-                    cv2.waitKey(self.vis_wait)
+                    if not self._vis_window_created:
+                        cv2.namedWindow(self._vis_window, cv2.WINDOW_NORMAL)
+                        cv2.resizeWindow(self._vis_window, self.window_width, self.window_height)
+                        try:
+                            cv2.startWindowThread()
+                        except Exception:
+                            pass
+                        self._vis_window_created = True
+                    cv2.imshow(self._vis_window, vis)
+                    key = cv2.waitKey(self.vis_wait)
+                    key_low = key & 0xFF if key >= 0 else -1
+                    try:
+                        window_closed = cv2.getWindowProperty(self._vis_window, cv2.WND_PROP_VISIBLE) < 1
+                    except Exception:
+                        window_closed = False
+                    if key in (27, ord("q"), ord("Q")) or key_low in (27, ord("q"), ord("Q")) or window_closed:
+                        self.close_visualization()
                 except Exception as e:
                     print(f"[WARN] Visualization failed: {e}")
 
@@ -290,3 +309,14 @@ class FlowPoseInfer:
                 message=str(e),
                 elapsed_sec=elapsed,
             )
+
+    def close_visualization(self) -> None:
+        self.visualize = False
+        if self._vis_window_created:
+            try:
+                cv2.destroyWindow(self._vis_window)
+            except Exception:
+                cv2.destroyAllWindows()
+            finally:
+                self._vis_window_created = False
+        print("[FlowPoseInfer] Visualization closed")

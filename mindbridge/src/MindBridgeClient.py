@@ -46,7 +46,18 @@ class MindBridgeClient:
         ]:
             try:
                 r = requests.get(f"{url}/health", timeout=2)
-                result[name] = r.json()
+                payload = r.json()
+                if name == "realsense" and payload.get("status") == "ok":
+                    info = requests.get(f"{url}/realsense/info", timeout=2)
+                    if info.status_code >= 400:
+                        result[name] = {
+                            "status": "engine_missing",
+                            "error": info.text,
+                        }
+                    else:
+                        result[name] = payload
+                else:
+                    result[name] = payload
             except Exception as e:
                 result[name] = {"status": "unreachable", "error": str(e)}
         return result
@@ -185,14 +196,10 @@ class MindBridgeClient:
             dict with keys: status, detections (list of dicts with mask_file keys),
             mask_bytes (dict {name: bytes}), elapsed_sec
         """
-        if prompts is None:
-            prompts = ["object"]
-
         files = {"image": ("image.jpg", image_bytes, "image/jpeg")}
-        data = {
-            "request_id": request_id,
-            "prompts": ",".join(prompts),
-        }
+        data = {"request_id": request_id}
+        if prompts is not None:
+            data["prompts"] = ",".join(prompts)
         if score_threshold is not None:
             data["score_threshold"] = str(score_threshold)
 

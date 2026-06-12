@@ -1,151 +1,123 @@
-# MindBridge
+# MindBridge / TJfusion
 
-## 功能
+当前推荐部署方式：**一个主镜像 `tjfusion:latest`，一个主容器 `TJfusion`，所有 MindBridge 服务都在这个容器里运行**。
 
-- RealSense RGB、硬件深度、左右 IR 采集。
-- YOLO 或 SAM3 检测 / 分割管线。
-- FastFoundation 双目深度估计。
-- FlowPose 6D 姿态估计。
-- SigLIP 场景 / 状态分类。
-- Docker 一键进入环境，脚本统一管理各个微服务。
+旧的 `mindtest` 容器可以保留，但不要和 `TJfusion` 同时跑 MindBridge 服务，否则会抢占 `8000-8006` 端口。
 
-## 快速开始
+## 快速启动
 
 在仓库根目录执行：
 
 ```bash
-# 构建 Docker 镜像，并安装宿主机命令 mindtest
-bash build.sh
-
-# 进入容器
-mindtest
-
-# 在容器内构建全部 Conda 环境
-bash scripts/build_env.sh all
-
-# 启动默认完整 SAM3 管线
-mind
+./run.sh
 ```
 
-`mind` 默认等价于：
+网页地址：
 
 ```text
-RealSense -> FastFoundation -> SAM3 -> FlowPose -> SigLIP
+http://127.0.0.1:8765
 ```
 
-## 常用命令
-
-以下命令均在 `mindtest` 容器内执行。
+进入容器：
 
 ```bash
-# 完整管线
-mind                         # 等价于 mind --sam3
+tjfusion
+```
+
+等价于：
+
+```bash
+docker exec -it TJfusion bash
+```
+
+## 管线命令
+
+以下命令在 `TJfusion` 容器内执行。
+
+```bash
+mind                         # 默认 SAM3 Full
 mind --sam3                  # RealSense + FastFoundation + SAM3 + FlowPose + SigLIP
 mind --yolo                  # RealSense + FastFoundation + YOLO + FlowPose + SigLIP
-
-# 基础管线
-mind --basic-sam3            # RealSense + SAM3 + SigLIP
-mind --basic-yolo            # RealSense + YOLO + SigLIP
-
-# 无窗口 / 限制帧数
-mind --sam3 --no-show
-mind --basic-yolo --no-show --max-frames 10
-
-# SAM3 自定义提示词
-mind --sam3 --sam3-prompts "pen,pencilbag,zipper" --sam3-threshold 0.3
-
-# 查看帮助
-mind --help
+mind --basic-sam3
+mind --basic-yolo
+mind --yolo-only
+mind --sam3-only
+mind --siglip-only
+mind --flowpose-only
+mind --rs-only
 ```
 
-## 服务
-
-| 服务 | 端口 | Conda 环境 | 功能 |
-| --- | ---: | --- | --- |
-| RealSense | 8000 | `realsense` | RGB、深度、左右 IR 采集 |
-| YOLO | 8001 | `yolo` | 目标检测 / 实例分割 |
-| SigLIP | 8002 | `siglip` | 场景 / 状态分类 |
-| FastFoundation | 8004 | `fastfoundation` | 双目 IR 深度估计 |
-| SAM3 | 8005 | `sam3` | 文本提示驱动的检测 / 分割 |
-| FlowPose | 8006 | `flowpose` | 6D 姿态估计 |
-
-单独管理服务：
+## 服务管理
 
 ```bash
-bash scripts/start_service.sh all
-bash scripts/start_service.sh status
-bash scripts/start_service.sh stop
-bash scripts/start_service.sh restart
-
-bash scripts/start_service.sh realsense
-bash scripts/start_service.sh yolo
-bash scripts/start_service.sh siglip
-bash scripts/start_service.sh fastfoundation
-bash scripts/start_service.sh sam3
-bash scripts/start_service.sh flowpose
+bash scripts/start_service.sh status     # 查看服务状态
+bash scripts/start_service.sh all        # 启动全部服务
+bash scripts/start_service.sh yolo-full  # 启动 YOLO Full 依赖
+bash scripts/start_service.sh sam3-full  # 启动 SAM3 Full 依赖
+bash scripts/start_service.sh stop       # 停止全部服务
 ```
 
-日志位于 `logs/*.log`，PID 文件位于 `/tmp/mindbridge`。
+服务端口：
 
-## API
+| 服务 | 端口 |
+| --- | ---: |
+| RealSense | 8000 |
+| YOLO | 8001 |
+| SigLIP | 8002 |
+| FastFoundation | 8004 |
+| SAM3 | 8005 |
+| FlowPose | 8006 |
+| Fusion Web UI | 8765 |
 
-所有服务都提供：
+## RealSense
+
+RealSense 需要同时满足：
+
+```bash
+curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/realsense/info
+```
+
+`/realsense/info` 正常返回相机内参才表示相机 engine 可用。
+
+## FlowPose 可视化
+
+窗口大小配置：
 
 ```text
-GET /health
-GET /docs
+mindbridge/src/core/config/flowpose-config.yaml
 ```
 
-主要推理接口：
+当前默认：
 
-| 服务 | 接口 |
-| --- | --- |
-| RealSense | `POST /realsense/capture/raw` |
-| YOLO | `POST /infer/predict/raw` |
-| SigLIP | `POST /infer/predict/raw` |
-| FastFoundation | `POST /infer/stereo/raw` |
-| SAM3 | `POST /infer/detect/raw` |
-| FlowPose | `POST /infer/pose/raw` |
+```yaml
+window_width: 640
+window_height: 480
+```
 
-RealSense、YOLO、FastFoundation 和 SAM3 也保留 base64 兼容接口。实际运行建议优先使用 raw 接口。
+窗口聚焦时按 `ESC` 或 `q` 会关闭可视化窗口，但不会停止 FlowPose 服务。
 
-## 目录结构
-
-```text## 更新代码
-
-项目代码会挂载到容器的 `/workspace`，普通代码更新通常不需要重新构建 Docker
-镜像。更新后重启服务即可：
+接口关闭：
 
 ```bash
-bash scripts/start_service.sh stop
-bash scripts/start_service.sh all
+curl -X POST 'http://127.0.0.1:8006/infer/visualization?enabled=false'
 ```
 
-只有 Docker 镜像或宿主机 `mindtest` 命令需要重建时，才重新执行 `bash build.sh`。
-Conda 环境缺失或依赖变更时，重新执行 `bash scripts/build_env.sh all`。
-.
-├── build.sh                    # 构建 Docker 镜像并安装 mindtest
-├── Dockerfile                  # CUDA + Miniconda 运行环境
-├── bin/mind                    # 容器内管线启动命令
-├── scripts/
-│   ├── build_env.sh            # 构建 Conda 环境
-│   └── start_service.sh        # 启停 FastAPI 服务
-├── mindbridge/
-│   ├── src/main.py             # Control Center 主循环
-│   ├── src/MindBridgeClient.py # 服务客户端
-│   └── src/core/               # config、launch、controller、service、schemas、tool
-└── logs/                       # 服务日志
-```
-
-## 更新代码
-
-项目代码会挂载到容器的 `/workspace`，普通代码更新通常不需要重新构建 Docker
-镜像。更新后重启服务即可：
+接口打开：
 
 ```bash
-bash scripts/start_service.sh stop
-bash scripts/start_service.sh all
+curl -X POST 'http://127.0.0.1:8006/infer/visualization?enabled=true'
 ```
 
-只有 Docker 镜像或宿主机 `mindtest` 命令需要重建时，才重新执行 `bash build.sh`。
-Conda 环境缺失或依赖变更时，重新执行 `bash scripts/build_env.sh all`。
+## Docker 说明
+
+`TJfusion` 是容器名，不是镜像名。
+
+```bash
+docker ps
+docker images
+```
+
+如果 `docker ps` 里 `TJfusion` 的 IMAGE 显示为 `f759...` 这类镜像 ID，说明容器创建时使用的是镜像 ID。功能不受影响。要显示 `tjfusion:latest`，需要重建容器对象，但不需要删除镜像。
+
+`mindtest` 现在只作为旧环境保留。不要让它和 `TJfusion` 同时跑服务。

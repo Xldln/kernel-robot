@@ -1,0 +1,147 @@
+[0.000000] (-) TimerEvent: {}
+[0.000054] (-) JobUnselected: {'identifier': 'fake_interface_pkg'}
+[0.000157] (-) JobUnselected: {'identifier': 'marvin_fabric'}
+[0.000166] (-) JobUnselected: {'identifier': 'marvin_msgs'}
+[0.000173] (-) JobUnselected: {'identifier': 'marvin_ros_control'}
+[0.000179] (-) JobUnselected: {'identifier': 'marvin_teleop'}
+[0.000188] (dm_gripper_py) JobQueued: {'identifier': 'dm_gripper_py', 'dependencies': OrderedDict()}
+[0.000196] (marvin_description) JobQueued: {'identifier': 'marvin_description', 'dependencies': OrderedDict()}
+[0.000325] (dm_gripper_py) JobStarted: {'identifier': 'dm_gripper_py'}
+[0.003500] (marvin_description) JobStarted: {'identifier': 'marvin_description'}
+[0.095085] (marvin_description) JobProgress: {'identifier': 'marvin_description', 'progress': 'cmake'}
+[0.095501] (marvin_description) Command: {'cmd': ['/usr/bin/cmake', '/ros2_ws/src/Marvin-description', '-DCMAKE_INSTALL_PREFIX=/ros2_ws/install/marvin_description'], 'cwd': '/ros2_ws/build/marvin_description', 'env': OrderedDict([('HOSTNAME', 'kewei-Pulse-GL76-11UEK'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/tmp'), ('OLDPWD', '/ros2_ws'), ('ROS_PYTHON_VERSION', '3'), ('SKIP_ROSDEP', '1'), ('ROS_DISTRO', 'humble'), ('PYTHONDONTWRITEBYTECODE', '1'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('WORKSPACE_DIR', '/ros2_ws'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('DEBIAN_FRONTEND', 'noninteractive'), ('PWD', '/ros2_ws/build/marvin_description'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.099857] (-) TimerEvent: {}
+[0.118676] (marvin_description) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[0.141251] (marvin_description) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[0.144269] (marvin_description) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.173916] (marvin_description) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.176782] (marvin_description) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.176896] (marvin_description) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.177068] (marvin_description) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.178340] (marvin_description) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.199932] (-) TimerEvent: {}
+[0.210634] (marvin_description) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.213682] (marvin_description) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.213839] (marvin_description) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.214048] (marvin_description) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.215018] (marvin_description) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.217945] (dm_gripper_py) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/dm_gripper_py', 'build', '--build-base', '/ros2_ws/build/dm_gripper_py/build', 'install', '--record', '/ros2_ws/build/dm_gripper_py/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/ros2_ws/src/dm_gripper_py', 'env': {'HOSTNAME': 'kewei-Pulse-GL76-11UEK', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/tmp', 'OLDPWD': '/ros2_ws', 'ROS_PYTHON_VERSION': '3', 'SKIP_ROSDEP': '1', 'ROS_DISTRO': 'humble', 'PYTHONDONTWRITEBYTECODE': '1', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'WORKSPACE_DIR': '/ros2_ws', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'AMENT_PREFIX_PATH': '/opt/ros/humble', 'DEBIAN_FRONTEND': 'noninteractive', 'PWD': '/ros2_ws/build/dm_gripper_py', 'LC_ALL': 'C.UTF-8', 'PYTHONPATH': '/ros2_ws/build/dm_gripper_py/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1'}, 'shell': False}
+[0.277767] (marvin_description) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.298249] (dm_gripper_py) StdoutLine: {'line': b'running egg_info\n'}
+[0.298455] (dm_gripper_py) StdoutLine: {'line': b'creating ../../build/dm_gripper_py/dm_gripper_py.egg-info\n'}
+[0.298538] (dm_gripper_py) StdoutLine: {'line': b'writing ../../build/dm_gripper_py/dm_gripper_py.egg-info/PKG-INFO\n'}
+[0.298618] (dm_gripper_py) StdoutLine: {'line': b'writing dependency_links to ../../build/dm_gripper_py/dm_gripper_py.egg-info/dependency_links.txt\n'}
+[0.298697] (dm_gripper_py) StdoutLine: {'line': b'writing entry points to ../../build/dm_gripper_py/dm_gripper_py.egg-info/entry_points.txt\n'}
+[0.298731] (dm_gripper_py) StdoutLine: {'line': b'writing requirements to ../../build/dm_gripper_py/dm_gripper_py.egg-info/requires.txt\n'}
+[0.298765] (dm_gripper_py) StdoutLine: {'line': b'writing top-level names to ../../build/dm_gripper_py/dm_gripper_py.egg-info/top_level.txt\n'}
+[0.298798] (dm_gripper_py) StdoutLine: {'line': b"writing manifest file '../../build/dm_gripper_py/dm_gripper_py.egg-info/SOURCES.txt'\n"}
+[0.299263] (dm_gripper_py) StdoutLine: {'line': b"reading manifest file '../../build/dm_gripper_py/dm_gripper_py.egg-info/SOURCES.txt'\n"}
+[0.299520] (dm_gripper_py) StdoutLine: {'line': b"writing manifest file '../../build/dm_gripper_py/dm_gripper_py.egg-info/SOURCES.txt'\n"}
+[0.299582] (dm_gripper_py) StdoutLine: {'line': b'running build\n'}
+[0.299619] (dm_gripper_py) StdoutLine: {'line': b'running build_py\n'}
+[0.299698] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/build/dm_gripper_py/build\n'}
+[0.299734] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/build/dm_gripper_py/build/lib\n'}
+[0.299768] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py\n'}
+[0.299788] (dm_gripper_py) StdoutLine: {'line': b'copying dm_gripper_py/__init__.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py\n'}
+[0.299806] (dm_gripper_py) StdoutLine: {'line': b'copying dm_gripper_py/test_gui.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py\n'}
+[0.299824] (dm_gripper_py) StdoutLine: {'line': b'copying dm_gripper_py/DM_gripper.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py\n'}
+[0.299882] (dm_gripper_py) StdoutLine: {'line': b'copying dm_gripper_py/DM_CAN.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py\n'}
+[0.299901] (dm_gripper_py) StderrLine: {'line': b'warning: build_py: byte-compiling is disabled, skipping.\n'}
+[0.299928] (-) TimerEvent: {}
+[0.299934] (dm_gripper_py) StderrLine: {'line': b'\n'}
+[0.299952] (dm_gripper_py) StdoutLine: {'line': b'running install\n'}
+[0.299998] (dm_gripper_py) StdoutLine: {'line': b'running install_lib\n'}
+[0.300306] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py\n'}
+[0.300339] (dm_gripper_py) StdoutLine: {'line': b'copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/__init__.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py\n'}
+[0.300374] (dm_gripper_py) StdoutLine: {'line': b'copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/test_gui.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py\n'}
+[0.300411] (dm_gripper_py) StdoutLine: {'line': b'copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/DM_gripper.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py\n'}
+[0.300443] (dm_gripper_py) StdoutLine: {'line': b'copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/DM_CAN.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py\n'}
+[0.300482] (dm_gripper_py) StderrLine: {'line': b'warning: install_lib: byte-compiling is disabled, skipping.\n'}
+[0.300530] (dm_gripper_py) StderrLine: {'line': b'\n'}
+[0.300550] (dm_gripper_py) StdoutLine: {'line': b'running install_data\n'}
+[0.300570] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/install/dm_gripper_py/share/ament_index\n'}
+[0.300589] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/install/dm_gripper_py/share/ament_index/resource_index\n'}
+[0.300608] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/install/dm_gripper_py/share/ament_index/resource_index/packages\n'}
+[0.300648] (dm_gripper_py) StdoutLine: {'line': b'copying resource/dm_gripper_py -> /ros2_ws/install/dm_gripper_py/share/ament_index/resource_index/packages\n'}
+[0.300666] (dm_gripper_py) StdoutLine: {'line': b'copying package.xml -> /ros2_ws/install/dm_gripper_py/share/dm_gripper_py\n'}
+[0.300683] (dm_gripper_py) StdoutLine: {'line': b'creating /ros2_ws/install/dm_gripper_py/share/dm_gripper_py/launch\n'}
+[0.300699] (dm_gripper_py) StdoutLine: {'line': b'copying launch/dm_gripper.launch.py -> /ros2_ws/install/dm_gripper_py/share/dm_gripper_py/launch\n'}
+[0.300715] (dm_gripper_py) StdoutLine: {'line': b'running install_egg_info\n'}
+[0.301359] (dm_gripper_py) StdoutLine: {'line': b'Copying ../../build/dm_gripper_py/dm_gripper_py.egg-info to /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py-0.0.0-py3.10.egg-info\n'}
+[0.301609] (dm_gripper_py) StdoutLine: {'line': b'running install_scripts\n'}
+[0.310528] (dm_gripper_py) StdoutLine: {'line': b'Installing dm_motor_test script to /ros2_ws/install/dm_gripper_py/lib/dm_gripper_py\n'}
+[0.310665] (dm_gripper_py) StdoutLine: {'line': b"writing list of installed files to '/ros2_ws/build/dm_gripper_py/install.log'\n"}
+[0.312800] (marvin_description) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.15 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[0.324056] (dm_gripper_py) CommandEnded: {'returncode': 0}
+[0.328352] (dm_gripper_py) JobEnded: {'identifier': 'dm_gripper_py', 'rc': 0}
+[0.340032] (marvin_description) StdoutLine: {'line': b'-- Configuring done\n'}
+[0.341154] (marvin_description) StdoutLine: {'line': b'-- Generating done\n'}
+[0.342051] (marvin_description) StdoutLine: {'line': b'-- Build files have been written to: /ros2_ws/build/marvin_description\n'}
+[0.344044] (marvin_description) CommandEnded: {'returncode': 0}
+[0.344632] (marvin_description) JobProgress: {'identifier': 'marvin_description', 'progress': 'build'}
+[0.344651] (marvin_description) Command: {'cmd': ['/usr/bin/cmake', '--build', '/ros2_ws/build/marvin_description', '--', '-j32', '-l32'], 'cwd': '/ros2_ws/build/marvin_description', 'env': OrderedDict([('HOSTNAME', 'kewei-Pulse-GL76-11UEK'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/tmp'), ('OLDPWD', '/ros2_ws'), ('ROS_PYTHON_VERSION', '3'), ('SKIP_ROSDEP', '1'), ('ROS_DISTRO', 'humble'), ('PYTHONDONTWRITEBYTECODE', '1'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('WORKSPACE_DIR', '/ros2_ws'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('DEBIAN_FRONTEND', 'noninteractive'), ('PWD', '/ros2_ws/build/marvin_description'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.358974] (marvin_description) CommandEnded: {'returncode': 0}
+[0.359179] (marvin_description) JobProgress: {'identifier': 'marvin_description', 'progress': 'install'}
+[0.362003] (marvin_description) Command: {'cmd': ['/usr/bin/cmake', '--install', '/ros2_ws/build/marvin_description'], 'cwd': '/ros2_ws/build/marvin_description', 'env': OrderedDict([('HOSTNAME', 'kewei-Pulse-GL76-11UEK'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/tmp'), ('OLDPWD', '/ros2_ws'), ('ROS_PYTHON_VERSION', '3'), ('SKIP_ROSDEP', '1'), ('ROS_DISTRO', 'humble'), ('PYTHONDONTWRITEBYTECODE', '1'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('WORKSPACE_DIR', '/ros2_ws'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('AMENT_PREFIX_PATH', '/opt/ros/humble'), ('DEBIAN_FRONTEND', 'noninteractive'), ('PWD', '/ros2_ws/build/marvin_description'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/opt/ros/humble')]), 'shell': False}
+[0.364640] (marvin_description) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[0.364712] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf\n'}
+[0.364776] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_m6_mobile.urdf.xacro\n'}
+[0.364868] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_m6.urdf.xacro\n'}
+[0.364945] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/mobile_base.urdf.xacro\n'}
+[0.365022] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/stand_cam.urdf.xacro\n'}
+[0.365053] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/M6-S-L-CCS-696-V4.urdf.xacro\n'}
+[0.365071] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_m3.urdf.xacro\n'}
+[0.365089] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/M6-S-R-CCS-696-V4.urdf.xacro\n'}
+[0.365106] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_cam_m6.urdf.xacro\n'}
+[0.365123] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/stand_v3.urf.xacro\n'}
+[0.365140] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/stand_flat.urdf.xacro\n'}
+[0.365158] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes\n'}
+[0.365189] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6\n'}
+[0.365205] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link6_R.STL\n'}
+[0.365222] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link2_R.STL\n'}
+[0.365583] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link5_R.STL\n'}
+[0.365958] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link4_R.STL\n'}
+[0.366360] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Base_R.STL\n'}
+[0.366451] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link2_L.STL\n'}
+[0.366876] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link4_L.STL\n'}
+[0.367308] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link7_R.STL\n'}
+[0.368097] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link7_L.STL\n'}
+[0.368865] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link3_R.STL\n'}
+[0.369084] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link1_R.STL\n'}
+[0.369289] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link5_L.STL\n'}
+[0.369666] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link1_L.STL\n'}
+[0.369857] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link3_L.STL\n'}
+[0.370063] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Base_L.STL\n'}
+[0.370145] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link6_L.STL\n'}
+[0.370258] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base\n'}
+[0.370294] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/support_link.STL\n'}
+[0.370519] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/stand.STL\n'}
+[0.373190] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/ZJ_Robot_link.STL\n'}
+[0.375381] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/base_link.STL\n'}
+[0.375504] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch\n'}
+[0.375699] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/urdf.rviz\n'}
+[0.375740] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/display_m6_cam.launch.py\n'}
+[0.375775] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym3.launch.py\n'}
+[0.375812] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym6m.launch.py\n'}
+[0.375849] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/description_only_m6.launch.py\n'}
+[0.375885] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym6dm.launch.py\n'}
+[0.375922] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/description_only_m3.launch.py\n'}
+[0.375958] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym6.launch.py\n'}
+[0.376054] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/ament_index/resource_index/package_run_dependencies/marvin_description\n'}
+[0.376143] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/ament_index/resource_index/parent_prefix_path/marvin_description\n'}
+[0.376166] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/ament_prefix_path.sh\n'}
+[0.376186] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/ament_prefix_path.dsv\n'}
+[0.376206] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/path.sh\n'}
+[0.376226] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/path.dsv\n'}
+[0.376246] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.bash\n'}
+[0.376266] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.sh\n'}
+[0.376285] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.zsh\n'}
+[0.376306] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.dsv\n'}
+[0.376325] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/package.dsv\n'}
+[0.376381] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/ament_index/resource_index/packages/marvin_description\n'}
+[0.376402] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/cmake/marvin_descriptionConfig.cmake\n'}
+[0.376419] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/cmake/marvin_descriptionConfig-version.cmake\n'}
+[0.376439] (marvin_description) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/package.xml\n'}
+[0.377137] (marvin_description) CommandEnded: {'returncode': 0}
+[0.382053] (marvin_description) JobEnded: {'identifier': 'marvin_description', 'rc': 0}
+[0.382422] (-) EventReactorShutdown: {}

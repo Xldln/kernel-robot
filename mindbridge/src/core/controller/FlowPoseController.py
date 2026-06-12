@@ -36,6 +36,18 @@ def _bytes_to_array(data: bytes, flags: int) -> np.ndarray:
     return img
 
 
+@infer_router.post("/visualization")
+def set_visualization(enabled: bool = True):
+    """Enable or disable the OpenCV visualization window without restarting FlowPose."""
+    if infer_engine is None:
+        raise HTTPException(status_code=503, detail="Engine not initialized")
+    if enabled:
+        infer_engine.visualize = True
+    else:
+        infer_engine.close_visualization()
+    return {"status": "ok", "visualize": infer_engine.visualize}
+
+
 # ── raw bytes 端点（推荐，无 base64 开销） ─────────────────────────
 
 @infer_router.post("/pose/raw", response_model=FlowPosePredictResponse)
