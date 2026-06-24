@@ -1,0 +1,27 @@
+[WARN] [1781062854.692577650] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[INFO] [1781062854.692632222] [robot_state_publisher]: got segment Base_L
+[INFO] [1781062854.692655015] [robot_state_publisher]: got segment Base_R
+[INFO] [1781062854.692657420] [robot_state_publisher]: got segment Link1_L
+[INFO] [1781062854.692659183] [robot_state_publisher]: got segment Link1_R
+[INFO] [1781062854.692660856] [robot_state_publisher]: got segment Link2_L
+[INFO] [1781062854.692662409] [robot_state_publisher]: got segment Link2_R
+[INFO] [1781062854.692664042] [robot_state_publisher]: got segment Link3_L
+[INFO] [1781062854.692665585] [robot_state_publisher]: got segment Link3_R
+[INFO] [1781062854.692667058] [robot_state_publisher]: got segment Link4_L
+[INFO] [1781062854.692668521] [robot_state_publisher]: got segment Link4_R
+[INFO] [1781062854.692669983] [robot_state_publisher]: got segment Link5_L
+[INFO] [1781062854.692671486] [robot_state_publisher]: got segment Link5_R
+[INFO] [1781062854.692673039] [robot_state_publisher]: got segment Link6_L
+[INFO] [1781062854.692674492] [robot_state_publisher]: got segment Link6_R
+[INFO] [1781062854.692675945] [robot_state_publisher]: got segment Link7_L
+[INFO] [1781062854.692677417] [robot_state_publisher]: got segment Link7_R
+[INFO] [1781062854.692678940] [robot_state_publisher]: got segment base_link
+[INFO] [1781062854.692680533] [robot_state_publisher]: got segment camera_left_link
+[INFO] [1781062854.692682257] [robot_state_publisher]: got segment camera_rgb_link
+[INFO] [1781062854.692683910] [robot_state_publisher]: got segment camera_right_link
+[INFO] [1781062854.692685523] [robot_state_publisher]: got segment flange_L
+[INFO] [1781062854.692687226] [robot_state_publisher]: got segment flange_R
+[INFO] [1781062854.692689129] [robot_state_publisher]: got segment left_tool
+[INFO] [1781062854.692690722] [robot_state_publisher]: got segment right_tool
+[INFO] [1781062854.692692265] [robot_state_publisher]: got segment tracking_base_link
+[INFO] [1781062872.990214123] [rclcpp]: signal_handler(SIGINT/SIGTERM)

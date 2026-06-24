@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 set -e
 
-IMAGE_NAME="mindbridge"
-CMD_PATH="$HOME/.local/bin/mindbridge"
+IMAGE_NAME="mindtest"
+CMD_PATH="$HOME/.local/bin/mindtest"
 
 echo "==> 1. 构建镜像: $IMAGE_NAME"
 sudo docker build -t "$IMAGE_NAME" .
 
-echo "==> 2. 安装 mindbridge 命令 -> $CMD_PATH"
+echo "==> 2. 安装 mindtest 命令 -> $CMD_PATH"
 mkdir -p "$HOME/.local/bin"
 
 cat > "$CMD_PATH" <<'SCRIPT'
 #!/usr/bin/env bash
-NAME="mindbridge"
+NAME="mindtest"
+echo "==> 允许 Docker root 用户连接 X11..."
+xhost +local:root 2>/dev/null || true
 if ! docker ps --format '{{.Names}}' | grep -qx "$NAME"; then
-  echo "==> 允许 X11 连接..."
-  xhost +local: 2>/dev/null || true
   echo "==> 启动容器..."
-    docker run -d --name mindbridge \
+    docker run -d --name mindtest \
      --gpus all \
      --network host \
      --privileged \
@@ -27,7 +27,7 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$NAME"; then
      -v /dev:/dev \
      -v /run/udev:/run/udev:ro \
      -w /workspace \
-     mindbridge \
+     mindtest \
      tail -f /dev/null
 fi
 exec docker exec -it "$NAME" bash
@@ -41,4 +41,4 @@ if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
   echo "已添加 ~/.local/bin 到 PATH，请执行: source ~/.bashrc"
 fi
 
-echo "==> build mindbridge docker successfully! You can now run 'mindbridge' command to start the container and access the workspace."
+echo "==> build mindtest docker successfully! You can now run 'mindtest' command to start the container and access the workspace."

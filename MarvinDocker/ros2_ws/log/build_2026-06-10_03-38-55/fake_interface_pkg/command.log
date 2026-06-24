@@ -1,0 +1,6 @@
+Invoking command in '/ros2_ws/build/fake_interface_pkg': /usr/bin/cmake /ros2_ws/src/fake_interface_pkg -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/ros2_ws/install/fake_interface_pkg
+Invoked command in '/ros2_ws/build/fake_interface_pkg' returned '0': /usr/bin/cmake /ros2_ws/src/fake_interface_pkg -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCMAKE_INSTALL_PREFIX=/ros2_ws/install/fake_interface_pkg
+Invoking command in '/ros2_ws/build/fake_interface_pkg': /usr/bin/cmake --build /ros2_ws/build/fake_interface_pkg -- -j32 -l32
+Invoked command in '/ros2_ws/build/fake_interface_pkg' returned '0': /usr/bin/cmake --build /ros2_ws/build/fake_interface_pkg -- -j32 -l32
+Invoking command in '/ros2_ws/build/fake_interface_pkg': /usr/bin/cmake --install /ros2_ws/build/fake_interface_pkg
+Invoked command in '/ros2_ws/build/fake_interface_pkg' returned '0': /usr/bin/cmake --install /ros2_ws/build/fake_interface_pkg

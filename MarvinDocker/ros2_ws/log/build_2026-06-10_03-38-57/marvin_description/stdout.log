@@ -1,0 +1,77 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+-- Found ament_lint_auto: 0.12.15 (/opt/ros/humble/share/ament_lint_auto/cmake)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /ros2_ws/build/marvin_description
+-- Install configuration: ""
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_m6_mobile.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_m6.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/mobile_base.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/stand_cam.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/M6-S-L-CCS-696-V4.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_m3.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/M6-S-R-CCS-696-V4.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/marvin_CCS_cam_m6.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/stand_v3.urf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/urdf/stand_flat.urdf.xacro
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link6_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link2_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link5_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link4_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Base_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link2_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link4_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link7_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link7_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link3_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link1_R.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link5_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link1_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link3_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Base_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/m6/Link6_L.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/support_link.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/stand.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/ZJ_Robot_link.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/meshes/base/base_link.STL
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/urdf.rviz
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/display_m6_cam.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym3.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym6m.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/description_only_m6.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym6dm.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/description_only_m3.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/launch/displaym6.launch.py
+-- Installing: /ros2_ws/install/marvin_description/share/ament_index/resource_index/package_run_dependencies/marvin_description
+-- Installing: /ros2_ws/install/marvin_description/share/ament_index/resource_index/parent_prefix_path/marvin_description
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/ament_prefix_path.sh
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/ament_prefix_path.dsv
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/path.sh
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/environment/path.dsv
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.bash
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.sh
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.zsh
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/local_setup.dsv
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/package.dsv
+-- Installing: /ros2_ws/install/marvin_description/share/ament_index/resource_index/packages/marvin_description
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/cmake/marvin_descriptionConfig.cmake
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/cmake/marvin_descriptionConfig-version.cmake
+-- Installing: /ros2_ws/install/marvin_description/share/marvin_description/package.xml

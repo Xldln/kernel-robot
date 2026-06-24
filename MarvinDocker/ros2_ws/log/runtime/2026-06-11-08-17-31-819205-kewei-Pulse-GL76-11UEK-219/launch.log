@@ -1,0 +1,32 @@
+1781165851.8196316 [INFO] [launch]: All log files can be found below /ros2_ws/log/runtime/2026-06-11-08-17-31-819205-kewei-Pulse-GL76-11UEK-219
+1781165851.8197072 [INFO] [launch]: Default logging verbosity is set to INFO
+1781165851.9041266 [INFO] [planner_node-1]: process started with pid [560]
+1781165851.9042597 [INFO] [marvin_robot_node-2]: process started with pid [562]
+1781165851.9042950 [INFO] [robot_state_publisher-3]: process started with pid [564]
+1781165851.9043231 [INFO] [rviz2-4]: process started with pid [566]
+1781165851.9175324 [robot_state_publisher-3] [WARN] [1781165851.917458691] [kdl_parser]: The root link base_link has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+1781165851.9176798 [robot_state_publisher-3] [INFO] [1781165851.917511089] [robot_state_publisher]: got segment Base_L
+1781165851.9177139 [robot_state_publisher-3] [INFO] [1781165851.917529704] [robot_state_publisher]: got segment Base_R
+1781165851.9177356 [robot_state_publisher-3] [INFO] [1781165851.917532088] [robot_state_publisher]: got segment Link1_L
+1781165851.9177558 [robot_state_publisher-3] [INFO] [1781165851.917533802] [robot_state_publisher]: got segment Link1_R
+1781165851.9177740 [robot_state_publisher-3] [INFO] [1781165851.917535395] [robot_state_publisher]: got segment Link2_L
+1781165851.9177921 [robot_state_publisher-3] [INFO] [1781165851.917536847] [robot_state_publisher]: got segment Link2_R
+1781165851.9178104 [robot_state_publisher-3] [INFO] [1781165851.917538450] [robot_state_publisher]: got segment Link3_L
+1781165851.9178278 [robot_state_publisher-3] [INFO] [1781165851.917539903] [robot_state_publisher]: got segment Link3_R
+1781165851.9178452 [robot_state_publisher-3] [INFO] [1781165851.917541346] [robot_state_publisher]: got segment Link4_L
+1781165851.9178660 [robot_state_publisher-3] [INFO] [1781165851.917542879] [robot_state_publisher]: got segment Link4_R
+1781165851.9178841 [robot_state_publisher-3] [INFO] [1781165851.917544391] [robot_state_publisher]: got segment Link5_L
+1781165851.9179037 [robot_state_publisher-3] [INFO] [1781165851.917546185] [robot_state_publisher]: got segment Link5_R
+1781165851.9179215 [robot_state_publisher-3] [INFO] [1781165851.917547677] [robot_state_publisher]: got segment Link6_L
+1781165851.9179392 [robot_state_publisher-3] [INFO] [1781165851.917549100] [robot_state_publisher]: got segment Link6_R
+1781165851.9179561 [robot_state_publisher-3] [INFO] [1781165851.917550593] [robot_state_publisher]: got segment Link7_L
+1781165851.9179726 [robot_state_publisher-3] [INFO] [1781165851.917552727] [robot_state_publisher]: got segment Link7_R
+1781165851.9179888 [robot_state_publisher-3] [INFO] [1781165851.917554901] [robot_state_publisher]: got segment base_link
+1781165851.9180055 [robot_state_publisher-3] [INFO] [1781165851.917557255] [robot_state_publisher]: got segment camera_left_link
+1781165851.9180226 [robot_state_publisher-3] [INFO] [1781165851.917559009] [robot_state_publisher]: got segment camera_rgb_link
+1781165851.9180388 [robot_state_publisher-3] [INFO] [1781165851.917560582] [robot_state_publisher]: got segment camera_right_link
+1781165851.9180551 [robot_state_publisher-3] [INFO] [1781165851.917562275] [robot_state_publisher]: got segment flange_L
+1781165851.9180713 [robot_state_publisher-3] [INFO] [1781165851.917563828] [robot_state_publisher]: got segment flange_R
+1781165851.9180877 [robot_state_publisher-3] [INFO] [1781165851.917565270] [robot_state_publisher]: got segment left_tool
+1781165851.9181113 [robot_state_publisher-3] [INFO] [1781165851.917566753] [robot_state_publisher]: got segment right_tool
+1781165851.9181273 [robot_state_publisher-3] [INFO] [1781165851.917568246] [robot_state_publisher]: got segment tracking_base_link

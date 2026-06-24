@@ -1,0 +1,23 @@
+# Fast-Foundation Stereo 深度估计服务配置
+
+fastfoundation:
+  # ── 代码库路径（Fast-FoundationStereo 项目根目录） ──
+  code_base: /workspace/mindbridge/models/Fast-FoundationStereo-master
+
+  # ── 模型权重（序列化的完整模型对象，cfg.yaml 在同目录下） ──
+  ckpt_dir: /workspace/mindbridge/models/weights/fastfoundation/model_best_bp2_serialize.pth
+  valid_iters: 8
+
+  # ── 相机默认内参 ──
+  width: 640
+  height: 480
+  fx: 640.0
+  fy: 640.0
+  ppx: 320.0
+  ppy: 240.0
+  baseline_m: 0.065
+
+  # ── 运行时默认参数 ──
+  scale: 1.0
+  z_far: 10.0
+  remove_invisible: 1

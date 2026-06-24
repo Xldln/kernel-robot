@@ -1,0 +1,15 @@
+[INFO] [1781078671.218169861] [robotaction]: [Config] status_topic=/siglip2/result, progress_topic=/control/task_percentage, object_tf_topic=/tf, base_frame=base_link
+[INFO] [1781078671.605394538] [robotaction]: [State] 激活状态 'pencilbag free and pens in pen holder'，共 1 个动作
+[INFO] [1781078672.077514041] [robotaction]: [Select] target='pencilbag' 候选: pencilbag_1(y=-0.048) -> 选择: 'pencilbag_1'
+[INFO] [1781078672.077680252] [robotaction]: [Step] state='pencilbag free and pens in pen holder' step=1/1 target='pencilbag' action='pick'
+[INFO] [1781078672.078515657] [robotaction]: [Execute] 'pick'
+[INFO] [1781078672.078829073] [robotaction]: [Publish] 'pick' arm='right'
+[INFO] [1781078677.389899752] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781078677.390066955] [robotaction]: [State] 'pencilbag free and pens in pen holder' 全部动作已完成，开始检查状态
+[INFO] [1781078678.391288516] [robotaction]: [State] 动作组后检测到状态切换: 'pencilbag free and pens in pen holder' -> 'right hand holding the pencilbag'
+[INFO] [1781078678.405071813] [robotaction]: [State] 激活状态 'right hand holding the pencilbag'，共 1 个动作
+[INFO] [1781078678.877304783] [robotaction]: [Select] target='pig_zipper' 候选: pig zipper_1(y=-0.075) -> 选择: 'pig zipper_1'
+[INFO] [1781078678.877484018] [robotaction]: [Step] state='right hand holding the pencilbag' step=1/1 target='pig_zipper' action='pick_leftslide'
+[INFO] [1781078678.878359898] [robotaction]: [Execute] 'pick_leftslide'
+[INFO] [1781078678.878674217] [robotaction]: [Publish] 'pick_leftslide' arm='left'
+[WARN] [1781078685.592165007] [robotaction]: [Step] 等待动作结束异常 status='stop'

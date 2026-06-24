@@ -1,0 +1,7 @@
+[INFO] [1781076063.016166081] [robotaction]: [Config] status_topic=/siglip2/result, progress_topic=/control/task_percentage, object_tf_topic=/tf, base_frame=base_link
+[INFO] [1781076063.405001618] [robotaction]: [State] 激活状态 'pencilbag been expended and exist pen in pen holder'，共 1 个动作
+[INFO] [1781076063.876966117] [robotaction]: [Select] target='pen' 候选: pen_1(y=0.223), pen_2(y=0.465) -> 选择: 'pen_1'
+[INFO] [1781076063.877150674] [robotaction]: [Step] state='pencilbag been expended and exist pen in pen holder' step=1/1 target='pen' action='pick'
+[INFO] [1781076063.878635184] [robotaction]: [Execute] 'pick'
+[INFO] [1781076063.878940457] [robotaction]: [Publish] 'pick' arm='left'
+[WARN] [1781076065.782250106] [robotaction]: [Step] 等待动作结束异常 status='stop'

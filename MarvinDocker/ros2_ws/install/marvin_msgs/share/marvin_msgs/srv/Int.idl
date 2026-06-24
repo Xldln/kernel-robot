@@ -1,0 +1,19 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from marvin_msgs/srv/Int.srv
+// generated code does not contain a copyright notice
+
+
+module marvin_msgs {
+  module srv {
+    struct Int_Request {
+      int64 data;
+    };
+    struct Int_Response {
+      int64 error_code;
+
+      boolean success;
+
+      string message;
+    };
+  };
+};
