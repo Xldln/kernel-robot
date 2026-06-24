@@ -1,5 +1,0 @@
-1781158900.0604703 [INFO] [launch]: All log files can be found below /ros2_ws/log/runtime/2026-06-11-06-21-40-059950-kewei-Pulse-GL76-11UEK-36172
-1781158900.0605538 [INFO] [launch]: Default logging verbosity is set to INFO
-1781158900.0772891 [INFO] [dm_motor_test-1]: process started with pid [41863]
-1781159141.6148841 [WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
-1781159141.7369499 [ERROR] [dm_motor_test-1]: process has died [pid 41863, exit code 1, cmd '/ros2_ws/install/dm_gripper_py/lib/dm_gripper_py/dm_motor_test --ros-args -r __node:=dm_gripper_motor_node --params-file /tmp/launch_params_t_0jwy1l'].

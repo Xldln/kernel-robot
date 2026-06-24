@@ -1,7 +1,0 @@
-[INFO] [1781165762.155731678] [robotaction]: [Config] status_topic=/siglip2/result, progress_topic=/control/task_percentage, object_tf_topic=/tf, base_frame=base_link
-[INFO] [1781165762.343832909] [robotaction]: [State] 激活状态 'pens all in pencilbag and pen holder empty'，共 1 个动作
-[INFO] [1781165762.815016868] [robotaction]: [Select] target='simple_zipper' 候选: simple zipper_1(y=-0.110) -> 选择: 'simple zipper_1'
-[INFO] [1781165762.815237310] [robotaction]: [Step] state='pens all in pencilbag and pen holder empty' step=1/1 target='simple_zipper' action='left_slide'
-[INFO] [1781165762.816376128] [robotaction]: [Execute] 'left_slide'
-[INFO] [1781165762.816670468] [robotaction]: [Publish] 'left_slide' arm='left'
-[WARN] [1781165771.784735086] [robotaction]: [Step] 等待动作结束异常 status='stop'

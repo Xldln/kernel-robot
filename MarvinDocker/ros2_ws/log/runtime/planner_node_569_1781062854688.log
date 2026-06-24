@@ -1,5 +1,0 @@
-[INFO] [1781062854.694079095] [planner_node]: Using URDF: /ros2_ws/install/marvin_fabric/share/marvin_fabric/config/marvin_CCS_m6.urdf
-[INFO] [1781062854.694123850] [planner_node]: Using SRDF: /ros2_ws/install/marvin_fabric/share/marvin_fabric/config/marvin_robot.srdf
-[INFO] [1781062854.694126976] [planner_node]: Using Fabric Config: robot_config.yaml
-[INFO] [1781062855.899830653] [planner_node]: ✅ FabricNode initialized with 500 Hz update rate.
-[INFO] [1781062872.990213953] [rclcpp]: signal_handler(SIGINT/SIGTERM)

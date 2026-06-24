@@ -1,4 +1,0 @@
-[INFO] [1781062854.661589548] [zmq2ros]: ZMQ SUB <- tcp://127.0.0.1:8899
-[INFO] [1781062854.661737627] [zmq2ros]: ZMQ topic filter <- /siglip2/result
-[INFO] [1781062854.661831874] [zmq2ros]: [Bridge ROS] publish to the same ROS topic as incoming ZMQ topic
-[INFO] [1781062859.708088118] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899

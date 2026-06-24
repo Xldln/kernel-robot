@@ -1,6 +1,0 @@
-[INFO] [1781165851.915220499] [CAN]: Successfully opened CAN socket on interface vcan0
-[INFO] [1781165851.915245365] [CAN]: Successfully opened CAN socket on interface vcan1
-[INFO] [1781165853.130473742] [marvin_robot_node]: [32mRobot is ready.[0m
-[INFO] [1781165853.538033790] [marvin_robot_node]: Marvin Robot Node initialized.
-[INFO] [1781165854.748368615] [marvin_robot_node]: Robot is ready.
-[INFO] [1781165855.700570482] [marvin_robot_node]: Mode set to 3 successfully.

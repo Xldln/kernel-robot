@@ -1,1 +1,0 @@
-[INFO] [1781159092.878203684] [robotaction]: [Config] status_topic=/siglip2/result, progress_topic=/control/task_percentage, object_tf_topic=/tf, base_frame=base_link
