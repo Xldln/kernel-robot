@@ -8,7 +8,12 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
-from mindbridge.src.core.controller.RealSenseController import realsense_router, init_engine
+from mindbridge.src.core.controller.RealSenseController import (
+    realsense_router,
+    init_engine,
+    close_engine,
+    engine_status,
+)
 
 
 @asynccontextmanager
@@ -20,8 +25,11 @@ async def lifespan(app: FastAPI):
     print(f"Loading RealSense from config: {config_path}")
     init_engine(config_path)
     print("RealSense service ready")
-    yield
-    print("RealSense service shutting down")
+    try:
+        yield
+    finally:
+        print("RealSense service shutting down")
+        close_engine()
 
 
 app = FastAPI(title="RealSense Depth Service", lifespan=lifespan)
@@ -30,7 +38,7 @@ app.include_router(realsense_router)
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return engine_status()
 
 
 if __name__ == "__main__":

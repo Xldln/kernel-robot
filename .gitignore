@@ -13,3 +13,20 @@ skills
 logs
 .crush
 output/
+
+# mindbridge/models/* - removed to allow uploading model code/configs
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+
+
+# Conda environments (22GB+)
+.conda_envs/
+
+# Model directories (16GB+)
+
+
+# VS Code
+.vscode/

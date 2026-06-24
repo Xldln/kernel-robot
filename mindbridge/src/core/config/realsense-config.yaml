@@ -4,7 +4,7 @@ paths:
 camera:
   width: 640
   height: 480
-  fps: 30
+  fps: 15
   disable_emitter: 0   # 0=关闭红外发射器, 1=开启
 
 runtime:

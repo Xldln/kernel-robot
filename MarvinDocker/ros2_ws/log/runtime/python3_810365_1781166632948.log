@@ -1,0 +1,15 @@
+[INFO] [1781166633.011333561] [robotaction]: [Config] status_topic=/siglip2/result, progress_topic=/control/task_percentage, object_tf_topic=/tf, base_frame=base_link
+[INFO] [1781166633.198977030] [robotaction]: [State] 激活状态 'pencilbag free and pens in pen holder'，共 1 个动作
+[INFO] [1781166633.671009042] [robotaction]: [Select] target='pencilbag' 候选: pencilbag_1(y=-0.045) -> 选择: 'pencilbag_1'
+[INFO] [1781166633.671178972] [robotaction]: [Step] state='pencilbag free and pens in pen holder' step=1/1 target='pencilbag' action='pick'
+[INFO] [1781166633.671851609] [robotaction]: [Execute] 'pick'
+[INFO] [1781166633.672136565] [robotaction]: [Publish] 'pick' arm='right'
+[INFO] [1781166638.882359761] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781166638.882714368] [robotaction]: [State] 'pencilbag free and pens in pen holder' 全部动作已完成，开始检查状态
+[INFO] [1781166639.883385705] [robotaction]: [State] 动作组后检测到状态切换: 'pencilbag free and pens in pen holder' -> 'pencilbag opened'
+[INFO] [1781166639.998792195] [robotaction]: [State] 激活状态 'pencilbag opened'，共 1 个动作
+[INFO] [1781166640.470207404] [robotaction]: [Select] target='pencilbag' 候选: pencilbag_1(y=-0.039) -> 选择: 'pencilbag_1'
+[INFO] [1781166640.470366213] [robotaction]: [Step] state='pencilbag opened' step=1/1 target='pencilbag' action='expand'
+[INFO] [1781166640.471530034] [robotaction]: [Execute] 'expand'
+[INFO] [1781166640.471865034] [robotaction]: [Publish] 'expand' arm='left'
+[WARN] [1781166643.677649019] [robotaction]: [Step] 等待动作结束异常 status='stop'

@@ -1,0 +1,693 @@
+[0.000000] (-) TimerEvent: {}
+[0.000119] (-) JobUnselected: {'identifier': 'dm_gripper_py'}
+[0.000174] (-) JobUnselected: {'identifier': 'fake_interface_pkg'}
+[0.000183] (-) JobUnselected: {'identifier': 'marvin_description'}
+[0.000191] (-) JobUnselected: {'identifier': 'marvin_msgs'}
+[0.000211] (-) JobUnselected: {'identifier': 'marvin_ros_control'}
+[0.000249] (-) JobUnselected: {'identifier': 'marvin_teleop'}
+[0.000270] (marvin_fabric) JobQueued: {'identifier': 'marvin_fabric', 'dependencies': OrderedDict([('marvin_description', '/ros2_ws/install/marvin_description'), ('marvin_msgs', '/ros2_ws/install/marvin_msgs'), ('marvin_ros_control', '/ros2_ws/install/marvin_ros_control')])}
+[0.000285] (marvin_fabric) JobStarted: {'identifier': 'marvin_fabric'}
+[0.005048] (marvin_fabric) JobProgress: {'identifier': 'marvin_fabric', 'progress': 'cmake'}
+[0.005259] (marvin_fabric) Command: {'cmd': ['/usr/bin/cmake', '/ros2_ws/src/marvin_fabric', '-DCPU_ARCH=x86', '-DCMAKE_INSTALL_PREFIX=/ros2_ws/install/marvin_fabric'], 'cwd': '/ros2_ws/build/marvin_fabric', 'env': OrderedDict([('HOSTNAME', 'kewei-Pulse-GL76-11UEK'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/ros2_ws/install/marvin_ros_control/lib:/ros2_ws/install/marvin_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/tmp'), ('OLDPWD', '/ros2_ws'), ('ROS_PYTHON_VERSION', '3'), ('SKIP_ROSDEP', '1'), ('ROS_DISTRO', 'humble'), ('PYTHONDONTWRITEBYTECODE', '1'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('WORKSPACE_DIR', '/ros2_ws'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('AMENT_PREFIX_PATH', '/ros2_ws/install/marvin_ros_control:/ros2_ws/install/marvin_msgs:/ros2_ws/install/marvin_description:/opt/ros/humble'), ('DEBIAN_FRONTEND', 'noninteractive'), ('PWD', '/ros2_ws/build/marvin_fabric'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/ros2_ws/install/marvin_ros_control:/ros2_ws/install/marvin_msgs:/ros2_ws/install/marvin_description:/opt/ros/humble')]), 'shell': False}
+[0.029371] (marvin_fabric) StdoutLine: {'line': b'-- The C compiler identification is GNU 11.4.0\n'}
+[0.051621] (marvin_fabric) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 11.4.0\n'}
+[0.054477] (marvin_fabric) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.080767] (marvin_fabric) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.083677] (marvin_fabric) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.083787] (marvin_fabric) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.083944] (marvin_fabric) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.085146] (marvin_fabric) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.099671] (-) TimerEvent: {}
+[0.115296] (marvin_fabric) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.118225] (marvin_fabric) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.118359] (marvin_fabric) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.118552] (marvin_fabric) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.199767] (-) TimerEvent: {}
+[0.212935] (marvin_fabric) StdoutLine: {'line': b'-- Found OpenMP_C: -fopenmp (found version "4.5") \n'}
+[0.245118] (marvin_fabric) StdoutLine: {'line': b'-- Found OpenMP_CXX: -fopenmp (found version "4.5") \n'}
+[0.245254] (marvin_fabric) StdoutLine: {'line': b'-- Found OpenMP: TRUE (found version "4.5")  \n'}
+[0.246032] (marvin_fabric) StdoutLine: {'line': b'-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)\n'}
+[0.299817] (-) TimerEvent: {}
+[0.306958] (marvin_fabric) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter \n'}
+[0.341650] (marvin_fabric) StdoutLine: {'line': b'-- Found rclcpp: 16.0.19 (/opt/ros/humble/share/rclcpp/cmake)\n'}
+[0.355734] (marvin_fabric) StdoutLine: {'line': b'-- Found rosidl_generator_c: 3.1.8 (/opt/ros/humble/share/rosidl_generator_c/cmake)\n'}
+[0.357553] (marvin_fabric) StdoutLine: {'line': b'-- Found rosidl_adapter: 3.1.8 (/opt/ros/humble/share/rosidl_adapter/cmake)\n'}
+[0.360804] (marvin_fabric) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 3.1.8 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)\n'}
+[0.365375] (marvin_fabric) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.371574] (marvin_fabric) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.388406] (marvin_fabric) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)\n'}
+[0.389314] (marvin_fabric) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 6.2.10 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.399899] (-) TimerEvent: {}
+[0.427367] (marvin_fabric) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  \n'}
+[0.437489] (marvin_fabric) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/humble/include  \n'}
+[0.453723] (marvin_fabric) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.456934] (marvin_fabric) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[0.486148] (marvin_fabric) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[0.486384] (marvin_fabric) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n'}
+[0.499964] (-) TimerEvent: {}
+[0.516336] (marvin_fabric) StdoutLine: {'line': b'-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n'}
+[0.516874] (marvin_fabric) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[0.536930] (marvin_fabric) StdoutLine: {'line': b'-- Found tf2_ros: 0.25.20 (/opt/ros/humble/share/tf2_ros/cmake)\n'}
+[0.579530] (marvin_fabric) StdoutLine: {'line': b'-- Found tf2_geometry_msgs: 0.25.20 (/opt/ros/humble/share/tf2_geometry_msgs/cmake)\n'}
+[0.584332] (marvin_fabric) StdoutLine: {'line': b'-- Found eigen3_cmake_module: 0.1.1 (/opt/ros/humble/share/eigen3_cmake_module/cmake)\n'}
+[0.584927] (marvin_fabric) StdoutLine: {'line': b'-- Found Eigen3: TRUE (found version "3.4.0") \n'}
+[0.584955] (marvin_fabric) StdoutLine: {'line': b'-- Ensuring Eigen3 include directory is part of orocos-kdl CMake target\n'}
+[0.585956] (marvin_fabric) StdoutLine: {'line': b'-- Found std_srvs: 4.9.1 (/opt/ros/humble/share/std_srvs/cmake)\n'}
+[0.589498] (marvin_fabric) StdoutLine: {'line': b'-- Found sensor_msgs: 4.9.1 (/opt/ros/humble/share/sensor_msgs/cmake)\n'}
+[0.595975] (marvin_fabric) StdoutLine: {'line': b'-- Found visualization_msgs: 4.9.1 (/opt/ros/humble/share/visualization_msgs/cmake)\n'}
+[0.600017] (-) TimerEvent: {}
+[0.602999] (marvin_fabric) StdoutLine: {'line': b'-- Found marvin_msgs: 0.0.0 (/ros2_ws/install/marvin_msgs/share/marvin_msgs/cmake)\n'}
+[0.609285] (marvin_fabric) StdoutLine: {'line': b'-- pinocchio_default FOUND. pinocchio_default at /opt/ros/humble/lib/x86_64-linux-gnu/libpinocchio_default.so\n'}
+[0.609314] (marvin_fabric) StdoutLine: {'line': b'-- pinocchio_parsers FOUND. pinocchio_parsers at /opt/ros/humble/lib/x86_64-linux-gnu/libpinocchio_parsers.so\n'}
+[0.609492] (marvin_fabric) StdoutLine: {'line': b'-- boost_filesystem FOUND. boost_filesystem at /lib/x86_64-linux-gnu/libboost_filesystem.so\n'}
+[0.621084] (marvin_fabric) StdoutLine: {'line': b'-- Found Boost: /usr/include (found version "1.74.0") found components: filesystem serialization \n'}
+[0.621637] (marvin_fabric) StdoutLine: {'line': b'-- eigenpy FOUND. eigenpy at /opt/ros/humble/lib/x86_64-linux-gnu/libeigenpy.so\n'}
+[0.632076] (marvin_fabric) StdoutLine: {'line': b'-- Checking for NumPy\n'}
+[0.700078] (-) TimerEvent: {}
+[0.751446] (marvin_fabric) StdoutLine: {'line': b'--   NUMPY_INCLUDE_DIRS=/usr/local/lib/python3.10/dist-packages/numpy/core/include\n'}
+[0.800145] (-) TimerEvent: {}
+[0.808860] (marvin_fabric) StdoutLine: {'line': b'--   NUMPY_VERSION=1.26.4\n'}
+[0.900206] (-) TimerEvent: {}
+[0.953011] (marvin_fabric) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter Development.Module NumPy \n'}
+[0.953309] (marvin_fabric) StdoutLine: {'line': b'-- PythonLibraryDirs: \n'}
+[0.953356] (marvin_fabric) StdoutLine: {'line': b'-- PythonLibVersionString: 3.10.12\n'}
+[0.961330] (marvin_fabric) StdoutLine: {'line': b'-- Python site lib: lib/python3.10/site-packages\n'}
+[0.961360] (marvin_fabric) StdoutLine: {'line': b'-- Python include dirs: /usr/include/python3.10\n'}
+[0.978648] (marvin_fabric) StdoutLine: {'line': b'-- Checking for NumPy\n'}
+[1.000270] (-) TimerEvent: {}
+[1.039425] (marvin_fabric) StdoutLine: {'line': b'--   NUMPY_INCLUDE_DIRS=/usr/local/lib/python3.10/dist-packages/numpy/core/include\n'}
+[1.095976] (marvin_fabric) StdoutLine: {'line': b'--   NUMPY_VERSION=1.26.4\n'}
+[1.096068] (marvin_fabric) StdoutLine: {'line': b'-- NumPy include dir: /usr/local/lib/python3.10/dist-packages/numpy/core/include\n'}
+[1.098184] (marvin_fabric) StderrLine: {'line': b'CMake Warning at /usr/share/cmake-3.22/Modules/FindBoost.cmake:2201 (message):\n'}
+[1.098226] (marvin_fabric) StderrLine: {'line': b'  No header defined for python310; skipping header check (note: header-only\n'}
+[1.098247] (marvin_fabric) StderrLine: {'line': b'  libraries have no designated component)\n'}
+[1.098267] (marvin_fabric) StderrLine: {'line': b'Call Stack (most recent call first):\n'}
+[1.098285] (marvin_fabric) StderrLine: {'line': b'  /opt/ros/humble/lib/x86_64-linux-gnu/cmake/eigenpy/boost.cmake:148 (find_package)\n'}
+[1.098304] (marvin_fabric) StderrLine: {'line': b'  /opt/ros/humble/lib/x86_64-linux-gnu/cmake/eigenpy/eigenpyConfig.cmake:149 (SEARCH_FOR_BOOST_PYTHON)\n'}
+[1.098322] (marvin_fabric) StderrLine: {'line': b'  /usr/share/cmake-3.22/Modules/CMakeFindDependencyMacro.cmake:47 (find_package)\n'}
+[1.098342] (marvin_fabric) StderrLine: {'line': b'  /opt/ros/humble/lib/x86_64-linux-gnu/cmake/pinocchio/pinocchioConfig.cmake:161 (find_dependency)\n'}
+[1.098358] (marvin_fabric) StderrLine: {'line': b'  CMakeLists.txt:27 (find_package)\n'}
+[1.098374] (marvin_fabric) StderrLine: {'line': b'\n'}
+[1.098391] (marvin_fabric) StderrLine: {'line': b'\n'}
+[1.099193] (marvin_fabric) StdoutLine: {'line': b'-- Found Boost: /usr/include (found version "1.74.0") found components: python310 \n'}
+[1.100323] (-) TimerEvent: {}
+[1.200433] (-) TimerEvent: {}
+[1.226085] (marvin_fabric) StdoutLine: {'line': b'-- Default C++ standard: 201703\n'}
+[1.226186] (marvin_fabric) StdoutLine: {'line': b'-- Minimal C++ standard upgraded to 11\n'}
+[1.226210] (marvin_fabric) StdoutLine: {'line': b'-- C++ standard sufficient: Minimal required 11, currently defined: 17\n'}
+[1.226768] (marvin_fabric) StdoutLine: {'line': b'-- hpp-fcl FOUND. hpp-fcl at /opt/ros/humble/lib/x86_64-linux-gnu/libhpp-fcl.so\n'}
+[1.230911] (marvin_fabric) StdoutLine: {'line': b'-- Found Boost: /usr/include (found version "1.74.0") found components: chrono serialization filesystem \n'}
+[1.233010] (marvin_fabric) StdoutLine: {'line': b'-- C++ standard sufficient: Minimal required 11, currently defined: 17\n'}
+[1.233325] (marvin_fabric) StdoutLine: {'line': b'-- C++ standard sufficient: Minimal required 11, currently defined: 17\n'}
+[1.236496] (marvin_fabric) StdoutLine: {'line': b'-- Found ament_lint_auto: 0.12.15 (/opt/ros/humble/share/ament_lint_auto/cmake)\n'}
+[1.270541] (marvin_fabric) StdoutLine: {'line': b"-- Added test 'cppcheck' to perform static code analysis on C / C++ code\n"}
+[1.270690] (marvin_fabric) StdoutLine: {'line': b'-- Configured cppcheck include dirs: /ros2_ws/src/marvin_fabric/include\n'}
+[1.270737] (marvin_fabric) StdoutLine: {'line': b'-- Configured cppcheck exclude dirs and/or files: \n'}
+[1.271176] (marvin_fabric) StdoutLine: {'line': b"-- Added test 'flake8' to check Python code syntax and style conventions\n"}
+[1.271977] (marvin_fabric) StdoutLine: {'line': b"-- Added test 'lint_cmake' to check CMake code style\n"}
+[1.272461] (marvin_fabric) StdoutLine: {'line': b"-- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257\n"}
+[1.275184] (marvin_fabric) StdoutLine: {'line': b"-- Added test 'uncrustify' to check C / C++ code style\n"}
+[1.275225] (marvin_fabric) StdoutLine: {'line': b'-- Configured uncrustify additional arguments: \n'}
+[1.275678] (marvin_fabric) StdoutLine: {'line': b"-- Added test 'xmllint' to check XML markup files\n"}
+[1.276163] (marvin_fabric) StdoutLine: {'line': b'-- Configuring done\n'}
+[1.283052] (marvin_fabric) StdoutLine: {'line': b'-- Generating done\n'}
+[1.283553] (marvin_fabric) StderrLine: {'line': b'CMake Warning:\n'}
+[1.283594] (marvin_fabric) StderrLine: {'line': b'  Manually-specified variables were not used by the project:\n'}
+[1.283627] (marvin_fabric) StderrLine: {'line': b'\n'}
+[1.283658] (marvin_fabric) StderrLine: {'line': b'    CPU_ARCH\n'}
+[1.283689] (marvin_fabric) StderrLine: {'line': b'\n'}
+[1.283718] (marvin_fabric) StderrLine: {'line': b'\n'}
+[1.284960] (marvin_fabric) StdoutLine: {'line': b'-- Build files have been written to: /ros2_ws/build/marvin_fabric\n'}
+[1.290202] (marvin_fabric) CommandEnded: {'returncode': 0}
+[1.290565] (marvin_fabric) JobProgress: {'identifier': 'marvin_fabric', 'progress': 'build'}
+[1.291190] (marvin_fabric) Command: {'cmd': ['/usr/bin/cmake', '--build', '/ros2_ws/build/marvin_fabric', '--', '-j32', '-l32'], 'cwd': '/ros2_ws/build/marvin_fabric', 'env': OrderedDict([('HOSTNAME', 'kewei-Pulse-GL76-11UEK'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/ros2_ws/install/marvin_ros_control/lib:/ros2_ws/install/marvin_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/tmp'), ('OLDPWD', '/ros2_ws'), ('ROS_PYTHON_VERSION', '3'), ('SKIP_ROSDEP', '1'), ('ROS_DISTRO', 'humble'), ('PYTHONDONTWRITEBYTECODE', '1'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('WORKSPACE_DIR', '/ros2_ws'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('AMENT_PREFIX_PATH', '/ros2_ws/install/marvin_ros_control:/ros2_ws/install/marvin_msgs:/ros2_ws/install/marvin_description:/opt/ros/humble'), ('DEBIAN_FRONTEND', 'noninteractive'), ('PWD', '/ros2_ws/build/marvin_fabric'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/ros2_ws/install/marvin_ros_control:/ros2_ws/install/marvin_msgs:/ros2_ws/install/marvin_description:/opt/ros/humble')]), 'shell': False}
+[1.300511] (-) TimerEvent: {}
+[1.312801] (marvin_fabric) StdoutLine: {'line': b'[ 25%] Building CXX object CMakeFiles/planner_node.dir/src/planner_ros_node.cpp.o\n'}
+[1.312891] (marvin_fabric) StdoutLine: {'line': b'[ 50%] Building CXX object CMakeFiles/planner_node.dir/src/robot_env.cpp.o\n'}
+[1.313337] (marvin_fabric) StdoutLine: {'line': b'[ 75%] Building CXX object CMakeFiles/planner_node.dir/src/fabric_functions.cpp.o\n'}
+[1.400609] (-) TimerEvent: {}
+[1.500771] (-) TimerEvent: {}
+[1.600952] (-) TimerEvent: {}
+[1.701125] (-) TimerEvent: {}
+[1.749769] (marvin_fabric) StderrLine: {'line': b'In file included from /ros2_ws/src/marvin_fabric/src/fabric_functions.cpp:2:\n'}
+[1.749990] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h: In function \xe2\x80\x98Eigen::MatrixXd floor_avoidance_task_jacobian(const VectorXd&)\xe2\x80\x99:\n'}
+[1.750056] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h:110:28: warning: unused parameter \xe2\x80\x98x\xe2\x80\x99 [-Wunused-parameter]\n'}
+[1.750082] (marvin_fabric) StderrLine: {'line': b'  110 |     const Eigen::VectorXd &x)\n'}
+[1.750105] (marvin_fabric) StderrLine: {'line': b'      |     ~~~~~~~~~~~~~~~~~~~~~~~^\n'}
+[1.801238] (-) TimerEvent: {}
+[1.901438] (-) TimerEvent: {}
+[2.001634] (-) TimerEvent: {}
+[2.101823] (-) TimerEvent: {}
+[2.202023] (-) TimerEvent: {}
+[2.302218] (-) TimerEvent: {}
+[2.402411] (-) TimerEvent: {}
+[2.502605] (-) TimerEvent: {}
+[2.602794] (-) TimerEvent: {}
+[2.702986] (-) TimerEvent: {}
+[2.803181] (-) TimerEvent: {}
+[2.903374] (-) TimerEvent: {}
+[3.003563] (-) TimerEvent: {}
+[3.103756] (-) TimerEvent: {}
+[3.203949] (-) TimerEvent: {}
+[3.304135] (-) TimerEvent: {}
+[3.404319] (-) TimerEvent: {}
+[3.504516] (-) TimerEvent: {}
+[3.604710] (-) TimerEvent: {}
+[3.704905] (-) TimerEvent: {}
+[3.805102] (-) TimerEvent: {}
+[3.901735] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/robot_env.cpp: In member function \xe2\x80\x98void RobotEnv::init_collision_objects(const string&, const string&)\xe2\x80\x99:\n'}
+[3.901914] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/robot_env.cpp:201:58: warning: unused parameter \xe2\x80\x98srdf_path\xe2\x80\x99 [-Wunused-parameter]\n'}
+[3.901963] (marvin_fabric) StderrLine: {'line': b'  201 |                                       const std::string& srdf_path)\n'}
+[3.902000] (marvin_fabric) StderrLine: {'line': b'      |                                       ~~~~~~~~~~~~~~~~~~~^~~~~~~~~\n'}
+[3.905167] (-) TimerEvent: {}
+[4.005310] (-) TimerEvent: {}
+[4.105500] (-) TimerEvent: {}
+[4.205689] (-) TimerEvent: {}
+[4.305884] (-) TimerEvent: {}
+[4.406066] (-) TimerEvent: {}
+[4.482002] (marvin_fabric) StderrLine: {'line': b'In file included from /ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:15:\n'}
+[4.482162] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h: In function \xe2\x80\x98Eigen::MatrixXd floor_avoidance_task_jacobian(const VectorXd&)\xe2\x80\x99:\n'}
+[4.482212] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/include/fabric_task_maps.h:110:28: warning: unused parameter \xe2\x80\x98x\xe2\x80\x99 [-Wunused-parameter]\n'}
+[4.482249] (marvin_fabric) StderrLine: {'line': b'  110 |     const Eigen::VectorXd &x)\n'}
+[4.482281] (marvin_fabric) StderrLine: {'line': b'      |     ~~~~~~~~~~~~~~~~~~~~~~~^\n'}
+[4.506158] (-) TimerEvent: {}
+[4.606320] (-) TimerEvent: {}
+[4.706499] (-) TimerEvent: {}
+[4.806698] (-) TimerEvent: {}
+[4.906871] (-) TimerEvent: {}
+[5.007029] (-) TimerEvent: {}
+[5.107175] (-) TimerEvent: {}
+[5.117627] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp: In member function \xe2\x80\x98void FabricNode::timer_callback()\xe2\x80\x99:\n'}
+[5.117782] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:433:30: warning: comparison of integer expressions of different signedness: \xe2\x80\x98size_t\xe2\x80\x99 {aka \xe2\x80\x98long unsigned int\xe2\x80\x99} and \xe2\x80\x98int\xe2\x80\x99 [-Wsign-compare]\n'}
+[5.117831] (marvin_fabric) StderrLine: {'line': b'  433 |         for (size_t i = 0; i < env_->sphere_num; ++i)\n'}
+[5.117865] (marvin_fabric) StderrLine: {'line': b'      |                            ~~^~~~~~~~~~~~~~~~~~\n'}
+[5.207263] (-) TimerEvent: {}
+[5.264452] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp: In member function \xe2\x80\x98void FabricNode::update_target_direction_frames()\xe2\x80\x99:\n'}
+[5.264622] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:824:29: warning: variable \xe2\x80\x98base_left\xe2\x80\x99 set but not used [-Wunused-but-set-variable]\n'}
+[5.264669] (marvin_fabric) StderrLine: {'line': b'  824 |             Eigen::Vector3d base_left = frame_fks[eef_left_id].oMf.translation();\n'}
+[5.264704] (marvin_fabric) StderrLine: {'line': b'      |                             ^~~~~~~~~\n'}
+[5.264821] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:836:29: warning: variable \xe2\x80\x98base_right\xe2\x80\x99 set but not used [-Wunused-but-set-variable]\n'}
+[5.264860] (marvin_fabric) StderrLine: {'line': b'  836 |             Eigen::Vector3d base_right = frame_fks[eef_right_id].oMf.translation();\n'}
+[5.264894] (marvin_fabric) StderrLine: {'line': b'      |                             ^~~~~~~~~~\n'}
+[5.283049] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp: In member function \xe2\x80\x98void FabricNode::collision_fabric()\xe2\x80\x99:\n'}
+[5.283181] (marvin_fabric) StderrLine: {'line': b'/ros2_ws/src/marvin_fabric/src/planner_ros_node.cpp:941:17: warning: unused variable \xe2\x80\x98nq\xe2\x80\x99 [-Wunused-variable]\n'}
+[5.283221] (marvin_fabric) StderrLine: {'line': b'  941 |             int nq = env_->model.nv; // generalized coordinates DOF\n'}
+[5.283253] (marvin_fabric) StderrLine: {'line': b'      |                 ^~\n'}
+[5.307353] (-) TimerEvent: {}
+[5.407517] (-) TimerEvent: {}
+[5.507696] (-) TimerEvent: {}
+[5.607895] (-) TimerEvent: {}
+[5.708081] (-) TimerEvent: {}
+[5.808268] (-) TimerEvent: {}
+[5.908446] (-) TimerEvent: {}
+[6.008636] (-) TimerEvent: {}
+[6.108824] (-) TimerEvent: {}
+[6.209024] (-) TimerEvent: {}
+[6.309220] (-) TimerEvent: {}
+[6.409414] (-) TimerEvent: {}
+[6.509601] (-) TimerEvent: {}
+[6.609793] (-) TimerEvent: {}
+[6.709971] (-) TimerEvent: {}
+[6.810152] (-) TimerEvent: {}
+[6.910330] (-) TimerEvent: {}
+[7.010505] (-) TimerEvent: {}
+[7.110679] (-) TimerEvent: {}
+[7.210857] (-) TimerEvent: {}
+[7.311049] (-) TimerEvent: {}
+[7.411224] (-) TimerEvent: {}
+[7.511399] (-) TimerEvent: {}
+[7.611545] (-) TimerEvent: {}
+[7.711736] (-) TimerEvent: {}
+[7.811928] (-) TimerEvent: {}
+[7.912096] (-) TimerEvent: {}
+[8.012252] (-) TimerEvent: {}
+[8.112428] (-) TimerEvent: {}
+[8.212620] (-) TimerEvent: {}
+[8.312813] (-) TimerEvent: {}
+[8.413005] (-) TimerEvent: {}
+[8.513187] (-) TimerEvent: {}
+[8.613362] (-) TimerEvent: {}
+[8.713544] (-) TimerEvent: {}
+[8.813736] (-) TimerEvent: {}
+[8.913936] (-) TimerEvent: {}
+[9.014133] (-) TimerEvent: {}
+[9.114322] (-) TimerEvent: {}
+[9.214517] (-) TimerEvent: {}
+[9.314708] (-) TimerEvent: {}
+[9.414941] (-) TimerEvent: {}
+[9.515150] (-) TimerEvent: {}
+[9.615340] (-) TimerEvent: {}
+[9.715506] (-) TimerEvent: {}
+[9.815698] (-) TimerEvent: {}
+[9.915877] (-) TimerEvent: {}
+[10.016058] (-) TimerEvent: {}
+[10.116248] (-) TimerEvent: {}
+[10.216441] (-) TimerEvent: {}
+[10.316635] (-) TimerEvent: {}
+[10.416829] (-) TimerEvent: {}
+[10.517031] (-) TimerEvent: {}
+[10.617221] (-) TimerEvent: {}
+[10.717412] (-) TimerEvent: {}
+[10.817609] (-) TimerEvent: {}
+[10.917799] (-) TimerEvent: {}
+[11.017997] (-) TimerEvent: {}
+[11.118198] (-) TimerEvent: {}
+[11.218402] (-) TimerEvent: {}
+[11.318600] (-) TimerEvent: {}
+[11.418801] (-) TimerEvent: {}
+[11.518996] (-) TimerEvent: {}
+[11.619177] (-) TimerEvent: {}
+[11.719357] (-) TimerEvent: {}
+[11.819549] (-) TimerEvent: {}
+[11.919720] (-) TimerEvent: {}
+[12.019931] (-) TimerEvent: {}
+[12.120124] (-) TimerEvent: {}
+[12.220322] (-) TimerEvent: {}
+[12.320517] (-) TimerEvent: {}
+[12.420713] (-) TimerEvent: {}
+[12.520919] (-) TimerEvent: {}
+[12.621119] (-) TimerEvent: {}
+[12.721312] (-) TimerEvent: {}
+[12.821503] (-) TimerEvent: {}
+[12.921702] (-) TimerEvent: {}
+[13.021906] (-) TimerEvent: {}
+[13.122105] (-) TimerEvent: {}
+[13.222291] (-) TimerEvent: {}
+[13.322475] (-) TimerEvent: {}
+[13.422673] (-) TimerEvent: {}
+[13.522861] (-) TimerEvent: {}
+[13.623062] (-) TimerEvent: {}
+[13.723249] (-) TimerEvent: {}
+[13.823435] (-) TimerEvent: {}
+[13.923595] (-) TimerEvent: {}
+[14.023740] (-) TimerEvent: {}
+[14.123907] (-) TimerEvent: {}
+[14.224091] (-) TimerEvent: {}
+[14.324263] (-) TimerEvent: {}
+[14.424442] (-) TimerEvent: {}
+[14.524633] (-) TimerEvent: {}
+[14.624806] (-) TimerEvent: {}
+[14.724962] (-) TimerEvent: {}
+[14.825116] (-) TimerEvent: {}
+[14.925286] (-) TimerEvent: {}
+[15.025463] (-) TimerEvent: {}
+[15.125638] (-) TimerEvent: {}
+[15.225826] (-) TimerEvent: {}
+[15.326030] (-) TimerEvent: {}
+[15.426191] (-) TimerEvent: {}
+[15.526355] (-) TimerEvent: {}
+[15.626517] (-) TimerEvent: {}
+[15.726695] (-) TimerEvent: {}
+[15.826868] (-) TimerEvent: {}
+[15.927040] (-) TimerEvent: {}
+[16.027217] (-) TimerEvent: {}
+[16.127424] (-) TimerEvent: {}
+[16.227600] (-) TimerEvent: {}
+[16.327764] (-) TimerEvent: {}
+[16.427927] (-) TimerEvent: {}
+[16.528090] (-) TimerEvent: {}
+[16.628255] (-) TimerEvent: {}
+[16.728417] (-) TimerEvent: {}
+[16.828581] (-) TimerEvent: {}
+[16.928740] (-) TimerEvent: {}
+[17.028926] (-) TimerEvent: {}
+[17.129108] (-) TimerEvent: {}
+[17.229269] (-) TimerEvent: {}
+[17.329451] (-) TimerEvent: {}
+[17.429633] (-) TimerEvent: {}
+[17.529823] (-) TimerEvent: {}
+[17.630020] (-) TimerEvent: {}
+[17.730218] (-) TimerEvent: {}
+[17.830416] (-) TimerEvent: {}
+[17.930591] (-) TimerEvent: {}
+[18.030779] (-) TimerEvent: {}
+[18.130963] (-) TimerEvent: {}
+[18.231141] (-) TimerEvent: {}
+[18.331313] (-) TimerEvent: {}
+[18.431515] (-) TimerEvent: {}
+[18.531718] (-) TimerEvent: {}
+[18.631907] (-) TimerEvent: {}
+[18.732093] (-) TimerEvent: {}
+[18.832293] (-) TimerEvent: {}
+[18.932471] (-) TimerEvent: {}
+[19.032643] (-) TimerEvent: {}
+[19.132818] (-) TimerEvent: {}
+[19.233030] (-) TimerEvent: {}
+[19.333226] (-) TimerEvent: {}
+[19.433417] (-) TimerEvent: {}
+[19.533606] (-) TimerEvent: {}
+[19.633804] (-) TimerEvent: {}
+[19.733995] (-) TimerEvent: {}
+[19.834191] (-) TimerEvent: {}
+[19.934392] (-) TimerEvent: {}
+[20.034579] (-) TimerEvent: {}
+[20.134762] (-) TimerEvent: {}
+[20.234962] (-) TimerEvent: {}
+[20.335148] (-) TimerEvent: {}
+[20.435347] (-) TimerEvent: {}
+[20.535537] (-) TimerEvent: {}
+[20.635716] (-) TimerEvent: {}
+[20.735906] (-) TimerEvent: {}
+[20.836102] (-) TimerEvent: {}
+[20.936300] (-) TimerEvent: {}
+[21.036475] (-) TimerEvent: {}
+[21.136667] (-) TimerEvent: {}
+[21.236866] (-) TimerEvent: {}
+[21.337056] (-) TimerEvent: {}
+[21.437234] (-) TimerEvent: {}
+[21.537428] (-) TimerEvent: {}
+[21.637610] (-) TimerEvent: {}
+[21.737800] (-) TimerEvent: {}
+[21.837959] (-) TimerEvent: {}
+[21.938146] (-) TimerEvent: {}
+[22.038327] (-) TimerEvent: {}
+[22.138505] (-) TimerEvent: {}
+[22.238683] (-) TimerEvent: {}
+[22.338863] (-) TimerEvent: {}
+[22.439090] (-) TimerEvent: {}
+[22.539280] (-) TimerEvent: {}
+[22.639471] (-) TimerEvent: {}
+[22.739643] (-) TimerEvent: {}
+[22.839805] (-) TimerEvent: {}
+[22.939941] (-) TimerEvent: {}
+[23.040103] (-) TimerEvent: {}
+[23.140262] (-) TimerEvent: {}
+[23.240422] (-) TimerEvent: {}
+[23.340591] (-) TimerEvent: {}
+[23.440769] (-) TimerEvent: {}
+[23.540966] (-) TimerEvent: {}
+[23.641170] (-) TimerEvent: {}
+[23.741367] (-) TimerEvent: {}
+[23.841558] (-) TimerEvent: {}
+[23.941740] (-) TimerEvent: {}
+[24.041945] (-) TimerEvent: {}
+[24.142142] (-) TimerEvent: {}
+[24.242338] (-) TimerEvent: {}
+[24.342535] (-) TimerEvent: {}
+[24.442731] (-) TimerEvent: {}
+[24.542939] (-) TimerEvent: {}
+[24.643139] (-) TimerEvent: {}
+[24.743333] (-) TimerEvent: {}
+[24.843515] (-) TimerEvent: {}
+[24.943689] (-) TimerEvent: {}
+[25.043868] (-) TimerEvent: {}
+[25.144029] (-) TimerEvent: {}
+[25.244190] (-) TimerEvent: {}
+[25.344346] (-) TimerEvent: {}
+[25.444502] (-) TimerEvent: {}
+[25.544677] (-) TimerEvent: {}
+[25.644862] (-) TimerEvent: {}
+[25.745049] (-) TimerEvent: {}
+[25.845233] (-) TimerEvent: {}
+[25.945417] (-) TimerEvent: {}
+[26.045605] (-) TimerEvent: {}
+[26.145792] (-) TimerEvent: {}
+[26.245957] (-) TimerEvent: {}
+[26.346144] (-) TimerEvent: {}
+[26.446326] (-) TimerEvent: {}
+[26.546504] (-) TimerEvent: {}
+[26.646683] (-) TimerEvent: {}
+[26.746867] (-) TimerEvent: {}
+[26.847058] (-) TimerEvent: {}
+[26.947244] (-) TimerEvent: {}
+[27.047425] (-) TimerEvent: {}
+[27.147600] (-) TimerEvent: {}
+[27.247777] (-) TimerEvent: {}
+[27.347966] (-) TimerEvent: {}
+[27.448153] (-) TimerEvent: {}
+[27.548336] (-) TimerEvent: {}
+[27.648521] (-) TimerEvent: {}
+[27.748706] (-) TimerEvent: {}
+[27.848897] (-) TimerEvent: {}
+[27.949086] (-) TimerEvent: {}
+[28.049276] (-) TimerEvent: {}
+[28.149460] (-) TimerEvent: {}
+[28.249645] (-) TimerEvent: {}
+[28.349830] (-) TimerEvent: {}
+[28.450015] (-) TimerEvent: {}
+[28.550185] (-) TimerEvent: {}
+[28.650368] (-) TimerEvent: {}
+[28.750546] (-) TimerEvent: {}
+[28.850732] (-) TimerEvent: {}
+[28.950917] (-) TimerEvent: {}
+[29.051098] (-) TimerEvent: {}
+[29.151275] (-) TimerEvent: {}
+[29.251460] (-) TimerEvent: {}
+[29.351646] (-) TimerEvent: {}
+[29.451832] (-) TimerEvent: {}
+[29.552016] (-) TimerEvent: {}
+[29.652197] (-) TimerEvent: {}
+[29.752380] (-) TimerEvent: {}
+[29.852568] (-) TimerEvent: {}
+[29.952752] (-) TimerEvent: {}
+[30.052928] (-) TimerEvent: {}
+[30.153103] (-) TimerEvent: {}
+[30.253289] (-) TimerEvent: {}
+[30.353471] (-) TimerEvent: {}
+[30.453655] (-) TimerEvent: {}
+[30.553838] (-) TimerEvent: {}
+[30.654027] (-) TimerEvent: {}
+[30.754210] (-) TimerEvent: {}
+[30.854400] (-) TimerEvent: {}
+[30.954582] (-) TimerEvent: {}
+[31.054766] (-) TimerEvent: {}
+[31.154945] (-) TimerEvent: {}
+[31.255130] (-) TimerEvent: {}
+[31.355315] (-) TimerEvent: {}
+[31.455503] (-) TimerEvent: {}
+[31.555668] (-) TimerEvent: {}
+[31.655840] (-) TimerEvent: {}
+[31.756036] (-) TimerEvent: {}
+[31.856223] (-) TimerEvent: {}
+[31.956406] (-) TimerEvent: {}
+[32.056581] (-) TimerEvent: {}
+[32.156746] (-) TimerEvent: {}
+[32.256920] (-) TimerEvent: {}
+[32.357106] (-) TimerEvent: {}
+[32.457292] (-) TimerEvent: {}
+[32.557463] (-) TimerEvent: {}
+[32.657634] (-) TimerEvent: {}
+[32.757808] (-) TimerEvent: {}
+[32.857937] (-) TimerEvent: {}
+[32.958094] (-) TimerEvent: {}
+[33.058260] (-) TimerEvent: {}
+[33.158436] (-) TimerEvent: {}
+[33.258611] (-) TimerEvent: {}
+[33.358799] (-) TimerEvent: {}
+[33.458990] (-) TimerEvent: {}
+[33.559179] (-) TimerEvent: {}
+[33.659350] (-) TimerEvent: {}
+[33.759523] (-) TimerEvent: {}
+[33.859712] (-) TimerEvent: {}
+[33.959912] (-) TimerEvent: {}
+[34.060086] (-) TimerEvent: {}
+[34.160251] (-) TimerEvent: {}
+[34.260418] (-) TimerEvent: {}
+[34.360593] (-) TimerEvent: {}
+[34.460754] (-) TimerEvent: {}
+[34.560918] (-) TimerEvent: {}
+[34.661100] (-) TimerEvent: {}
+[34.761281] (-) TimerEvent: {}
+[34.861444] (-) TimerEvent: {}
+[34.961618] (-) TimerEvent: {}
+[35.061811] (-) TimerEvent: {}
+[35.162007] (-) TimerEvent: {}
+[35.262195] (-) TimerEvent: {}
+[35.362399] (-) TimerEvent: {}
+[35.462582] (-) TimerEvent: {}
+[35.562771] (-) TimerEvent: {}
+[35.662943] (-) TimerEvent: {}
+[35.763125] (-) TimerEvent: {}
+[35.863302] (-) TimerEvent: {}
+[35.963489] (-) TimerEvent: {}
+[35.984917] (marvin_fabric) StdoutLine: {'line': b'[100%] Linking CXX executable planner_node\n'}
+[36.063581] (-) TimerEvent: {}
+[36.163757] (-) TimerEvent: {}
+[36.263961] (-) TimerEvent: {}
+[36.364166] (-) TimerEvent: {}
+[36.464369] (-) TimerEvent: {}
+[36.564554] (-) TimerEvent: {}
+[36.664729] (-) TimerEvent: {}
+[36.764922] (-) TimerEvent: {}
+[36.865120] (-) TimerEvent: {}
+[36.965316] (-) TimerEvent: {}
+[37.065514] (-) TimerEvent: {}
+[37.165705] (-) TimerEvent: {}
+[37.265905] (-) TimerEvent: {}
+[37.366108] (-) TimerEvent: {}
+[37.466298] (-) TimerEvent: {}
+[37.513094] (marvin_fabric) StdoutLine: {'line': b'[100%] Built target planner_node\n'}
+[37.517831] (marvin_fabric) CommandEnded: {'returncode': 0}
+[37.518276] (marvin_fabric) JobProgress: {'identifier': 'marvin_fabric', 'progress': 'install'}
+[37.521344] (marvin_fabric) Command: {'cmd': ['/usr/bin/cmake', '--install', '/ros2_ws/build/marvin_fabric'], 'cwd': '/ros2_ws/build/marvin_fabric', 'env': OrderedDict([('HOSTNAME', 'kewei-Pulse-GL76-11UEK'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/ros2_ws/install/marvin_ros_control/lib:/ros2_ws/install/marvin_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/tmp'), ('OLDPWD', '/ros2_ws'), ('ROS_PYTHON_VERSION', '3'), ('SKIP_ROSDEP', '1'), ('ROS_DISTRO', 'humble'), ('PYTHONDONTWRITEBYTECODE', '1'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('WORKSPACE_DIR', '/ros2_ws'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'), ('LANG', 'C.UTF-8'), ('AMENT_PREFIX_PATH', '/ros2_ws/install/marvin_ros_control:/ros2_ws/install/marvin_msgs:/ros2_ws/install/marvin_description:/opt/ros/humble'), ('DEBIAN_FRONTEND', 'noninteractive'), ('PWD', '/ros2_ws/build/marvin_fabric'), ('LC_ALL', 'C.UTF-8'), ('PYTHONPATH', '/ros2_ws/install/marvin_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('CMAKE_PREFIX_PATH', '/ros2_ws/install/marvin_ros_control:/ros2_ws/install/marvin_msgs:/ros2_ws/install/marvin_description:/opt/ros/humble')]), 'shell': False}
+[37.524594] (marvin_fabric) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[37.524665] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/lib/marvin_fabric/planner_node\n'}
+[37.534813] (marvin_fabric) StdoutLine: {'line': b'-- Set runtime path of "/ros2_ws/install/marvin_fabric/lib/marvin_fabric/planner_node" to ""\n'}
+[37.535027] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/lib/marvin_fabric/controller_udp.py\n'}
+[37.535119] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/lib/marvin_fabric/IK_viewer.py\n'}
+[37.535141] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/lib/marvin_fabric/vla_client.py\n'}
+[37.535162] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/lib/marvin_fabric/test_task_manager_dynamic.py\n'}
+[37.535279] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//launch\n'}
+[37.535300] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//launch/planner_m3.launch.py\n'}
+[37.535320] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//launch/planner_m6.launch.py\n'}
+[37.538921] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//launch/planner_mujoco.launch.py\n'}
+[37.538948] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//launch/vla_m6.launch.py\n'}
+[37.538967] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config\n'}
+[37.538984] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/marvin_CCS_m3_old.urdf\n'}
+[37.539000] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_103039\n'}
+[37.539017] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_131810\n'}
+[37.539032] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_134200\n'}
+[37.539048] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_125548\n'}
+[37.539063] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095011\n'}
+[37.539078] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_085443\n'}
+[37.539093] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_131926\n'}
+[37.539108] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095935\n'}
+[37.539123] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_100534\n'}
+[37.539139] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/rviz.rviz\n'}
+[37.539155] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_032811\n'}
+[37.539170] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_011412\n'}
+[37.539188] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_100118\n'}
+[37.539204] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_092942\n'}
+[37.539219] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_131956\n'}
+[37.539235] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_config_m3.yaml\n'}
+[37.539251] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_130610\n'}
+[37.539266] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_130053\n'}
+[37.539282] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260331_100412\n'}
+[37.539297] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260331_142217\n'}
+[37.539311] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_075554\n'}
+[37.539327] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_075250\n'}
+[37.539343] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_090716\n'}
+[37.539357] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_032407\n'}
+[37.539372] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_033107\n'}
+[37.539386] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_064238\n'}
+[37.539401] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260330_012014\n'}
+[37.539415] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_025700\n'}
+[37.539430] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_045253\n'}
+[37.539445] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_100050\n'}
+[37.539459] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_013150\n'}
+[37.539474] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095227\n'}
+[37.539487] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_025429\n'}
+[37.539502] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095313\n'}
+[37.539515] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260330_022708\n'}
+[37.539530] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_033843\n'}
+[37.539544] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_083852\n'}
+[37.539559] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_030747\n'}
+[37.539573] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095627\n'}
+[37.539587] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml\n'}
+[37.539601] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_094441\n'}
+[37.539616] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_011618\n'}
+[37.539630] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_075332\n'}
+[37.539644] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_063724\n'}
+[37.539658] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_060354\n'}
+[37.539672] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_055435\n'}
+[37.539687] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_075536\n'}
+[37.539701] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095828\n'}
+[37.539715] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/marvin_robot copy.srdf\n'}
+[37.539729] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_022115\n'}
+[37.539743] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260331_102939\n'}
+[37.539758] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_072940\n'}
+[37.539772] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_030629\n'}
+[37.539787] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_023920\n'}
+[37.539801] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_090517\n'}
+[37.539815] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_060034\n'}
+[37.539829] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/ccs_m3.MvKDCfg\n'}
+[37.539844] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_082421\n'}
+[37.539858] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260331_082255\n'}
+[37.539873] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095619\n'}
+[37.539888] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095555\n'}
+[37.539905] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_022003\n'}
+[37.539920] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_050949\n'}
+[37.539935] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/marvin_robot.srdf\n'}
+[37.539949] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_124554\n'}
+[37.539963] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_094121\n'}
+[37.539977] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_100004\n'}
+[37.539991] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_021446\n'}
+[37.540005] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_092612\n'}
+[37.540019] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param copy.yaml\n'}
+[37.540034] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_021205\n'}
+[37.540098] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_055206\n'}
+[37.540112] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_134425\n'}
+[37.540126] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data\n'}
+[37.540141] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/tasks\n'}
+[37.540155] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/tasks/drawer copy 2.yaml\n'}
+[37.540170] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/tasks/drawer copy.yaml\n'}
+[37.540206] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/tasks/drawer.yaml\n'}
+[37.540221] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/tasks/pick_coke.yaml\n'}
+[37.540235] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/objs\n'}
+[37.540249] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/objs/desk.yaml\n'}
+[37.540263] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/objs/mug.yaml\n'}
+[37.540278] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/world_data/objs/drawer.yaml\n'}
+[37.540294] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_030944\n'}
+[37.540308] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_081416\n'}
+[37.540323] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/marvin_CCS_m3.urdf\n'}
+[37.540359] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_072313\n'}
+[37.540375] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_124906\n'}
+[37.540389] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_032117\n'}
+[37.540421] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095800\n'}
+[37.540435] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_131654\n'}
+[37.540451] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095727\n'}
+[37.540466] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_030844\n'}
+[37.540481] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_095427\n'}
+[37.540496] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_094907\n'}
+[37.540511] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_021019\n'}
+[37.540526] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_065108\n'}
+[37.540561] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095859\n'}
+[37.540576] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_032419\n'}
+[37.540591] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_094136\n'}
+[37.540606] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_131745\n'}
+[37.540621] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_075313\n'}
+[37.540636] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_090342\n'}
+[37.540651] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095606\n'}
+[37.540666] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095639\n'}
+[37.540681] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_045454\n'}
+[37.540696] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_114019\n'}
+[37.540711] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260331_095522\n'}
+[37.540726] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_025048\n'}
+[37.540741] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_013109\n'}
+[37.540756] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_020641\n'}
+[37.540796] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260331_102256\n'}
+[37.540810] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_135352\n'}
+[37.540825] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_config.yaml\n'}
+[37.540840] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095711\n'}
+[37.540855] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m3.yaml\n'}
+[37.540870] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_085648\n'}
+[37.540886] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_095657\n'}
+[37.540938] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_074928\n'}
+[37.540954] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_075506\n'}
+[37.540989] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260402_024321\n'}
+[37.541004] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260327_093037\n'}
+[37.541018] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_032943\n'}
+[37.541032] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/marvin_CCS_m6.urdf\n'}
+[37.541046] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_022141\n'}
+[37.541061] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_070155\n'}
+[37.541075] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_124807\n'}
+[37.541090] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/ccs_m6.MvKDCfg\n'}
+[37.541105] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric//config/robot_param_m6.yaml.bak.20260401_135539\n'}
+[37.541119] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include\n'}
+[37.541134] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/tpm\n'}
+[37.541148] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/tpm/tpm_check.hpp\n'}
+[37.541162] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/marvin_ros_control\n'}
+[37.541176] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/marvin_ros_control/MarvinSDK.h\n'}
+[37.541191] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/marvin_ros_control/oneEuro_filter.h\n'}
+[37.541205] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/marvin_ros_control/marvin_robot.h\n'}
+[37.541220] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/fabric_task_maps.h\n'}
+[37.541234] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/include/robot_env.h\n'}
+[37.541250] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/ament_index/resource_index/package_run_dependencies/marvin_fabric\n'}
+[37.541264] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/ament_index/resource_index/parent_prefix_path/marvin_fabric\n'}
+[37.541278] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/environment/ament_prefix_path.sh\n'}
+[37.541293] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/environment/ament_prefix_path.dsv\n'}
+[37.541307] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/environment/path.sh\n'}
+[37.541321] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/environment/path.dsv\n'}
+[37.541335] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/local_setup.bash\n'}
+[37.541349] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/local_setup.sh\n'}
+[37.541364] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/local_setup.zsh\n'}
+[37.541378] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/local_setup.dsv\n'}
+[37.541392] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/package.dsv\n'}
+[37.541406] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/ament_index/resource_index/packages/marvin_fabric\n'}
+[37.541420] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[37.541434] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/cmake/marvin_fabricConfig.cmake\n'}
+[37.541448] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/cmake/marvin_fabricConfig-version.cmake\n'}
+[37.541463] (marvin_fabric) StdoutLine: {'line': b'-- Installing: /ros2_ws/install/marvin_fabric/share/marvin_fabric/package.xml\n'}
+[37.541709] (marvin_fabric) CommandEnded: {'returncode': 0}
+[37.548376] (marvin_fabric) JobEnded: {'identifier': 'marvin_fabric', 'rc': 0}
+[37.548567] (-) EventReactorShutdown: {}

@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from marvin_msgs/msg/Jointfeedback.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module marvin_msgs {
+  module msg {
+    typedef double double__14[14];
+    struct Jointfeedback {
+      @verbatim (language="comment", text=
+        "order L1,L2,L3,L4,L5,L6,L7,R1,R2,R3,R4,R5,R6,R7")
+      std_msgs::msg::Header header;
+
+      double__14 positions;
+
+      double__14 velocities;
+
+      double__14 efforts;
+    };
+  };
+};

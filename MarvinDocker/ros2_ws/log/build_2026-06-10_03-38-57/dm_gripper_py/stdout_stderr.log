@@ -1,0 +1,43 @@
+running egg_info
+creating ../../build/dm_gripper_py/dm_gripper_py.egg-info
+writing ../../build/dm_gripper_py/dm_gripper_py.egg-info/PKG-INFO
+writing dependency_links to ../../build/dm_gripper_py/dm_gripper_py.egg-info/dependency_links.txt
+writing entry points to ../../build/dm_gripper_py/dm_gripper_py.egg-info/entry_points.txt
+writing requirements to ../../build/dm_gripper_py/dm_gripper_py.egg-info/requires.txt
+writing top-level names to ../../build/dm_gripper_py/dm_gripper_py.egg-info/top_level.txt
+writing manifest file '../../build/dm_gripper_py/dm_gripper_py.egg-info/SOURCES.txt'
+reading manifest file '../../build/dm_gripper_py/dm_gripper_py.egg-info/SOURCES.txt'
+writing manifest file '../../build/dm_gripper_py/dm_gripper_py.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /ros2_ws/build/dm_gripper_py/build
+creating /ros2_ws/build/dm_gripper_py/build/lib
+creating /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py
+copying dm_gripper_py/__init__.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py
+copying dm_gripper_py/test_gui.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py
+copying dm_gripper_py/DM_gripper.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py
+copying dm_gripper_py/DM_CAN.py -> /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py
+warning: build_py: byte-compiling is disabled, skipping.
+
+running install
+running install_lib
+creating /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py
+copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/__init__.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py
+copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/test_gui.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py
+copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/DM_gripper.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py
+copying /ros2_ws/build/dm_gripper_py/build/lib/dm_gripper_py/DM_CAN.py -> /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py
+warning: install_lib: byte-compiling is disabled, skipping.
+
+running install_data
+creating /ros2_ws/install/dm_gripper_py/share/ament_index
+creating /ros2_ws/install/dm_gripper_py/share/ament_index/resource_index
+creating /ros2_ws/install/dm_gripper_py/share/ament_index/resource_index/packages
+copying resource/dm_gripper_py -> /ros2_ws/install/dm_gripper_py/share/ament_index/resource_index/packages
+copying package.xml -> /ros2_ws/install/dm_gripper_py/share/dm_gripper_py
+creating /ros2_ws/install/dm_gripper_py/share/dm_gripper_py/launch
+copying launch/dm_gripper.launch.py -> /ros2_ws/install/dm_gripper_py/share/dm_gripper_py/launch
+running install_egg_info
+Copying ../../build/dm_gripper_py/dm_gripper_py.egg-info to /ros2_ws/install/dm_gripper_py/lib/python3.10/site-packages/dm_gripper_py-0.0.0-py3.10.egg-info
+running install_scripts
+Installing dm_motor_test script to /ros2_ws/install/dm_gripper_py/lib/dm_gripper_py
+writing list of installed files to '/ros2_ws/build/dm_gripper_py/install.log'

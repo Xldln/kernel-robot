@@ -1,0 +1,229 @@
+[INFO] [1781158860.909766456] [zmq2ros]: ZMQ SUB <- tcp://127.0.0.1:8899
+[INFO] [1781158860.909924162] [zmq2ros]: ZMQ topic filter <- /tf
+[INFO] [1781158860.910021054] [zmq2ros]: [Bridge ROS] publish to the same ROS topic as incoming ZMQ topic
+[INFO] [1781158865.954663618] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158871.010195777] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158876.065361018] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158881.120436013] [zmq2ros]: waiting for zmq message from tcp://127.0.0.1:8899
+[INFO] [1781158881.746347688] [zmq2ros]: received zmq message #1 parts=1
+[INFO] [1781158881.746510374] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158881.749447454] [zmq2ros]: ROS TF topic -> /tf
+[INFO] [1781158881.796427905] [zmq2ros]: received zmq message #2 parts=1
+[INFO] [1781158881.796594638] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158881.841491003] [zmq2ros]: received zmq message #3 parts=1
+[INFO] [1781158881.841647847] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.092414056] [zmq2ros]: received zmq message #4 parts=1
+[INFO] [1781158882.092589084] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.135560561] [zmq2ros]: received zmq message #5 parts=1
+[INFO] [1781158882.135713218] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.194565479] [zmq2ros]: received zmq message #6 parts=1
+[INFO] [1781158882.194782287] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.438182430] [zmq2ros]: received zmq message #7 parts=1
+[INFO] [1781158882.438334226] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.482909897] [zmq2ros]: received zmq message #8 parts=1
+[INFO] [1781158882.483050481] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.526716413] [zmq2ros]: received zmq message #9 parts=1
+[INFO] [1781158882.526851116] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.781839888] [zmq2ros]: received zmq message #10 parts=1
+[INFO] [1781158882.781991163] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.839538422] [zmq2ros]: received zmq message #11 parts=1
+[INFO] [1781158882.839686921] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158882.884820711] [zmq2ros]: received zmq message #12 parts=1
+[INFO] [1781158882.884959712] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.159701665] [zmq2ros]: received zmq message #13 parts=1
+[INFO] [1781158883.159865964] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.202212596] [zmq2ros]: received zmq message #14 parts=1
+[INFO] [1781158883.202358380] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.246234897] [zmq2ros]: received zmq message #15 parts=1
+[INFO] [1781158883.246396411] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.493208725] [zmq2ros]: received zmq message #16 parts=1
+[INFO] [1781158883.493372863] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.534809014] [zmq2ros]: received zmq message #17 parts=1
+[INFO] [1781158883.534968885] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.577432807] [zmq2ros]: received zmq message #18 parts=1
+[INFO] [1781158883.577571097] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.815804218] [zmq2ros]: received zmq message #19 parts=1
+[INFO] [1781158883.815971332] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.858266698] [zmq2ros]: received zmq message #20 parts=1
+[INFO] [1781158883.858407803] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158883.915057395] [zmq2ros]: received zmq message #21 parts=1
+[INFO] [1781158883.915206144] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.144958476] [zmq2ros]: received zmq message #22 parts=1
+[INFO] [1781158884.145133756] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.190203014] [zmq2ros]: received zmq message #23 parts=1
+[INFO] [1781158884.190368745] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.232374627] [zmq2ros]: received zmq message #24 parts=1
+[INFO] [1781158884.232543213] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.475635234] [zmq2ros]: received zmq message #25 parts=1
+[INFO] [1781158884.475894902] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.531576173] [zmq2ros]: received zmq message #26 parts=1
+[INFO] [1781158884.531737136] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.573575853] [zmq2ros]: received zmq message #27 parts=1
+[INFO] [1781158884.573785557] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.803719549] [zmq2ros]: received zmq message #28 parts=1
+[INFO] [1781158884.803930526] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.846577081] [zmq2ros]: received zmq message #29 parts=1
+[INFO] [1781158884.846762380] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158884.891327140] [zmq2ros]: received zmq message #30 parts=1
+[INFO] [1781158884.891473905] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.148170682] [zmq2ros]: received zmq message #31 parts=1
+[INFO] [1781158885.148319902] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.188816076] [zmq2ros]: received zmq message #32 parts=1
+[INFO] [1781158885.188969444] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.228835704] [zmq2ros]: received zmq message #33 parts=1
+[INFO] [1781158885.228986107] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.464748842] [zmq2ros]: received zmq message #34 parts=1
+[INFO] [1781158885.464900166] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.505975949] [zmq2ros]: received zmq message #35 parts=1
+[INFO] [1781158885.506158332] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.566786529] [zmq2ros]: received zmq message #36 parts=1
+[INFO] [1781158885.566930971] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.808976613] [zmq2ros]: received zmq message #37 parts=1
+[INFO] [1781158885.809160017] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.850577032] [zmq2ros]: received zmq message #38 parts=1
+[INFO] [1781158885.850735299] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158885.892360885] [zmq2ros]: received zmq message #39 parts=1
+[INFO] [1781158885.892515616] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.132117785] [zmq2ros]: received zmq message #40 parts=1
+[INFO] [1781158886.132290119] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.189713814] [zmq2ros]: received zmq message #41 parts=1
+[INFO] [1781158886.189859508] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.233388731] [zmq2ros]: received zmq message #42 parts=1
+[INFO] [1781158886.233547619] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.476012708] [zmq2ros]: received zmq message #43 parts=1
+[INFO] [1781158886.476278117] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.518967922] [zmq2ros]: received zmq message #44 parts=1
+[INFO] [1781158886.519110961] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.562307479] [zmq2ros]: received zmq message #45 parts=1
+[INFO] [1781158886.562542922] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.822313191] [zmq2ros]: received zmq message #46 parts=1
+[INFO] [1781158886.822474234] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.863715578] [zmq2ros]: received zmq message #47 parts=1
+[INFO] [1781158886.863872853] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158886.906013888] [zmq2ros]: received zmq message #48 parts=1
+[INFO] [1781158886.906144644] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.134398544] [zmq2ros]: received zmq message #49 parts=1
+[INFO] [1781158887.134564025] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.177057842] [zmq2ros]: received zmq message #50 parts=1
+[INFO] [1781158887.177221900] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.235281770] [zmq2ros]: received zmq message #51 parts=1
+[INFO] [1781158887.235439156] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.470731403] [zmq2ros]: received zmq message #52 parts=1
+[INFO] [1781158887.470879571] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.513007381] [zmq2ros]: received zmq message #53 parts=1
+[INFO] [1781158887.513155218] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.554444402] [zmq2ros]: received zmq message #54 parts=1
+[INFO] [1781158887.554630551] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.809712719] [zmq2ros]: received zmq message #55 parts=1
+[INFO] [1781158887.809875825] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.866752010] [zmq2ros]: received zmq message #56 parts=1
+[INFO] [1781158887.866992863] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158887.907850115] [zmq2ros]: received zmq message #57 parts=1
+[INFO] [1781158887.908062223] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.127588440] [zmq2ros]: received zmq message #58 parts=1
+[INFO] [1781158888.127841706] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.171616781] [zmq2ros]: received zmq message #59 parts=1
+[INFO] [1781158888.171799013] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.222860070] [zmq2ros]: received zmq message #60 parts=1
+[INFO] [1781158888.223045900] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.490247841] [zmq2ros]: received zmq message #61 parts=1
+[INFO] [1781158888.490395668] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.534674570] [zmq2ros]: received zmq message #62 parts=1
+[INFO] [1781158888.534820244] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.577640414] [zmq2ros]: received zmq message #63 parts=1
+[INFO] [1781158888.577792470] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.810569007] [zmq2ros]: received zmq message #64 parts=1
+[INFO] [1781158888.810756198] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.854288948] [zmq2ros]: received zmq message #65 parts=1
+[INFO] [1781158888.854434862] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158888.912434348] [zmq2ros]: received zmq message #66 parts=1
+[INFO] [1781158888.912598757] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.146973346] [zmq2ros]: received zmq message #67 parts=1
+[INFO] [1781158889.147168001] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.190410805] [zmq2ros]: received zmq message #68 parts=1
+[INFO] [1781158889.190569554] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.232273075] [zmq2ros]: received zmq message #69 parts=1
+[INFO] [1781158889.232423528] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.474752664] [zmq2ros]: received zmq message #70 parts=1
+[INFO] [1781158889.474925559] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.532998252] [zmq2ros]: received zmq message #71 parts=1
+[INFO] [1781158889.533152943] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.575742449] [zmq2ros]: received zmq message #72 parts=1
+[INFO] [1781158889.575876752] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.812576289] [zmq2ros]: received zmq message #73 parts=1
+[INFO] [1781158889.812831689] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.856224705] [zmq2ros]: received zmq message #74 parts=1
+[INFO] [1781158889.856380478] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158889.900956618] [zmq2ros]: received zmq message #75 parts=1
+[INFO] [1781158889.901253496] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.156330237] [zmq2ros]: received zmq message #76 parts=1
+[INFO] [1781158890.156483335] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.199768097] [zmq2ros]: received zmq message #77 parts=1
+[INFO] [1781158890.199928709] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.243906123] [zmq2ros]: received zmq message #78 parts=1
+[INFO] [1781158890.244049703] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.472737252] [zmq2ros]: received zmq message #79 parts=1
+[INFO] [1781158890.472891091] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.514401139] [zmq2ros]: received zmq message #80 parts=1
+[INFO] [1781158890.514540020] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.571944516] [zmq2ros]: received zmq message #81 parts=1
+[INFO] [1781158890.572141226] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.811119123] [zmq2ros]: received zmq message #82 parts=1
+[INFO] [1781158890.811283472] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.853329316] [zmq2ros]: received zmq message #83 parts=1
+[INFO] [1781158890.853455173] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158890.896130831] [zmq2ros]: received zmq message #84 parts=1
+[INFO] [1781158890.896276835] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.134908981] [zmq2ros]: received zmq message #85 parts=1
+[INFO] [1781158891.135069252] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.191379783] [zmq2ros]: received zmq message #86 parts=1
+[INFO] [1781158891.191546115] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.232239387] [zmq2ros]: received zmq message #87 parts=1
+[INFO] [1781158891.232398386] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.461068581] [zmq2ros]: received zmq message #88 parts=1
+[INFO] [1781158891.461307690] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.502414399] [zmq2ros]: received zmq message #89 parts=1
+[INFO] [1781158891.502562317] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.556009226] [zmq2ros]: received zmq message #90 parts=1
+[INFO] [1781158891.556170710] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.809309536] [zmq2ros]: received zmq message #91 parts=1
+[INFO] [1781158891.809447926] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.850763608] [zmq2ros]: received zmq message #92 parts=1
+[INFO] [1781158891.850930552] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158891.892310745] [zmq2ros]: received zmq message #93 parts=1
+[INFO] [1781158891.892451029] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.131545201] [zmq2ros]: received zmq message #94 parts=1
+[INFO] [1781158892.131716844] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.174753690] [zmq2ros]: received zmq message #95 parts=1
+[INFO] [1781158892.174910474] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.238374257] [zmq2ros]: received zmq message #96 parts=1
+[INFO] [1781158892.238535460] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.472527513] [zmq2ros]: received zmq message #97 parts=1
+[INFO] [1781158892.472672526] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.512682754] [zmq2ros]: received zmq message #98 parts=1
+[INFO] [1781158892.512832435] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.556600455] [zmq2ros]: received zmq message #99 parts=1
+[INFO] [1781158892.556783369] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.803676046] [zmq2ros]: received zmq message #100 parts=1
+[INFO] [1781158892.803837840] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.860266532] [zmq2ros]: received zmq message #101 parts=1
+[INFO] [1781158892.860415572] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158892.901155301] [zmq2ros]: received zmq message #102 parts=1
+[INFO] [1781158892.901278222] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.130852042] [zmq2ros]: received zmq message #103 parts=1
+[INFO] [1781158893.131020178] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.173891372] [zmq2ros]: received zmq message #104 parts=1
+[INFO] [1781158893.174046624] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.224605765] [zmq2ros]: received zmq message #105 parts=1
+[INFO] [1781158893.224753954] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.474129644] [zmq2ros]: received zmq message #106 parts=1
+[INFO] [1781158893.474282752] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.515292037] [zmq2ros]: received zmq message #107 parts=1
+[INFO] [1781158893.515425047] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.559359840] [zmq2ros]: received zmq message #108 parts=1
+[INFO] [1781158893.559505694] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.818506663] [zmq2ros]: received zmq message #109 parts=1
+[INFO] [1781158893.818683796] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.860314279] [zmq2ros]: received zmq message #110 parts=1
+[INFO] [1781158893.860461836] [zmq2ros]: received zmq topic: /tf
+[INFO] [1781158893.918149964] [zmq2ros]: received zmq 

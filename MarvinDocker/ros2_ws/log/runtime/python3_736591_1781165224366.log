@@ -1,0 +1,57 @@
+[INFO] [1781165224.432330485] [robotaction]: [Config] status_topic=/siglip2/result, progress_topic=/control/task_percentage, object_tf_topic=/tf, base_frame=base_link
+[INFO] [1781165224.622219550] [robotaction]: [State] 激活状态 'pencilbag been expended and exist pen in pen holder'，共 1 个动作
+[INFO] [1781165225.757551221] [robotaction]: [Select] target='pen' 候选: pen_2(y=0.001), pen_1(y=0.156) -> 选择: 'pen_2'
+[INFO] [1781165225.757836935] [robotaction]: [Step] state='pencilbag been expended and exist pen in pen holder' step=1/1 target='pen' action='pick'
+[INFO] [1781165225.759013623] [robotaction]: [Execute] 'pick'
+[INFO] [1781165225.759336445] [robotaction]: [Publish] 'pick' arm='left'
+[INFO] [1781165235.028435240] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781165235.028624444] [robotaction]: [State] 'pencilbag been expended and exist pen in pen holder' 全部动作已完成，开始检查状态
+[INFO] [1781165236.029401132] [robotaction]: [State] 动作组后稳定状态仍为 'pencilbag been expended and exist pen in pen holder'
+[INFO] [1781165236.220799601] [robotaction]: [State] 激活状态 'pencilbag been expended and exist pen in pen holder'，共 1 个动作
+[INFO] [1781165236.692927301] [robotaction]: [Select] target='pen' 候选: pen_2(y=0.137), pen_1(y=0.157) -> 选择: 'pen_2'
+[INFO] [1781165236.693091958] [robotaction]: [Step] state='pencilbag been expended and exist pen in pen holder' step=1/1 target='pen' action='pick'
+[INFO] [1781165236.694208984] [robotaction]: [Execute] 'pick'
+[INFO] [1781165236.694507432] [robotaction]: [Publish] 'pick' arm='left'
+[INFO] [1781165245.464592876] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781165245.464750831] [robotaction]: [State] 'pencilbag been expended and exist pen in pen holder' 全部动作已完成，开始检查状态
+[INFO] [1781165246.465355265] [robotaction]: [State] 动作组后检测到状态切换: 'pencilbag been expended and exist pen in pen holder' -> 'left hand holding the pen'
+[INFO] [1781165246.620775913] [robotaction]: [State] 激活状态 'left hand holding the pen'，共 1 个动作
+[INFO] [1781165247.093784871] [robotaction]: [Select] target='pencilbag' 候选: pencilbag_1(y=-0.038) -> 选择: 'pencilbag_1'
+[INFO] [1781165247.093967912] [robotaction]: [Step] state='left hand holding the pen' step=1/1 target='pencilbag' action='place'
+[INFO] [1781165247.094893531] [robotaction]: [Execute] 'place'
+[INFO] [1781165247.095284732] [robotaction]: [Publish] 'place' arm='left'
+[INFO] [1781165254.209642948] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781165254.209971782] [robotaction]: [Home] 发布 home arm='left', allow_preempt=False
+[INFO] [1781165254.210594715] [robotaction]: [Publish] 'home' arm='left'
+[INFO] [1781165254.210768630] [robotaction]: [Home] publish 1/3 arm='left'
+[INFO] [1781165254.311442430] [robotaction]: [Publish] 'home' arm='left'
+[INFO] [1781165254.311634389] [robotaction]: [Home] publish 2/3 arm='left'
+[INFO] [1781165254.412233419] [robotaction]: [Publish] 'home' arm='left'
+[INFO] [1781165254.412369914] [robotaction]: [Home] publish 3/3 arm='left'
+[INFO] [1781165255.413388735] [robotaction]: [Home] 检测到 home 完成 arm='left'
+[INFO] [1781165255.413589390] [robotaction]: [State] 'left hand holding the pen' 全部动作已完成，开始检查状态
+[INFO] [1781165256.414453854] [robotaction]: [State] 动作组后检测到状态切换: 'left hand holding the pen' -> 'pencilbag been expended and exist pen in pen holder'
+[INFO] [1781165256.422875624] [robotaction]: [State] 激活状态 'pencilbag been expended and exist pen in pen holder'，共 1 个动作
+[INFO] [1781165256.893368112] [robotaction]: [Select] target='pen' 候选: pen_1(y=0.150) -> 选择: 'pen_1'
+[INFO] [1781165256.893527290] [robotaction]: [Step] state='pencilbag been expended and exist pen in pen holder' step=1/1 target='pen' action='pick'
+[INFO] [1781165256.894365565] [robotaction]: [Execute] 'pick'
+[INFO] [1781165256.894673240] [robotaction]: [Publish] 'pick' arm='left'
+[INFO] [1781165266.013451350] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781165266.013892775] [robotaction]: [State] 'pencilbag been expended and exist pen in pen holder' 全部动作已完成，开始检查状态
+[INFO] [1781165267.014428662] [robotaction]: [State] 动作组后检测到状态切换: 'pencilbag been expended and exist pen in pen holder' -> 'left hand holding the pen'
+[INFO] [1781165267.020839276] [robotaction]: [State] 激活状态 'left hand holding the pen'，共 1 个动作
+[INFO] [1781165267.493327655] [robotaction]: [Select] target='pencilbag' 候选: pencilbag_1(y=-0.033) -> 选择: 'pencilbag_1'
+[INFO] [1781165267.493490610] [robotaction]: [Step] state='left hand holding the pen' step=1/1 target='pencilbag' action='place'
+[INFO] [1781165267.494225873] [robotaction]: [Execute] 'place'
+[INFO] [1781165267.494556651] [robotaction]: [Publish] 'place' arm='left'
+[INFO] [1781165274.608652786] [robotaction]: [Progress] 当前机械臂动作结束
+[INFO] [1781165274.608881964] [robotaction]: [Home] 发布 home arm='left', allow_preempt=False
+[INFO] [1781165274.609191031] [robotaction]: [Publish] 'home' arm='left'
+[INFO] [1781165274.609294986] [robotaction]: [Home] publish 1/3 arm='left'
+[INFO] [1781165274.709873984] [robotaction]: [Publish] 'home' arm='left'
+[INFO] [1781165274.710014907] [robotaction]: [Home] publish 2/3 arm='left'
+[INFO] [1781165274.810513264] [robotaction]: [Publish] 'home' arm='left'
+[INFO] [1781165274.810652595] [robotaction]: [Home] publish 3/3 arm='left'
+[INFO] [1781165275.812084176] [robotaction]: [Home] 检测到 home 完成 arm='left'
+[INFO] [1781165275.812374649] [robotaction]: [State] 'left hand holding the pen' 全部动作已完成，开始检查状态
+[WARN] [1781165276.813685517] [robotaction]: [State] 动作组结束后 0.5s 内未等到稳定状态

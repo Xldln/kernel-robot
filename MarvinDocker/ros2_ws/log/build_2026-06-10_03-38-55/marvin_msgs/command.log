@@ -1,0 +1,6 @@
+Invoking command in '/ros2_ws/build/marvin_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /ros2_ws/src/marvin_msgs -DCMAKE_INSTALL_PREFIX=/ros2_ws/install/marvin_msgs
+Invoked command in '/ros2_ws/build/marvin_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /ros2_ws/src/marvin_msgs -DCMAKE_INSTALL_PREFIX=/ros2_ws/install/marvin_msgs
+Invoking command in '/ros2_ws/build/marvin_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /ros2_ws/build/marvin_msgs -- -j32 -l32
+Invoked command in '/ros2_ws/build/marvin_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /ros2_ws/build/marvin_msgs -- -j32 -l32
+Invoking command in '/ros2_ws/build/marvin_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /ros2_ws/build/marvin_msgs
+Invoked command in '/ros2_ws/build/marvin_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /ros2_ws/build/marvin_msgs
