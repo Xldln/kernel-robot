@@ -472,6 +472,32 @@ def run(
                 except Exception:
                     pass
 
+            # ── 原始相机视角作为独立可视化流（UI 中的单独按钮） ──
+            # multi 模式下推送 primary+color-only 相机的横向拼接，可直接查看多视角；
+            # single 模式下推送单路彩色帧。与检测流分开，便于在 UI 中独立切换查看。
+            if fusion_ui_client:
+                aux_frames = cap.get("aux", {}) if _camera_mode == "multi" else {}
+                raw_view_jpg = (
+                    _build_multiview_jpg(color_jpg, list(aux_frames.values()))
+                    if aux_frames else color_jpg
+                )
+                if raw_view_jpg:
+                    is_multi = bool(aux_frames)
+                    try:
+                        fusion_ui_client.post_video_frame(
+                            raw_view_jpg,
+                            title=f"{_rgb_source.upper()} MultiView" if is_multi
+                            else f"{_rgb_source.upper()} Camera",
+                            source=f"{_rgb_source}-raw",
+                            metadata={
+                                "frame_id": frame_id,
+                                "camera_mode": _camera_mode,
+                                "num_views": 1 + len(aux_frames),
+                            },
+                        )
+                    except Exception:
+                        pass
+
             if show:
                 if yolo_display is not None:
                     cv2.imshow(win_title, yolo_display)
