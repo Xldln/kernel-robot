@@ -121,6 +121,68 @@ class MindBridgeClient:
             "elapsed_sec": float(r.headers.get("X-Elapsed-Sec", 0)),
         }
 
+    def capture_all(self) -> dict:
+        """采集 primary（完整）+ 全部 color-only 相机，单次 multipart。
+
+        Returns:
+            dict：包含 capture() 的全部字段，外加
+                aux (dict {cam_id: jpg_bytes})        # color-only 相机彩色帧
+                aux_cameras (list[{id, name, part}])  # 顺序与名称
+                mode (str)
+        """
+        r = requests.post(f"{self.realsense_url}/realsense/capture/all/raw", timeout=30)
+
+        status = r.headers.get("X-Status", "error")
+        if status == "error":
+            return {
+                "status": "error",
+                "frame_id": int(r.headers.get("X-Frame-Id", 0)),
+                "message": r.headers.get("X-Error-Message", "unknown error"),
+                "elapsed_sec": float(r.headers.get("X-Elapsed-Sec", 0)),
+                "aux": {},
+                "aux_cameras": [],
+            }
+
+        _, binary_parts = parse_multipart_response(r.content, r.headers.get("Content-Type", ""))
+
+        def _hdr_json(name: str):
+            try:
+                return _json.loads(r.headers.get(name, "[]"))
+            except Exception:
+                return []
+
+        try:
+            aux_cameras = _json.loads(r.headers.get("X-Aux-Cameras", "[]"))
+        except Exception:
+            aux_cameras = []
+
+        aux: dict[str, bytes] = {}
+        for cam in aux_cameras:
+            part = cam.get("part") or f"aux_{cam.get('id')}_jpg"
+            data = binary_parts.get(part)
+            if data is not None:
+                aux[cam.get("id")] = data
+
+        return {
+            "status": "ok",
+            "mode": r.headers.get("X-Mode", "single"),
+            "frame_id": int(r.headers.get("X-Frame-Id", 0)),
+            "baseline": float(r.headers.get("X-Baseline", 0)),
+            "K": _hdr_json("X-K"),
+            "ir_left_K": _hdr_json("X-IR-Left-K"),
+            "ir_to_color_R": _hdr_json("X-IR-To-Color-R"),
+            "ir_to_color_T": _hdr_json("X-IR-To-Color-T"),
+            "color_width": int(r.headers.get("X-Color-Width", 0)),
+            "color_height": int(r.headers.get("X-Color-Height", 0)),
+            "color_jpg": binary_parts.get("color_jpg"),
+            "depth_png": binary_parts.get("depth_png"),
+            "ir_left_jpg": binary_parts.get("ir_left_jpg"),
+            "ir_right_jpg": binary_parts.get("ir_right_jpg"),
+            "aux": aux,
+            "aux_cameras": aux_cameras,
+            "elapsed_sec": float(r.headers.get("X-Elapsed-Sec", 0)),
+        }
+
     # ── YOLO Predict (raw bytes) ─────────────────────────────────────
 
     def predict(self, image_bytes: bytes, request_id: str = "",

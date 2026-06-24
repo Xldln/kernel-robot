@@ -22,6 +22,28 @@ from mindbridge.src.core.tool.image import _draw_detections
 from mindbridge.src.fusion.ui_client import FusionUiClient
 
 
+def _build_multiview_jpg(color_jpg: bytes, aux_jpgs: list[bytes]) -> bytes:
+    """将 primary 彩色帧与各 color 相机帧横向拼接为一张 JPEG（供 SigLIP 多视角）。
+
+    无 aux 帧时原样返回 color_jpg。
+    """
+    imgs = []
+    for raw in [color_jpg, *aux_jpgs]:
+        if not raw:
+            continue
+        arr = np.frombuffer(raw, dtype=np.uint8)
+        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if img is not None:
+            imgs.append(img)
+    if len(imgs) <= 1:
+        return color_jpg
+    h = min(i.shape[0] for i in imgs)
+    resized = [cv2.resize(i, (int(i.shape[1] * h / i.shape[0]), h)) for i in imgs]
+    montage = cv2.hconcat(resized)
+    ok, buf = cv2.imencode(".jpg", montage, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    return buf.tobytes() if ok else color_jpg
+
+
 def run(
     realsense_url: str = "http://127.0.0.1:8000",
     yolo_url: str = "http://127.0.0.1:8001",
@@ -30,6 +52,7 @@ def run(
     fastfoundation_url: str = "http://127.0.0.1:8004",
     flowpose_url: str = "http://127.0.0.1:8006",
     rgb_source: str = "realsense",
+    camera_mode: str = "single",      # "single" | "multi"
     camera_index: int = 0,
     camera_width: Optional[int] = None,
     camera_height: Optional[int] = None,
@@ -56,12 +79,18 @@ def run(
     _full = pipeline.lower() == "full"
     _mode = mode.lower()
     _rgb_source = rgb_source.lower()
+    _camera_mode = camera_mode.lower()
     if _detector not in ("yolo", "sam3"):
         raise ValueError(f"detector must be 'yolo' or 'sam3', got '{detector}'")
     if _mode not in ("pipeline", "yolo-only", "sam3-only", "siglip-only", "flowpose-only"):
         raise ValueError(f"mode must be pipeline/yolo-only/sam3-only/siglip-only/flowpose-only, got '{mode}'")
     if _rgb_source not in ("realsense", "usb"):
         raise ValueError(f"rgb_source must be 'realsense' or 'usb', got '{rgb_source}'")
+    if _camera_mode not in ("single", "multi"):
+        raise ValueError(f"camera_mode must be 'single' or 'multi', got '{camera_mode}'")
+    if _camera_mode == "multi" and _rgb_source != "realsense":
+        print("[ControlCenter] camera-mode=multi only applies to realsense source; ignoring")
+        _camera_mode = "single"
     if _rgb_source == "usb" and _full:
         print("[ControlCenter] USB RGB source does not provide stereo/depth; using BASIC pipeline")
         _full = False
@@ -75,9 +104,10 @@ def run(
     elif _mode == "flowpose-only":
         _full = True
 
-    print(f"[ControlCenter] Mode: {_mode} | Pipeline: {'FULL' if _full else 'BASIC'} | Detector: {_detector.upper()}")
+    print(f"[ControlCenter] Mode: {_mode} | Pipeline: {'FULL' if _full else 'BASIC'} | "
+          f"Detector: {_detector.upper()} | Camera: {_camera_mode}")
     if _rgb_source == "realsense":
-        frame_source = RealSenseRGBSource(client)
+        frame_source = RealSenseRGBSource(client, multi=(_camera_mode == "multi"))
         require_rs = True
     else:
         frame_source = OpenCVRGBSource(
@@ -341,8 +371,14 @@ def run(
             )
             if run_siglip:
                 t_siglip_start = time.time()
+                # multi 模式下，将 primary + color-only 相机横向拼接为多视角图送入 SigLIP
+                siglip_input = color_jpg
+                if _camera_mode == "multi":
+                    aux_frames = cap.get("aux", {})
+                    if aux_frames:
+                        siglip_input = _build_multiview_jpg(color_jpg, list(aux_frames.values()))
                 try:
-                    state_result = client.classify_state(color_jpg, request_id=str(frame_id))
+                    state_result = client.classify_state(siglip_input, request_id=str(frame_id))
                     if _mode == "pipeline":
                         last_state_result = state_result
                 except Exception as e:
@@ -547,6 +583,10 @@ def main() -> None:
         "--rgb-source", choices=["realsense", "usb"], default="realsense",
         help="RGB 来源: realsense(默认) 或 usb",
     )
+    parser.add_argument(
+        "--camera-mode", choices=["single", "multi"], default="single",
+        help="RealSense 相机模式: single(默认) 或 multi(primary 完整 + 其余仅彩色，拼接送 SigLIP)",
+    )
     parser.add_argument("--camera-index", type=int, default=0, help="USB 摄像头编号")
     parser.add_argument("--camera-width", type=int, default=None, help="USB 摄像头宽度")
     parser.add_argument("--camera-height", type=int, default=None, help="USB 摄像头高度")
@@ -607,6 +647,7 @@ def main() -> None:
         fastfoundation_url=args.fastfoundation_url,
         flowpose_url=args.flowpose_url,
         rgb_source=args.rgb_source,
+        camera_mode=args.camera_mode,
         camera_index=args.camera_index,
         camera_width=args.camera_width,
         camera_height=args.camera_height,

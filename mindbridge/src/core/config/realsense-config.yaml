@@ -1,11 +1,46 @@
 paths:
   out_dir: "./output"
 
+# ── 顶层模式开关 ───────────────────────────────────────────────
+# single = 单相机（保持原行为，当前默认）
+# multi  = 多相机：primary 提供完整 彩色+深度+IR 立体；其余相机仅提供彩色
+# 切换到 multi 前请先在下方 cameras 列表填好各相机 serial。
+mode: single   # single | multi
+
+# ── single 模式使用；同时作为 multi 模式 primary 的兜底默认参数 ──
 camera:
+  serial: ""           # 留空 = 取枚举到的第一台设备
   width: 640
   height: 480
   fps: 15
   disable_emitter: 0   # 0=关闭红外发射器, 1=开启
+
+# ── multi 模式使用；按顺序枚举各相机 ───────────────────────────
+# role: primary = 完整 彩色+深度+IR（仅允许一台，缺省时取列表第一台）
+#       color   = 仅彩色（作为 SigLIP 等模型的额外视角）
+cameras:
+  - id: head
+    name: "Head"
+    role: primary
+    serial: ""          # 填写实际序列号, 如 "944622071036"
+    width: 640
+    height: 480
+    fps: 15
+    disable_emitter: 0
+  - id: left_hand
+    name: "Left hand"
+    role: color
+    serial: ""
+    width: 640
+    height: 480
+    fps: 15
+  - id: right_hand
+    name: "Right hand"
+    role: color
+    serial: ""
+    width: 640
+    height: 480
+    fps: 15
 
 runtime:
   scale: 1.0
