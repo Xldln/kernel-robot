@@ -1,7 +1,15 @@
 model:
   path: /workspace/mindbridge/models/siglip2-so400m-patch14-224
-  checkpoint: /workspace/mindbridge/models/weights/siglip/model_siglip2_epoch_20.pt
-  graph_info_file: /workspace/mindbridge/models/weights/siglip/graph_info_epoch20.json
+  checkpoint: /workspace/mindbridge/models/weights/siglip/model_siglip2_multiview_v2_best_eval.pt
+  # 类别中心须由「多视角模型」重新计算 (与单图特征空间不通用)
+  graph_info_file: /workspace/mindbridge/models/weights/siglip/graph_info_best_eval.json
 
   topk: 5
- 
+
+  # ── 多视角参数 (须与训练时一致) ──────────────────────────────
+  num_views: 3            # 拼接图视角数 (控制中心水平拼接三路相机)
+  num_query_tokens: 8     # CrossViewAttentionPooler 可学习 query 数
+  pooler_num_layers: 2    # 跨视角注意力层数
+  pooler_num_heads: 8     # 注意力头数
+  use_pretrained: false   # true=仅用预训练 base, 不加载 pooler 权重
+  background_mask_ratio: 0  # 拼接图顶部遮盖比例, 0=不启用

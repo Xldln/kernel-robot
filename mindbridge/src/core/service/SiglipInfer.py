@@ -12,8 +12,14 @@ import numpy as np
 import torch
 import yaml
 from PIL import Image
-from transformers import SiglipModel, SiglipProcessor, AutoModel, AutoProcessor
+from transformers import AutoModel, AutoProcessor
 
+from mindbridge.siglip2_trainer import (
+    CrossViewAttentionPooler,
+    MultiViewSigLIPModel,
+    apply_background_mask,
+    split_image_to_views,
+)
 from mindbridge.src.core.schemas.SiglipEntity import (
     PredictRequest,
     PredictResponse,
@@ -156,6 +162,14 @@ class SiglipInfer:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.topk = int(model_cfg.get("topk", 5))
 
+        # ── 多视角模型参数 (须与训练时一致) ──────────────────────
+        self.num_views = int(model_cfg.get("num_views", 3))
+        self.num_query_tokens = int(model_cfg.get("num_query_tokens", 8))
+        self.pooler_num_layers = int(model_cfg.get("pooler_num_layers", 2))
+        self.pooler_num_heads = int(model_cfg.get("pooler_num_heads", 8))
+        self.use_pretrained = bool(model_cfg.get("use_pretrained", False))
+        self.background_mask_ratio = float(model_cfg.get("background_mask_ratio", 0))
+
         print(f"[SiglipInfer] 设备: {self.device}")
         print(f"[SiglipInfer] 加载基础模型: {self.model_path}")
         self.model, self.processor = self._load_model()
@@ -169,39 +183,55 @@ class SiglipInfer:
     # ── 模型构建 ────────────────────────────────────────────────
 
     def _load_model(self):
-        """加载 SigLIP 基础模型 + 训练权重"""
-        # 检查路径是否存在
+        """加载 SigLIP2 base model + 跨视角池化, 构建 MultiViewSigLIPModel。
+
+        与参考脚本 test_video_siglip2_multiview_recursive.py::load_model 对齐:
+        base 用 AutoModel 加载, pooler 为 CrossViewAttentionPooler,
+        二者封装为 MultiViewSigLIPModel, 再从 checkpoint 加载训练权重。
+        """
         model_path = Path(self.model_path)
         if not model_path.exists():
             raise FileNotFoundError(f"Model path does not exist: {self.model_path}")
 
-        print(f"[SiglipInfer] Loading model from: {model_path}")
+        print(f"[SiglipInfer] Loading base model from: {model_path}")
+        base_model = AutoModel.from_pretrained(str(model_path), local_files_only=True)
+        processor = AutoProcessor.from_pretrained(str(model_path), local_files_only=True)
 
-        # 尝试多种加载方式
-        try:
-            # 方法1: 使用相对路径
-            model = SiglipModel.from_pretrained(str(model_path), local_files_only=True)
-            processor = SiglipProcessor.from_pretrained(str(model_path), local_files_only=True)
-        except Exception as e1:
-            print(f"[SiglipInfer] Method 1 failed: {e1}")
-            try:
-                # 方法2: 添加 trust_remote_code
-                model = SiglipModel.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-                processor = SiglipProcessor.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-            except Exception as e2:
-                print(f"[SiglipInfer] Method 2 failed: {e2}")
-                # 方法3: 使用 AutoModel
-                model = AutoModel.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-                processor = AutoProcessor.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
+        embed_dim = base_model.config.vision_config.hidden_size
+        print(f"[SiglipInfer] 视觉特征维度: {embed_dim}")
 
-        checkpoint = torch.load(self.checkpoint_path, map_location="cpu", weights_only=False)
-        model_state = checkpoint.get("model_state_dict", checkpoint)
+        pooler = CrossViewAttentionPooler(
+            embed_dim=embed_dim,
+            num_queries=self.num_query_tokens,
+            num_heads=self.pooler_num_heads,
+            num_layers=self.pooler_num_layers,
+            dropout=0.0,
+        )
+        model = MultiViewSigLIPModel(
+            base_model, pooler,
+            num_views=self.num_views,
+            embed_dim=embed_dim,
+        )
 
-        incompatible = model.load_state_dict(model_state, strict=False)
-        if getattr(incompatible, "missing_keys", None):
-            print(f"[SiglipInfer] 缺失键: {incompatible.missing_keys}")
-        if getattr(incompatible, "unexpected_keys", None):
-            print(f"[SiglipInfer] 多余键: {incompatible.unexpected_keys}")
+        if self.use_pretrained:
+            print("[SiglipInfer] use_pretrained=True, 使用预训练 base (pooler 随机初始化)")
+        elif self.checkpoint_path and Path(self.checkpoint_path).exists():
+            print(f"[SiglipInfer] 加载多视角训练权重: {self.checkpoint_path}")
+            checkpoint = torch.load(self.checkpoint_path, map_location="cpu", weights_only=False)
+            model_state = checkpoint.get("model_state_dict", checkpoint)
+            incompatible = model.load_state_dict(model_state, strict=False)
+            missing = getattr(incompatible, "missing_keys", []) or []
+            unexpected = getattr(incompatible, "unexpected_keys", []) or []
+            # pooler.* 为重建实现, 若与训练命名不符会在此报出
+            pooler_missing = [k for k in missing if k.startswith("pooler.")]
+            if pooler_missing:
+                print(f"[SiglipInfer] ⚠ pooler 权重未匹配 (随机初始化): {pooler_missing}")
+            if missing:
+                print(f"[SiglipInfer] 缺失键: {missing}")
+            if unexpected:
+                print(f"[SiglipInfer] 多余键: {unexpected}")
+        else:
+            print(f"[SiglipInfer] ⚠ 未找到 checkpoint: {self.checkpoint_path}, 使用预训练 base")
 
         model = model.to(self.device)
         model.eval()
@@ -251,14 +281,25 @@ class SiglipInfer:
 
     @torch.inference_mode()
     def _encode_image(self, image: Image.Image) -> np.ndarray:
-        inputs = self.processor(images=[image], return_tensors="pt")
-        pixel_values = inputs["pixel_values"].to(self.device)
+        """对一张拼接图做多视角编码: 先拆分视角, 再跨视角融合。
 
-        outputs = self.model.get_image_features(pixel_values=pixel_values)
-        feature = outputs.pooler_output
-        feature = feature / feature.norm(dim=-1, keepdim=True).clamp(min=1e-12)
+        与参考脚本 encode_multiview_frame 对齐:
+        background_mask -> split_image_to_views -> processor -> encode_views。
+        """
+        # 背景遮盖在拆分之前应用于整张拼接图
+        if self.background_mask_ratio > 0:
+            image = apply_background_mask(image, self.background_mask_ratio)
 
-        return feature[0].detach().cpu().numpy().astype(np.float32)
+        views = split_image_to_views(image)
+        if len(views) != self.num_views:
+            print(f"[SiglipInfer] ⚠ 拼接图拆分为 {len(views)} 个视角, "
+                  f"与 num_views={self.num_views} 不一致")
+
+        inputs = self.processor(images=views, return_tensors="pt")
+        pixel_values = inputs["pixel_values"].to(self.device)  # [V, C, H, W]
+
+        fused = self.model.encode_views(pixel_values)  # [1, D]
+        return fused[0].detach().cpu().numpy().astype(np.float32)
 
     def predict(self, req: PredictRequest) -> PredictResponse:
         t_start = time.time()
