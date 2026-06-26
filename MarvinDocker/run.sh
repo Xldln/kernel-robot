@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IP="${1:-192.168.13.190}"
+IP="${1:-192.168.12.190}"
 MODE="${2:-all}"
 ATTACH=1
 if [ "${3:-}" = "--no-attach" ] || [ "${ATTACH:-}" = "0" ]; then
@@ -30,11 +30,24 @@ mkdir -p "${ROOT_DIR}/ros2_ws/log/runtime"
 
 if docker ps --format '{{.Names}}' | grep -qx marvin_dev; then
   if [ "${MODE}" = "base" ] || [ "${MODE}" = "action" ] || [ "${MODE}" = "run" ]; then
-    echo "[INFO] marvin_dev is already running; executing ${MODE}."
-    docker exec -d marvin_dev bash -lc "/scripts/StartAll.sh '${IP}' '${MODE}' --no-attach"
-    exit 0
+    if [ "${ATTACH}" = "0" ]; then
+      echo "[INFO] marvin_dev is already running; executing ${MODE} (background)."
+      docker exec -d marvin_dev bash -lc "/scripts/StartAll.sh '${IP}' '${MODE}' --no-attach"
+      exit 0
+    fi
+    echo "[INFO] marvin_dev is already running; restarting ${MODE} and attaching..."
+    docker exec -d marvin_dev bash -lc "/scripts/StartAll.sh '${IP}' 'base' --no-attach"
+    sleep 3
+    exec docker exec -it marvin_dev bash -lc 'tmux attach -t marvin || bash'
   fi
-  echo "[INFO] marvin_dev is already running; attaching to tmux session."
+  # MODE=all (default): attach to existing session, or restart base if tmux is dead
+  if docker exec marvin_dev tmux has-session -t marvin 2>/dev/null; then
+    echo "[INFO] marvin_dev is already running; attaching to tmux session."
+    exec docker exec -it marvin_dev bash -lc 'tmux attach -t marvin || bash'
+  fi
+  echo "[INFO] marvin_dev running but no tmux session; restarting base..."
+  docker exec -d marvin_dev bash -lc "/scripts/StartAll.sh '${IP}' 'base' --no-attach"
+  sleep 3
   exec docker exec -it marvin_dev bash -lc 'tmux attach -t marvin || bash'
 fi
 
@@ -77,7 +90,7 @@ set -g mouse on
 set -g history-limit 100000
 setw -g mode-keys vi
 EOF
-cat >> ~/.bashrc <<'EOF'
+cat >> ~/.bashrc <<'"'"'EOF'"'"'
 [ -f /opt/ros/humble/setup.bash ] && source /opt/ros/humble/setup.bash
 [ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash
 EOF
@@ -88,7 +101,7 @@ fi
 '
 
 if [ "${ATTACH}" = "0" ]; then
-  docker run -d --rm "${DOCKER_RUN_ARGS[@]}" marvinfabric:latest bash -lc "${CONTAINER_CMD}" >/dev/null
+  docker run -d "${DOCKER_RUN_ARGS[@]}" marvinfabric:latest bash -lc "${CONTAINER_CMD}" >/dev/null
 else
-  docker run -it --rm "${DOCKER_RUN_ARGS[@]}" marvinfabric:latest bash -lc "${CONTAINER_CMD}"
+  docker run -it "${DOCKER_RUN_ARGS[@]}" marvinfabric:latest bash -lc "${CONTAINER_CMD}"
 fi

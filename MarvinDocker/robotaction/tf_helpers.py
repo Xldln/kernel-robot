@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import random
 import time
 from typing import Optional
 
@@ -23,10 +24,22 @@ class FusionTfMixin:
     def _stamp_to_ns(stamp) -> int:
         return int(stamp.sec) * 1_000_000_000 + int(stamp.nanosec)
 
-    def _cached_object_frames(self, target_norm: Optional[str] = None):
+    @staticmethod
+    def _target_norms(target) -> Optional[set]:
+        if target is None:
+            return None
+        if isinstance(target, (list, tuple, set)):
+            values = target
+        else:
+            values = [target]
+        norms = {normalize_obj_name(value) for value in values if str(value).strip()}
+        return norms or None
+
+    def _cached_object_frames(self, target_norm=None):
         if self.object_tf_watcher is None:
             return {}
 
+        target_norms = self._target_norms(target_norm)
         now_ns = self.get_clock().now().nanoseconds
         frames = {}
         for child, ts in self.object_tf_watcher.snapshot().items():
@@ -34,7 +47,7 @@ class FusionTfMixin:
             if parent not in self.camera_frames:
                 continue
             child_norm = tf_to_template(child)
-            if target_norm is not None and child_norm != target_norm:
+            if target_norms is not None and child_norm not in target_norms:
                 continue
             stamp_ns = self._stamp_to_ns(ts.header.stamp)
             age = (now_ns - stamp_ns) / 1e9
@@ -50,7 +63,7 @@ class FusionTfMixin:
         poll_interval: float = 0.02,
     ):
         start = time.time()
-        target_norm = normalize_obj_name(target) if target is not None else None
+        target_norm = self._target_norms(target)
 
         while rclpy.ok():
             frames = {}
@@ -73,7 +86,7 @@ class FusionTfMixin:
                         if parent not in self.camera_frames:
                             continue
                         child_norm = tf_to_template(child)
-                        if target_norm is not None and child_norm != target_norm:
+                        if target_norm is not None and child_norm not in target_norm:
                             continue
                         try:
                             ts = self.tf_buffer.lookup_transform(
@@ -160,28 +173,74 @@ class FusionTfMixin:
         )
 
     def _select_instance(self, step, frames) -> Optional[str]:
-        target_norm = normalize_obj_name(step.target)
-        candidates = [frame for frame in frames if normalize_obj_name(frame) == target_norm]
+        target_norms = set(normalize_obj_name(target) for target in step.target_names())
+        candidates = [
+            frame for frame in frames if normalize_obj_name(frame) in target_norms
+        ]
         if not candidates:
             debug_names = ", ".join(
                 [f"{frame}->{normalize_obj_name(frame)}" for frame in frames.keys()]
             )
             self.get_logger().warning(
-                f"[Select] 未找到 target='{step.target}'(norm='{target_norm}'), 可用frames: {debug_names}"
+                f"[Select] 未找到 target='{step.display_target()}'"
+                f"(norm='{sorted(target_norms)}'), 可用frames: {debug_names}"
             )
             return None
 
-        def get_y(inst_name):
-            ts = self._lookup_transform_base_to_instance(inst_name)
+        valid = []
+        invalid = []
+
+        def get_y(inst_name, ts=None):
+            if ts is None:
+                ts = self._lookup_transform_base_to_instance(inst_name)
             if ts is None:
                 return float("inf")
             return ts.transform.translation.y
 
-        candidates.sort(key=get_y)
-        selected = candidates[0]
+        def get_z(inst_name, ts=None):
+            if ts is None:
+                ts = self._lookup_transform_base_to_instance(inst_name)
+            if ts is None:
+                return float("-inf")
+            return ts.transform.translation.z
+
+        for candidate in candidates:
+            ts = self._lookup_transform_base_to_instance(candidate)
+            if ts is None:
+                invalid.append(candidate)
+                continue
+            valid.append((candidate, ts))
+
+        if not valid:
+            self.get_logger().warning(
+                f"[Select] target='{step.display_target()}' 有 camera TF 但无法转换到 "
+                f"'{self.base_frame}': {', '.join(candidates)}"
+            )
+            return None
+
+        policy = str(getattr(step, "policy", "first") or "first").strip().lower()
+        if policy == "random":
+            selected, _ = random.choice(valid)
+            self.get_logger().info(
+                f"[Select] policy=random target='{step.display_target()}' 候选: "
+                + ", ".join(
+                    f"{name}(z={get_z(name, ts):.3f}, y={get_y(name, ts):.3f})"
+                    for name, ts in valid
+                )
+                + (f"; 无base位姿: {', '.join(invalid)}" if invalid else "")
+                + f" -> 随机选择: '{selected}'"
+            )
+            return selected
+
+        valid.sort(key=lambda item: (-get_z(item[0], item[1]), get_y(item[0], item[1])))
+        selected = valid[0][0]
         self.get_logger().info(
-            f"[Select] target='{step.target}' 候选: "
-            + ", ".join(f"{cand}(y={get_y(cand):.3f})" for cand in candidates)
+            f"[Select] policy={policy} target='{step.display_target()}' 候选: "
+            + ", ".join(
+                f"{name}(z={get_z(name, ts):.3f}, y={get_y(name, ts):.3f})"
+                for name, ts in valid
+            )
+            + (f"; 无base位姿: {', '.join(invalid)}" if invalid else "")
             + f" -> 选择: '{selected}'"
         )
         return selected
@@ -191,13 +250,13 @@ class FusionTfMixin:
         target: str,
         timeout: float = 2.0,
         settle_time: float = 0.25,
-        poll_interval: float = 0.03,
+        poll_interval: float = 1.0,
     ):
         start = time.time()
         last_set = None
         last_change_t = time.time()
         last_frames = {}
-        target_norm = normalize_obj_name(target)
+        target_norm = self._target_norms(target)
 
         while rclpy.ok():
             frames = self.get_camera_link_frames(

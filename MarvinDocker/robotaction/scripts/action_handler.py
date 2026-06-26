@@ -1,4 +1,6 @@
 import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent))
 sys.path.append("/robotaction/scripts")
 from pose_correct import correct_orientation
 import numpy as np
@@ -33,9 +35,12 @@ class ActionHandler:
 
         # 跳过空 block，避免 block={}
         blocks = [b for b in blocks if isinstance(b, dict) and b]
+        blocks = self._select_blocks_for_arm(blocks, task_arm)
 
         if not blocks:
-            self._warn(f"Action '{action_name}' not found or empty in template.")
+            self._warn(
+                f"Action '{action_name}' not found or no block matches arm='{task_arm}'."
+            )
             return []
 
         all_kps = []
@@ -47,6 +52,59 @@ class ActionHandler:
                 )
             )
         return all_kps
+
+    def process_absolute(self, action_name, task_arm=None, task_speed=1.0):
+        blocks = self.action_map.get(action_name, [])
+        if not isinstance(blocks, list):
+            blocks = [blocks]
+
+        blocks = [b for b in blocks if isinstance(b, dict) and b]
+        blocks = self._select_blocks_for_arm(blocks, task_arm)
+
+        if not blocks:
+            self._warn(
+                f"Absolute action '{action_name}' not found or no block matches arm='{task_arm}'."
+            )
+            return []
+
+        all_kps = []
+        for block in blocks:
+            all_kps.extend(
+                self._process_single_block_absolute(
+                    block,
+                    action_name,
+                    task_arm=task_arm,
+                    task_speed=task_speed,
+                )
+            )
+        return all_kps
+
+    @staticmethod
+    def _normalize_arm(arm):
+        return str(arm or "").strip().lower()
+
+    def _select_blocks_for_arm(self, blocks, task_arm):
+        task_arm_n = self._normalize_arm(task_arm)
+        if not task_arm_n or task_arm_n in ("correct", "copy last one"):
+            return blocks
+
+        arm_blocks = [
+            block for block in blocks
+            if self._normalize_arm(block.get("arm")) == task_arm_n
+        ]
+        if arm_blocks:
+            return arm_blocks
+
+        generic_blocks = [
+            block for block in blocks
+            if not self._normalize_arm(block.get("arm"))
+        ]
+        has_arm_specific_blocks = any(
+            self._normalize_arm(block.get("arm")) for block in blocks
+        )
+        if has_arm_specific_blocks:
+            return generic_blocks
+        return blocks
 
     def _process_single_block(self, block, action_name, ts_transform,
                             task_arm=None, task_speed=None, correction_mode="none"):
@@ -99,6 +157,57 @@ class ActionHandler:
                 float(rotation_constraint[2])
             ],
             "speed": float(speed if speed is not None else 1.0),
+            "gripper_value": gripper_states,
+            "time": time_list,
+        }]
+
+    def _process_single_block_absolute(self, block, action_name, task_arm=None, task_speed=None):
+        if block is None:
+            return []
+
+        rotation_constraint = block.get("rotation_constraint", [1, 1, 1])
+        pose_abs = block.get("pose_relative")
+        gripper_states = block.get("gripper_state", [])
+        time_list = block.get("time", [])
+
+        if pose_abs is None:
+            self._warn("Warning: pose_relative is None in absolute block: %s" % (block,))
+            return []
+        if isinstance(pose_abs[0], (float, int)):
+            pose_abs_list = [pose_abs]
+        else:
+            pose_abs_list = pose_abs
+
+        if not isinstance(gripper_states, list):
+            gripper_states = [gripper_states]
+        if not isinstance(time_list, list):
+            time_list = [time_list]
+
+        final_arm = task_arm or block.get("arm")
+        poses = []
+        for pose in pose_abs_list:
+            pos_world = np.array(pose[:3], dtype=float)
+            quat_world = np.array(pose[3:], dtype=float)
+            if np.linalg.norm(quat_world) > 1e-8:
+                quat_world = quat_world / np.linalg.norm(quat_world)
+            else:
+                quat_world = np.array([0.0, 0.0, 0.0, 1.0], dtype=float)
+            poses.append(self.to_pose_msg(pos_world.tolist(), quat_world.tolist()))
+
+        if final_arm not in ("correct", "copy last one") and final_arm is not None:
+            if self.node:
+                self.node.last_arm = final_arm
+
+        return [{
+            "name": action_name,
+            "arm": final_arm,
+            "poses": poses,
+            "constraints": [
+                float(rotation_constraint[0]),
+                float(rotation_constraint[1]),
+                float(rotation_constraint[2])
+            ],
+            "speed": float(task_speed if task_speed is not None else 1.0),
             "gripper_value": gripper_states,
             "time": time_list,
         }]

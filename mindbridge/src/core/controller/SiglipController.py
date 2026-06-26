@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 
+import numpy as np
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 
@@ -13,6 +14,7 @@ from mindbridge.src.core.service.SiglipInfer import SiglipInfer
 infer_router = APIRouter(prefix="/infer", tags=["SigLIP Inference"])
 
 infer_engine: SiglipInfer | None = None
+_ema_state: np.ndarray | None = None  # 相似度 EMA 状态，跨请求持续累积
 
 
 def init_engine(config_path: str = "/workspace/mindbridge/src/core/config/siglip-config.yaml"):
@@ -21,6 +23,14 @@ def init_engine(config_path: str = "/workspace/mindbridge/src/core/config/siglip
     print(f"Loading SigLIP model from config: {config_path}")
     infer_engine = SiglipInfer(config_path)
     return infer_engine
+
+
+def _do_predict(req: PredictRequest) -> PredictResponse:
+    """执行推理并维护 EMA 状态。"""
+    global _ema_state
+    result, new_ema = infer_engine.predict(req, ema_state=_ema_state)
+    _ema_state = new_ema
+    return result
 
 
 # ── raw bytes 端点（推荐，无 base64 开销） ──────────────────────
@@ -45,7 +55,7 @@ async def predict_raw(
     image_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
     req = PredictRequest(request_id=request_id, image_b64=image_b64)
-    result = infer_engine.predict(req)
+    result = _do_predict(req)
 
     # 返回 JSON 响应（client.classify_state() 期望 r.json()）
     return JSONResponse(content=result.model_dump())
@@ -58,7 +68,7 @@ async def predict(body: PredictRequest):
     """base64 图片推理（特征匹配）。"""
     if infer_engine is None:
         raise HTTPException(status_code=503, detail="Engine not initialized")
-    return infer_engine.predict(body)
+    return _do_predict(body)
 
 
 @infer_router.post("/predict/file", response_model=PredictResponse)
@@ -73,4 +83,4 @@ async def predict_file(
     image_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
     req = PredictRequest(image_b64=image_b64)
-    return infer_engine.predict(req)
+    return _do_predict(req)

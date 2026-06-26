@@ -79,7 +79,7 @@ run_robot_action() {
   fi
   tmux select-pane -t "${SESSION}:0.6" -T "ROBOT_ACTION"
   tmux send-keys -t "${SESSION}:0.6" C-c
-  tmux send-keys -t "${SESSION}:0.6" "bash -lc '${SET_ROS_DOMAIN_ID}; ${PRELUDE}; sleep 3 && python3 /robotaction/robot_action.py --object_yaml_path /robotaction/data/0519/test_pencilbag.yaml --status_json_path /robotaction/data/0519/graph_info.json --status_topic /siglip2/result --progress_topic /control/task_percentage --object_tf_topic /tf'" C-m
+  tmux send-keys -t "${SESSION}:0.6" "bash -lc '${SET_ROS_DOMAIN_ID}; ${PRELUDE}; sleep 3 && python3 /robotaction/robot_action.py --object_yaml_path /robotaction/data/0626/test_box.yaml --status_json_path /robotaction/data/0626/gift_m8_ego_0623.json --status_topic /siglip2/result --progress_topic /control/task_percentage --object_tf_topic /tf'" C-m
 }
 
 case "${MODE}" in

@@ -1,0 +1,140 @@
+{
+  "nodes": [
+    {
+      "node_id": "001",
+      "state_description": "The left gripper approaches the cuboid box; the small toy and gift bag remain on the table.",
+      "next_action": [
+        { 
+          "target": "cuboid box",
+          "action_name": "pick",
+          "arm": "left",
+          "speed": 0.8,
+          "correction_mode": "forward"
+        },
+        { 
+          "target": "home",
+          "action_name": "location",
+          "arm": "copy last one",
+          "speed": 0.8,
+          "correction_mode": "forward"
+        }     
+      ],
+      "parents": null,
+      "center_feature": null
+    },
+    {
+      "node_id": "002",
+      "state_description": "The left gripper holds the cuboid box; the right gripper grasps the yellow tassel to open it.",
+      "next_action": [
+        { 
+          "target": "yellow tassel",
+          "action_name": "pull",
+          "arm": "right",
+          "speed": 0.8,
+          "correction_mode": "forward",
+          "finish_home": true
+        }
+      ],
+      "center_feature": null
+    },
+    {
+      "node_id": "003",
+      "state_description": "The cuboid box is open; the right gripper moves toward the small toy.",
+      "next_action": [
+        { 
+          "target": "small toy",
+          "action_name": "pick",
+          "arm": "right",
+          "speed": 0.8,
+          "correction_mode": "forward"
+        }
+      ],
+      "center_feature": null
+    },
+    {
+      "node_id": "004",
+      "state_description": "The right gripper picks up the small toy and moves it above the open box.",
+      "next_action": [
+        { 
+          "target": "cuboid box",
+          "action_name": "near",
+          "arm": "right",
+          "speed": 0.8,
+          "correction_mode": "forward",
+          "finish_home": true
+        }
+      ],
+      "center_feature": null
+    },
+    {
+      "node_id": "005",
+      "state_description": "The right gripper places the small toy into the cuboid box and closes the cuboid box.",
+      "next_action": [
+        { 
+          "target": "cuboid box",
+          "action_name": "release",
+          "arm": "right",
+          "speed": 0.8,
+          "correction_mode": "forward"
+        },
+        { 
+          "target": "cuboid box",
+          "action_name": "push",
+          "arm": "right",
+          "speed": 0.8,
+          "correction_mode": "forward",
+          "finish_home": true
+        }
+      ],
+      "center_feature": null
+    },
+    {
+      "node_id": "006",
+      "state_description": "The small toy is inside the closed cuboid box; the left gripper moves to grasp the cuboid box.",
+      "next_action": [
+        { 
+          "target": "gift bag",
+          "action_name": "pick",
+          "arm": "right",
+          "speed": 0.8,
+          "correction_mode": "forward",
+          "finish_home": true
+        }
+      ],
+      "center_feature": null
+    },
+    {
+      "node_id": "007",
+      "state_description": "The left gripper lifts the cuboid box above the gift bag.",
+      "next_action": [
+        { 
+          "target": "gift bag",
+          "action_name": "near",
+          "arm": "left",
+          "speed": 0.8,
+          "correction_mode": "reverse",
+          "finish_home": true
+        }
+      ],
+      "center_feature": null
+    },
+    {
+      "node_id": "008",
+      "state_description": "The left gripper releases the cuboid box into the gift bag; both grippers move away.",
+      "next_action": [
+        { 
+          "target": "gift bag",
+          "action_name": "place",
+          "arm": "left",
+          "speed": 0.8,
+          "correction_mode": "reverse",
+          "finish_home": true
+        }
+      ],
+      "parents": [
+        "007"
+      ],
+      "center_feature": null
+    }
+  ]
+}

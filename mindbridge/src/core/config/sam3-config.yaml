@@ -5,14 +5,14 @@ sam3:
   code_base: /workspace/mindbridge/models/sam3-main
 
   # ── 模型权重路径 ──
-  checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3_quantized.pt
-
+  # checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3_quantized.pt
+  checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3.1_multiplex.pt
   # ── 推理参数 ──
   prompts:
-    - pencilbag
-    - pen
-    - pig_zipper
-    - simple_zipper
+    - gift bag
+    - small toy
+    - yellow tassel
+    - cuboid box
     # - tiny object
     # - object
-  score_threshold: 0.4
+  score_threshold: 0.2

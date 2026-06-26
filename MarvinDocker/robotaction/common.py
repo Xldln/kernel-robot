@@ -5,7 +5,7 @@ import dataclasses
 import importlib.util
 import re
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Any, Callable, List, Optional
 
 import numpy as np
 from geometry_msgs.msg import TransformStamped
@@ -183,7 +183,7 @@ def matrix_to_transform_stamped(
 @dataclasses.dataclass
 class Step:
     action_name: str
-    target: str
+    target: Any
     arm: Optional[str]
     speed: Optional[float]
     correction_mode: str
@@ -192,19 +192,68 @@ class Step:
     approach_count: int = 0
     status_timeout: float = 2.0
     task_finish_timeout: float = 60.0
+    policy: str = "first"
+
+    def target_names(self) -> List[str]:
+        raw = self.target
+        if isinstance(raw, (list, tuple, set)):
+            values = raw
+        elif raw is None:
+            values = []
+        else:
+            values = [raw]
+        return [str(value).strip() for value in values if str(value).strip()]
+
+    def primary_target(self) -> str:
+        names = self.target_names()
+        return names[0] if names else ""
+
+    def display_target(self) -> str:
+        names = self.target_names()
+        if not names:
+            return ""
+        if len(names) == 1:
+            return names[0]
+        return "[" + ", ".join(names) + "]"
+
+    def template_target_for_instance(self, inst: str) -> str:
+        inst_norm = normalize_obj_name(inst)
+        for target in self.target_names():
+            if normalize_obj_name(target) == inst_norm:
+                return target
+        return self.primary_target()
 
 
 class ArmResolver:
     def __init__(self, get_last_arm: Callable):
         self._get_last_arm = get_last_arm
 
-    def resolve(self, arm_spec: Optional[str], translation=None) -> str:
+    def resolve(self, arm_spec: Optional[str], translation=None, rotation=None) -> str:
         if arm_spec == "copy last one":
             return self._get_last_arm() or "right"
         if arm_spec == "correct":
-            if translation is not None and translation.y > 0:
+            if translation is None:
+                return self._get_last_arm() or "right"
+            if translation.y > 0.1:
                 return "left"
-            return "right"
+            if translation.y < -0.1:
+                return "right"
+            
+            rot = quaternion_xyzw_to_matrix(
+                float(rotation.x),
+                float(rotation.y),
+                float(rotation.z),
+                float(rotation.w),
+            )
+            object_x_axis = rot[:, 0]
+            signed_angle = float(np.arctan2(object_x_axis[1], object_x_axis[0]))
+            angle_epsilon = np.deg2rad(1.0)
+            if -0.1 < translation.y < 0.1:
+                if signed_angle < -angle_epsilon:
+                    return "left"
+                if signed_angle > angle_epsilon:
+                    return "right"
+            return self._get_last_arm() or "right"
         return arm_spec or "right"
 
 

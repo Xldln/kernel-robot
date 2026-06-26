@@ -3,6 +3,8 @@
 
 import argparse
 import threading
+import sys
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from fake_interface_pkg.msg import KeypointPoseArray
@@ -12,8 +14,11 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from std_msgs.msg import String
 from tf2_ros import Buffer, TransformListener
-import sys
-sys.path.append("/")  # Ensure robotaction is in the path for imports
+
+PACKAGE_PARENT = str(Path(__file__).resolve().parent.parent)
+if PACKAGE_PARENT not in sys.path:
+    sys.path.insert(0, PACKAGE_PARENT)
+
 from robotaction.common import (
     ActionHandler,
     ArmResolver,
@@ -25,6 +30,9 @@ from robotaction.execution import FusionExecutionMixin
 from robotaction.state_machine import FusionStateMixin
 from robotaction.tf_helpers import FusionTfMixin
 from robotaction.watchers import ObjectTfWatcher, StatusWatcher, TaskProgressWatcher
+import robotaction.common as robotaction_common
+import robotaction.execution as robotaction_execution
+import robotaction.state_machine as robotaction_state_machine
 
 
 class FusionNode(FusionStateMixin, FusionExecutionMixin, FusionTfMixin, Node):
@@ -90,6 +98,7 @@ class FusionNode(FusionStateMixin, FusionExecutionMixin, FusionTfMixin, Node):
         self.active_steps: List[Step] = []
         self.active_step_idx = 0
         self.last_ignored_state = None
+        self._last_waiting_state_log_time = 0.0
         self._control_lock = threading.Lock()
         self.timer = self.create_timer(
             0.2,
@@ -111,6 +120,13 @@ class FusionNode(FusionStateMixin, FusionExecutionMixin, FusionTfMixin, Node):
         self.get_logger().info(
             f"[Config] status_topic={status_topic}, progress_topic={progress_topic}, "
             f"object_tf_topic={object_tf_topic or '<tf_buffer>'}, base_frame={self.base_frame}"
+        )
+        self.get_logger().info(f"[Config] loaded {len(self.status_tasks)} status actions")
+        self.get_logger().info(
+            "[Config] robotaction modules: "
+            f"common={robotaction_common.__file__}, "
+            f"execution={robotaction_execution.__file__}, "
+            f"state_machine={robotaction_state_machine.__file__}"
         )
 
 

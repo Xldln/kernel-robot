@@ -14,9 +14,10 @@ class FusionStateMixin:
     def _is_home_step(self, step: Step):
         if str(step.action_name).strip().lower() == "home":
             return True
-        if normalize_obj_name(step.target) == "home":
-            return True
         return False
+
+    def _is_absolute_home_step(self, step: Step):
+        return normalize_obj_name(step.primary_target()) == "home" and not self._is_home_step(step)
 
     def _normalize_arm_text(self, arm: Optional[str]) -> str:
         return str(arm or "").strip().lower()
@@ -27,22 +28,29 @@ class FusionStateMixin:
         tasks = self.status_tasks.get(state_name)
         if self._is_home_token(tasks):
             tasks = self._home_task_default()
+        if isinstance(tasks, dict):
+            tasks = [tasks]
         if not isinstance(tasks, list) or len(tasks) == 0:
             return None
         first = tasks[0] or {}
         return first.get("arm")
 
     @staticmethod
-    def _normalize_action_signature(
-        target: Optional[str], action_name: Optional[str], arm: Optional[str]
-    ):
-        target_n = normalize_obj_name(target or "")
+    def _normalize_action_signature(target, action_name: Optional[str], arm: Optional[str]):
+        if isinstance(target, (list, tuple, set)):
+            target_n = tuple(sorted(normalize_obj_name(item) for item in target if item))
+        else:
+            target_n = normalize_obj_name(target or "")
         action_n = str(action_name or "").strip().lower()
         arm_n = str(arm or "right").strip().lower()
         return target_n, action_n, arm_n
 
     def _step_signature(self, step: Step):
-        return self._normalize_action_signature(step.target, step.action_name, step.arm)
+        return self._normalize_action_signature(
+            step.target_names(),
+            step.action_name,
+            step.arm,
+        )
 
     def _first_action_signature_of_state(self, state_name: Optional[str]):
         if not state_name:
@@ -50,11 +58,13 @@ class FusionStateMixin:
         tasks = self.status_tasks.get(state_name)
         if self._is_home_token(tasks):
             tasks = self._home_task_default()
+        if isinstance(tasks, dict):
+            tasks = [tasks]
         if not isinstance(tasks, list) or len(tasks) == 0:
             return None
         first = tasks[0] or {}
         return self._normalize_action_signature(
-            first.get("target"),
+            first.get("targets", first.get("objects", first.get("target"))),
             first.get("action_name"),
             first.get("arm"),
         )
@@ -78,11 +88,17 @@ class FusionStateMixin:
 
     def _build_steps_for_state(self, state_name: str, tasks) -> List[Step]:
         steps = []
+        if isinstance(tasks, dict):
+            tasks = [tasks]
         for i, task in enumerate(tasks):
+            target = task.get(
+                "targets",
+                task.get("objects", task.get("target", "")),
+            )
             steps.append(
                 Step(
                     action_name=task.get("action_name", f"step_{i}"),
-                    target=task.get("target", ""),
+                    target=target,
                     arm=task.get("arm"),
                     speed=task.get("speed"),
                     correction_mode=task.get("correction_mode", "org"),
@@ -93,6 +109,7 @@ class FusionStateMixin:
                     approach_count=task.get("approach_count", 0),
                     status_timeout=float(task.get("status_timeout", 2.0)),
                     task_finish_timeout=float(task.get("task_finish_timeout", 60.0)),
+                    policy=str(task.get("policy", "first")).strip().lower() or "first",
                 )
             )
         return steps
@@ -133,6 +150,9 @@ class FusionStateMixin:
         if self._is_home_token(tasks):
             tasks = self._home_task_default()
 
+        if isinstance(tasks, dict):
+            tasks = [tasks]
+
         if not isinstance(tasks, list) or len(tasks) == 0:
             self.get_logger().info(f"[State] '{state_name}' -> empty,跳过")
             self.active_state = None
@@ -155,7 +175,7 @@ class FusionStateMixin:
         tasks = self.status_tasks.get(state_name)
         if self._is_home_token(tasks):
             return True
-        return isinstance(tasks, list) and len(tasks) > 0
+        return (isinstance(tasks, list) and len(tasks) > 0) or isinstance(tasks, dict)
 
     def _get_preempt_state(self) -> Optional[str]:
         stable_state = self.status_watcher.get_stable_state()
@@ -173,7 +193,7 @@ class FusionStateMixin:
             if next_first_sig is not None and current_sig == next_first_sig:
                 self.get_logger().info(
                     f"[Preempt] 忽略状态切换 '{self.active_state}' -> '{stable_state}'，"
-                    f"因首动作与当前动作相同: target='{current_step.target}', "
+                    f"因首动作与当前动作相同: target='{current_step.display_target()}', "
                     f"action='{current_step.action_name}', arm='{current_step.arm}'"
                 )
                 return None
@@ -218,7 +238,7 @@ class FusionStateMixin:
 
             if self.task_progress_watcher.is_finished(
                 silence_after_zero=silence_after_zero,
-                finish_percentage=0.97,
+                finish_percentage=0.99,
             ):
                 self.get_logger().info("[Progress] 当前机械臂动作结束")
                 return TaskStatus.SUCCESS, None
@@ -238,6 +258,11 @@ class FusionStateMixin:
             stable_state = self.status_watcher.get_stable_state()
             if self.active_state is None:
                 if stable_state is None:
+                    now = time.time()
+                    last_log = getattr(self, "_last_waiting_state_log_time", 0.0)
+                    if now - last_log >= 5.0:
+                        self._last_waiting_state_log_time = now
+                        self.get_logger().info("[State] 等待稳定状态输入")
                     return
                 self._activate_state(stable_state)
                 return
@@ -281,17 +306,88 @@ class FusionStateMixin:
                     self._activate_state(home_preempt_state)
                 return
 
+            if self._is_absolute_home_step(step):
+                self.get_logger().info(
+                    f"[Step] state='{self.active_state}' "
+                    f"step={self.active_step_idx + 1}/{len(self.active_steps)} "
+                    f"target='home' action='{step.action_name}'"
+                )
+
+                self.task_progress_watcher.reset()
+                self._publish_current_action(step, phase="run")
+                status = self._run_step(step, "home")
+                if status != TaskStatus.SUCCESS:
+                    self.get_logger().warning(
+                        f"[Step] 执行失败 target='home' action='{step.action_name}'"
+                    )
+                    return
+
+                wait_status, preempt_state = self._wait_until_finished_or_preempt(
+                    step,
+                    silence_after_zero=0.05,
+                    poll_interval=0.05,
+                    allow_preempt=False,
+                )
+                if wait_status == TaskStatus.PREEMPT:
+                    old_state = self.active_state
+                    self.active_state = None
+                    self.active_steps = []
+                    self.active_step_idx = 0
+                    self.get_logger().warning(
+                        f"[Preempt] 中断状态 '{old_state}'，切换到 '{preempt_state}'"
+                    )
+                    self._activate_state(preempt_state)
+                    return
+
+                if wait_status == TaskStatus.TIMEOUT:
+                    self.get_logger().warning(
+                        f"[Step] home动作结束等待超时 action='{step.action_name}'"
+                    )
+                    return
+
+                if wait_status != TaskStatus.SUCCESS:
+                    self.get_logger().warning(f"[Step] 等待home动作结束异常 status='{wait_status}'")
+                    return
+
+                is_last_step = self.active_step_idx == len(self.active_steps) - 1
+                if not is_last_step:
+                    self.active_step_idx += 1
+                    self.get_logger().info(
+                        f"[State] '{self.active_state}' 当前动作完成，继续执行下一个绑定动作 "
+                        f"{self.active_step_idx + 1}/{len(self.active_steps)}"
+                    )
+                    return
+
+                finished_state = self.active_state
+                self.get_logger().info(f"[State] '{finished_state}' 全部动作已完成，开始检查状态")
+                next_state = self.status_watcher.wait_stable_state(timeout=0.5, poll_interval=0.05)
+
+                self.active_state = None
+                self.active_steps = []
+                self.active_step_idx = 0
+
+                if next_state is None:
+                    self.get_logger().warning("[State] 动作组结束后 0.5s 内未等到稳定状态")
+                    return
+                if next_state != finished_state:
+                    self.get_logger().info(
+                        f"[State] 动作组后检测到状态切换: '{finished_state}' -> '{next_state}'"
+                    )
+                else:
+                    self.get_logger().info(f"[State] 动作组后稳定状态仍为 '{finished_state}'")
+                return
+
             frames = self._wait_target_instances_ready(
-                target=step.target,
+                target=step.target_names(),
                 timeout=2.0,
                 settle_time=0.25,
-                poll_interval=0.03,
+                poll_interval=0.1,
             )
             if not frames:
                 miss_key = (
                     self.active_state,
                     self.active_step_idx,
-                    normalize_obj_name(step.target),
+                    tuple(sorted(normalize_obj_name(t) for t in step.target_names())),
                     self._normalize_arm_text(step.arm),
                 )
                 if self._tf_miss_key != miss_key:
@@ -300,7 +396,7 @@ class FusionStateMixin:
 
                 self._tf_miss_streak += 1
                 self.get_logger().warning(
-                    f"[TF] 未等到 target='{step.target}' 的TF,跳过本周期 "
+                    f"[TF] 未等到 target='{step.display_target()}' 的TF,跳过本周期 "
                     f"(连续{self._tf_miss_streak}/2)"
                 )
 
@@ -310,7 +406,7 @@ class FusionStateMixin:
                     #     self.arm_resolver.resolve(step.arm, None)
                     # )
                     self.get_logger().warning(
-                        f"[TF] 连续2次未获取到 '{step.target}',执行home arm='{arm}'，并重新查询状态"
+                        f"[TF] 连续2次未获取到 '{step.display_target()}',执行home arm='{arm}'，并重新查询状态"
                     )
                     home_status, _ = self._run_home_and_wait(arm, step, allow_preempt=False)
                     if home_status != TaskStatus.SUCCESS:
@@ -333,7 +429,8 @@ class FusionStateMixin:
             self.get_logger().info(
                 f"[Step] state='{self.active_state}' "
                 f"step={self.active_step_idx + 1}/{len(self.active_steps)} "
-                f"target='{step.target}' action='{step.action_name}'"
+                f"target='{step.display_target()}' selected='{inst}' "
+                f"policy='{step.policy}' action='{step.action_name}'"
             )
 
             self.task_progress_watcher.reset()
@@ -341,7 +438,8 @@ class FusionStateMixin:
             status = self._run_step(step, inst)
             if status != TaskStatus.SUCCESS:
                 self.get_logger().warning(
-                    f"[Step] 执行失败 target='{step.target}' action='{step.action_name}'"
+                    f"[Step] 执行失败 target='{step.display_target()}' selected='{inst}' "
+                    f"action='{step.action_name}'"
                 )
                 return
 
@@ -364,7 +462,8 @@ class FusionStateMixin:
 
             if wait_status == TaskStatus.TIMEOUT:
                 self.get_logger().warning(
-                    f"[Step] 机械臂动作结束等待超时 target='{step.target}' action='{step.action_name}'"
+                    f"[Step] 机械臂动作结束等待超时 target='{step.display_target()}' "
+                    f"action='{step.action_name}'"
                 )
                 return
 
@@ -407,8 +506,8 @@ class FusionStateMixin:
 
             finished_state = self.active_state
             self.get_logger().info(f"[State] '{finished_state}' 全部动作已完成，开始检查状态")
-            time.sleep(1)
-            next_state = self.status_watcher.wait_stable_state(timeout=0.5, poll_interval=0.1)
+            # time.sleep(1)
+            next_state = self.status_watcher.wait_stable_state(timeout=0.5, poll_interval=0.01)
 
             self.active_state = None
             self.active_steps = []

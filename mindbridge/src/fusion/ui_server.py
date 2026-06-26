@@ -440,7 +440,7 @@ class ServiceController:
 
 
 class MarvinDockerController:
-    def __init__(self, *, root_dir: str = "/workspace", robot_ip: str = "192.168.13.190") -> None:
+    def __init__(self, *, root_dir: str = "/workspace", robot_ip: str = "192.168.12.190") -> None:
         self.root_dir = root_dir
         self.robot_ip = robot_ip
         self.script = os.path.join(root_dir, "MarvinDocker", "run.sh")
@@ -630,7 +630,7 @@ HTML = """<!doctype html>
 	        <div class="marvin-panel">
 	          <div class="field">
 	            <label for="marvinIp">Robot IP</label>
-	            <input id="marvinIp" value="192.168.13.190" autocomplete="off">
+	            <input id="marvinIp" value="192.168.12.190" autocomplete="off">
 	          </div>
 	          <div id="marvinDockerReady" class="muted">checking docker...</div>
 	        </div>

@@ -50,7 +50,7 @@ RUN conda init bash \
     && conda install python=3.12 -y \
     && pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
     && pip install pillow uvicorn fastapi numpy opencv-python \
-    && pip install omegaconf imageio pyyaml \
+    && pip install omegaconf imageio pyyaml pyzmq \
     && pip3 install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu128
 
 WORKDIR /workspace

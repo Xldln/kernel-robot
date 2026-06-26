@@ -15,6 +15,8 @@ logs
 output/
 MarvinDocker/ros2_ws/log
 test_video_siglip2_multiview_recursive.py
+MarvinDocker/ros2_ws/install
+MarvinDocker/robotaction_org
 
 # mindbridge/models/* - removed to allow uploading model code/configs
 *.safetensors

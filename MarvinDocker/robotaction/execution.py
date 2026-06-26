@@ -19,7 +19,9 @@ class FusionExecutionMixin:
         msg.data = json.dumps(
             {
                 "state": self.active_state,
-                "target": step.target,
+                "target": step.primary_target(),
+                "targets": step.target_names(),
+                "policy": step.policy,
                 "action_name": step.action_name,
                 "arm": step.arm,
                 "step_idx": self.active_step_idx + 1,
@@ -73,7 +75,7 @@ class FusionExecutionMixin:
             "arm": arm,
             "poses": [],
             "constraints": [100, 100, 100],
-            "speed": 0.3,
+            "speed": 1.0,
             "gripper_value": [0.0, 0.0],
             "time": [0, 0.1],
         }]
@@ -88,23 +90,47 @@ class FusionExecutionMixin:
     def publish_home_both(self):
         for arm in ["right", "left"]:
             self._home(arm)
-            time.sleep(1)
+            # time.sleep(1)
 
     def publish_home_separately(self, arm):
         self._home(arm)
 
     def _execute_step_once(self, step: Step, inst: str) -> Optional[List]:
+        if self._is_absolute_home_step(step):
+            arm = self.arm_resolver.resolve(step.arm, None)
+            self.last_arm = arm
+
+            handler = self.template_handlers.get("home")
+            if handler is None:
+                self.get_logger().warning("No handler for target 'home'")
+                return None
+
+            kps = handler.process_absolute(
+                step.action_name,
+                task_arm=arm,
+                task_speed=step.speed,
+            )
+            return kps
+
         ts = self._lookup_transform_base_to_instance(inst)
         if ts is None:
             return None
 
         translation = ts.transform.translation
-        arm = self.arm_resolver.resolve(step.arm, translation)
+        arm = self.arm_resolver.resolve(
+            step.arm,
+            translation,
+            ts.transform.rotation,
+        )
         self.last_arm = arm
 
-        handler = self.template_handlers.get(step.target)
+        template_target = step.template_target_for_instance(inst)
+        handler = self.template_handlers.get(template_target)
         if handler is None:
-            self.get_logger().warning(f"No handler for target '{step.target}'")
+            self.get_logger().warning(
+                f"No handler for target '{template_target}' selected='{inst}' "
+                f"from candidates='{step.display_target()}'"
+            )
             return None
 
         kps = handler.process_for_object(
@@ -191,8 +217,8 @@ class FusionExecutionMixin:
                     return TaskStatus.PREEMPT, preempt_state
 
             if self.task_progress_watcher.is_finished(
-                silence_after_zero=0.5,
-                finish_percentage=0.8,
+                silence_after_zero=0.3,
+                finish_percentage=0.99,
             ):
                 self.get_logger().info(f"[Home] 检测到 home 完成 arm='{arm}'")
                 return TaskStatus.SUCCESS, None
@@ -200,6 +226,6 @@ class FusionExecutionMixin:
             if (time.time() - start) >= home_timeout_sec:
                 self.get_logger().warning(f"[Home] 等待 home 完成超时 arm='{arm}'")
                 return TaskStatus.TIMEOUT, None
-            time.sleep(1)
+            # time.sleep(1)
 
         return TaskStatus.STOP, None

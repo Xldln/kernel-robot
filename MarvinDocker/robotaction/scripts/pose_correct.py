@@ -146,6 +146,30 @@ def correct_orientation(pos, quat, mode="none", arm=None,
     # mode == "reverse": Z轴朝上，X轴根据手臂方向调整
     if mode == "reverse":
         R_mat = R.from_quat(q).as_matrix()
+        axis_x = R_mat[:, 0].copy()
+        axis_y = R_mat[:, 1].copy()
+        axis_x /= np.linalg.norm(axis_x)
+        axis_y /= np.linalg.norm(axis_y)
+        z_up_norm = z_up / np.linalg.norm(z_up)
+
+        x_up_angle_deg = np.degrees(np.arccos(np.clip(np.dot(axis_x, z_up_norm), -1.0, 1.0)))
+        y_up_angle_deg = np.degrees(np.arccos(np.clip(np.dot(axis_y, z_up_norm), -1.0, 1.0)))
+
+        if x_up_angle_deg <= z_thresh_deg:
+            x_up_transform = np.array([
+                [0.0, 0.0, 1.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+            ])
+            R_mat = R_mat @ x_up_transform
+        elif y_up_angle_deg <= z_thresh_deg:
+            y_up_transform = np.array([
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [1.0, 0.0, 0.0],
+            ])
+            R_mat = R_mat @ y_up_transform
+
         z_axis = R_mat[:, 2]
         z_axis /= np.linalg.norm(z_axis)
         z_up_norm = z_up / np.linalg.norm(z_up)
@@ -178,37 +202,37 @@ def correct_orientation(pos, quat, mode="none", arm=None,
         cross_prod = np.cross(x_forward_norm, x_axis_final)
         rotation_direction = cross_prod[2]  # 正数表示逆时针，负数表示顺时针
         
-        if arm == "right":
-            if rotation_direction < 0: 
-                # 创建绕 z 轴逆时针 90 度的旋转矩阵
-                angle_rad = np.pi / 2  # 90 度
-                rotation_matrix = np.array([
-                    [np.cos(angle_rad), -np.sin(angle_rad), 0],
-                    [np.sin(angle_rad), np.cos(angle_rad), 0],
-                    [0, 0, 1]
-                ])
-                # 将旋转矩阵应用到 R_mat
-                R_mat = R_mat @ rotation_matrix
-                # 提取旋转后的坐标轴
-                new_x = R_mat[:, 0]
-                new_y = R_mat[:, 1]
-                new_z = R_mat[:, 2]
-        elif arm == "left":
-            if rotation_direction > 0:
-                print(f"[DEBUG] Left arm: rotating x CW 90 degrees")
-                # 创建绕 z 轴顺时针 90 度的旋转矩阵
-                angle_rad = -np.pi / 2  # -90 度（顺时针）
-                rotation_matrix = np.array([
-                    [np.cos(angle_rad), -np.sin(angle_rad), 0],
-                    [np.sin(angle_rad), np.cos(angle_rad), 0],
-                    [0, 0, 1]
-                ])
-                # 将旋转矩阵应用到 R_mat
-                R_mat = R_mat @ rotation_matrix
-                # 提取旋转后的坐标轴
-                new_x = R_mat[:, 0]
-                new_y = R_mat[:, 1]
-                new_z = R_mat[:, 2]
+        # if arm == "right":
+        #     if rotation_direction < 0: 
+        #         # 创建绕 z 轴逆时针 90 度的旋转矩阵
+        #         angle_rad = np.pi / 2  # 90 度
+        #         rotation_matrix = np.array([
+        #             [np.cos(angle_rad), -np.sin(angle_rad), 0],
+        #             [np.sin(angle_rad), np.cos(angle_rad), 0],
+        #             [0, 0, 1]
+        #         ])
+        #         # 将旋转矩阵应用到 R_mat
+        #         R_mat = R_mat @ rotation_matrix
+        #         # 提取旋转后的坐标轴
+        #         new_x = R_mat[:, 0]
+        #         new_y = R_mat[:, 1]
+        #         new_z = R_mat[:, 2]
+        # elif arm == "left":
+        #     if rotation_direction > 0:
+        #         print(f"[DEBUG] Left arm: rotating x CW 90 degrees")
+        #         # 创建绕 z 轴顺时针 90 度的旋转矩阵
+        #         angle_rad = -np.pi / 2  # -90 度（顺时针）
+        #         rotation_matrix = np.array([
+        #             [np.cos(angle_rad), -np.sin(angle_rad), 0],
+        #             [np.sin(angle_rad), np.cos(angle_rad), 0],
+        #             [0, 0, 1]
+        #         ])
+        #         # 将旋转矩阵应用到 R_mat
+        #         R_mat = R_mat @ rotation_matrix
+        #         # 提取旋转后的坐标轴
+        #         new_x = R_mat[:, 0]
+        #         new_y = R_mat[:, 1]
+        #         new_z = R_mat[:, 2]
 
         quat_corrected = R.from_matrix(R_mat).as_quat()
 

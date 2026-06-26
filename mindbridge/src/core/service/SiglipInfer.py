@@ -10,9 +10,10 @@ from pathlib import Path
 import cv2
 import numpy as np
 import torch
+import torch.nn as nn
 import yaml
 from PIL import Image
-from transformers import SiglipModel, SiglipProcessor, AutoModel, AutoProcessor
+from transformers import AutoModel, AutoProcessor
 
 from mindbridge.src.core.schemas.SiglipEntity import (
     PredictRequest,
@@ -22,12 +23,82 @@ from mindbridge.src.core.schemas.SiglipEntity import (
 )
 from mindbridge.src.core.tool.SiglipTools import (
     build_visualization_frame,
-    calculate_similarity,
     decode_image_b64_to_bgr,
     decode_image_b64_to_pil,
     parse_center_feature,
     upload_visualization_frame,
 )
+
+
+# =============================================================================
+# V2 Attention Pooler & Model（与 ZeroMQServer 保持一致）
+# =============================================================================
+
+class CrossViewAttentionPooler(nn.Module):
+    """Cross-attention pooler: learnable queries attend to patch tokens."""
+
+    def __init__(self, embed_dim=1152, num_queries=8, num_heads=8,
+                 num_layers=2, dropout=0.0):
+        super().__init__()
+        self.embed_dim = embed_dim
+        self.num_queries = num_queries
+
+        self.query_tokens = nn.Parameter(torch.zeros(1, num_queries, embed_dim))
+
+        self.layers = nn.ModuleList()
+        for _ in range(num_layers):
+            self.layers.append(nn.ModuleDict({
+                'cross_attn': nn.MultiheadAttention(
+                    embed_dim=embed_dim, num_heads=num_heads,
+                    dropout=dropout, batch_first=True,
+                ),
+                'norm1': nn.LayerNorm(embed_dim),
+                'norm2': nn.LayerNorm(embed_dim),
+                'ffn': nn.Sequential(
+                    nn.Linear(embed_dim, embed_dim * 4),
+                    nn.GELU(),
+                    nn.Dropout(dropout),
+                    nn.Linear(embed_dim * 4, embed_dim),
+                    nn.Dropout(dropout),
+                ),
+            }))
+
+        self.output_ln = nn.LayerNorm(embed_dim)
+
+    def forward(self, x):
+        B = x.shape[0]
+        queries = self.query_tokens.expand(B, -1, -1)
+
+        for layer in self.layers:
+            residual = queries
+            queries = layer['norm1'](queries)
+            queries = layer['cross_attn'](query=queries, key=x, value=x)[0] + residual
+
+            residual = queries
+            queries = layer['norm2'](queries)
+            queries = layer['ffn'](queries) + residual
+
+        output = queries.mean(dim=1)
+        output = self.output_ln(output)
+        return output
+
+
+class SingleViewSigLIPModel(nn.Module):
+    """V2 single-view: frozen SigLIP + CrossViewAttentionPooler on patch tokens."""
+
+    def __init__(self, base_model, pooler, embed_dim=1152):
+        super().__init__()
+        self.base_model = base_model
+        self.pooler = pooler
+        self.config = base_model.config
+
+    def encode(self, pixel_values):
+        with torch.no_grad():
+            vision_outputs = self.base_model.vision_model(pixel_values=pixel_values)
+            patch_tokens = vision_outputs.last_hidden_state  # [B, 256, D]
+        fused = self.pooler(patch_tokens)
+        fused = fused / (fused.norm(dim=-1, keepdim=True) + 1e-12)
+        return fused
 
 
 # =============================================================================
@@ -156,10 +227,16 @@ class SiglipInfer:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.topk = int(model_cfg.get("topk", 5))
 
+        # EMA 平滑配置
+        self.use_sim_ema = cfg.get("ema", {}).get("enabled", True)
+        self.ema_beta = cfg.get("ema", {}).get("beta", 0.7)
+
         print(f"[SiglipInfer] 设备: {self.device}")
         print(f"[SiglipInfer] 加载基础模型: {self.model_path}")
         self.model, self.processor = self._load_model()
         print(f"[SiglipInfer] 加载训练权重: {self.checkpoint_path}")
+        print(f"[SiglipInfer] EMA 平滑: {'开启' if self.use_sim_ema else '关闭'}"
+              + (f", beta={self.ema_beta}" if self.use_sim_ema else ""))
         print("[SiglipInfer] 模型加载完成")
 
         print(f"[SiglipInfer] 加载类别中心: {self.graph_info_path}")
@@ -169,42 +246,47 @@ class SiglipInfer:
     # ── 模型构建 ────────────────────────────────────────────────
 
     def _load_model(self):
-        """加载 SigLIP 基础模型 + 训练权重"""
-        # 检查路径是否存在
-        model_path = Path(self.model_path)
-        if not model_path.exists():
-            raise FileNotFoundError(f"Model path does not exist: {self.model_path}")
+        """加载 SigLIP 基础模型 + 训练权重（支持 V1/V2 checkpoint 自动检测）"""
+        print(f"[SiglipInfer] 加载基础模型: {self.model_path}")
+        full_model = AutoModel.from_pretrained(self.model_path)
+        processor = AutoProcessor.from_pretrained(self.model_path)
 
-        print(f"[SiglipInfer] Loading model from: {model_path}")
-
-        # 尝试多种加载方式
-        try:
-            # 方法1: 使用相对路径
-            model = SiglipModel.from_pretrained(str(model_path), local_files_only=True)
-            processor = SiglipProcessor.from_pretrained(str(model_path), local_files_only=True)
-        except Exception as e1:
-            print(f"[SiglipInfer] Method 1 failed: {e1}")
-            try:
-                # 方法2: 添加 trust_remote_code
-                model = SiglipModel.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-                processor = SiglipProcessor.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-            except Exception as e2:
-                print(f"[SiglipInfer] Method 2 failed: {e2}")
-                # 方法3: 使用 AutoModel
-                model = AutoModel.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-                processor = AutoProcessor.from_pretrained(str(model_path), local_files_only=True, trust_remote_code=True)
-
+        print(f"[SiglipInfer] 加载训练权重: {self.checkpoint_path}")
         checkpoint = torch.load(self.checkpoint_path, map_location="cpu", weights_only=False)
-        model_state = checkpoint.get("model_state_dict", checkpoint)
+        state_dict = checkpoint.get("model_state_dict", checkpoint)
 
-        incompatible = model.load_state_dict(model_state, strict=False)
-        if getattr(incompatible, "missing_keys", None):
-            print(f"[SiglipInfer] 缺失键: {incompatible.missing_keys}")
-        if getattr(incompatible, "unexpected_keys", None):
-            print(f"[SiglipInfer] 多余键: {incompatible.unexpected_keys}")
+        # 检测 V2 单视角 checkpoint: key 以 base_model. 和 pooler. 开头
+        sample_key = next(iter(state_dict))
+        is_v2 = sample_key.startswith('base_model.') and any(
+            k.startswith('pooler.') for k in state_dict)
 
-        model = model.to(self.device)
-        model.eval()
+        if is_v2:
+            embed_dim = full_model.config.vision_config.hidden_size
+            # 从 checkpoint 推断 pooler 参数
+            num_queries = state_dict['pooler.query_tokens'].shape[1]
+            num_layers = sum(1 for k in state_dict if k.endswith('.cross_attn.in_proj_weight'))
+            num_heads = 8  # 与训练配置一致
+
+            pooler = CrossViewAttentionPooler(
+                embed_dim=embed_dim, num_queries=num_queries,
+                num_heads=num_heads, num_layers=num_layers, dropout=0.0)
+            model = SingleViewSigLIPModel(full_model, pooler, embed_dim=embed_dim)
+            model.load_state_dict(state_dict)
+            model = model.to(self.device)
+            model.eval()
+            print(f"[SiglipInfer] V2 SingleView 模型加载完成 (queries={num_queries}, layers={num_layers})")
+        else:
+            # V1 路径: 直接加载到 full_model
+            incompatible = full_model.load_state_dict(state_dict, strict=False)
+            if getattr(incompatible, "missing_keys", None):
+                print(f"[SiglipInfer] 缺失键: {incompatible.missing_keys}")
+            if getattr(incompatible, "unexpected_keys", None):
+                print(f"[SiglipInfer] 多余键: {incompatible.unexpected_keys}")
+            model = full_model
+            model = model.to(self.device)
+            model.eval()
+            print("[SiglipInfer] V1 模型加载完成")
+
         return model, processor
 
     def _load_centers(self):
@@ -254,19 +336,53 @@ class SiglipInfer:
         inputs = self.processor(images=[image], return_tensors="pt")
         pixel_values = inputs["pixel_values"].to(self.device)
 
-        outputs = self.model.get_image_features(pixel_values=pixel_values)
-        feature = outputs.pooler_output
-        feature = feature / feature.norm(dim=-1, keepdim=True).clamp(min=1e-12)
+        # V2: model.encode() / V1: model.vision_model()
+        if hasattr(self.model, 'encode'):
+            feature = self.model.encode(pixel_values)  # [1, D] already L2-normalized
+        else:
+            outputs = self.model.vision_model(pixel_values=pixel_values)
+            feature = outputs.pooler_output
+            feature = feature / (feature.norm(dim=-1, keepdim=True) + 1e-12)
 
         return feature[0].detach().cpu().numpy().astype(np.float32)
 
-    def predict(self, req: PredictRequest) -> PredictResponse:
+    def _calculate_similarity(self, feat_np: np.ndarray,
+                               ema_state: np.ndarray | None = None):
+        """计算相似度，支持 EMA 平滑。返回 (result_dict, updated_ema_state)。"""
+        sim_keys = list(self.centers.keys())
+        sim_vals = np.array([float(np.dot(feat_np, self.centers[k])) for k in sim_keys],
+                            dtype=np.float32)
+
+        # EMA 平滑
+        if self.use_sim_ema:
+            if ema_state is None:
+                ema_state = sim_vals.copy()
+            else:
+                ema_state = self.ema_beta * ema_state + (1 - self.ema_beta) * sim_vals
+            smoothed = ema_state
+        else:
+            smoothed = sim_vals
+
+        sims = {k: float(smoothed[i]) for i, k in enumerate(sim_keys)}
+        best = max(sims.items(), key=lambda x: x[1])
+        topk = sorted(sims.items(), key=lambda x: x[1], reverse=True)[:self.topk]
+
+        result = {
+            "ok": True,
+            "best_category": best[0],
+            "best_similarity": best[1],
+            "topk": [{"category": k, "similarity": v} for k, v in topk],
+        }
+        return result, ema_state
+
+    def predict(self, req: PredictRequest, ema_state: np.ndarray | None = None) -> tuple[PredictResponse, np.ndarray | None]:
+        """执行推理，返回 (PredictResponse, updated_ema_state)。"""
         t_start = time.time()
         request_id = req.request_id
         try:
             image = decode_image_b64_to_pil(req.image_b64)
             feat_np = self._encode_image(image)
-            sim_result = calculate_similarity(feat_np, self.centers, topk=self.topk)
+            sim_result, new_ema = self._calculate_similarity(feat_np, ema_state=ema_state)
 
             topk_items = [
                 TopKItem(category=item["category"], similarity=item["similarity"])
@@ -287,7 +403,7 @@ class SiglipInfer:
                 topk=topk_items,
                 total_category=state_items,
                 elapsed_sec=elapsed,
-            )
+            ), new_ema
 
         except Exception as e:
             elapsed = round(time.time() - t_start, 4)
@@ -297,7 +413,7 @@ class SiglipInfer:
                 ok=False,
                 message=str(e),
                 elapsed_sec=elapsed,
-            )
+            ), ema_state
 
     # ── 可视化辅助（供 Controller 使用） ────────────────────────
 
