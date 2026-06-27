@@ -65,7 +65,7 @@ class FlowPoseInfer:
         # ── 可视化配置 ──
         vis_cfg = fp_cfg.get("visualization", {})
         self.visualize = bool(fp_cfg.get("visualize", False))
-        self.vis_wait = max(30, int(fp_cfg.get("vis_wait", 30)))
+        self.vis_wait = max(1, int(fp_cfg.get("vis_wait", 30)))
         self.fx = float(vis_cfg.get("fx", 606.965))
         self.fy = float(vis_cfg.get("fy", 606.133))
         self.cx = float(vis_cfg.get("cx", 323.882))

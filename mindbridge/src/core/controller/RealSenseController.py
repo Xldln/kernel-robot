@@ -14,6 +14,7 @@ from fastapi.responses import Response
 
 from mindbridge.src.core.schemas.RealsenseEntity import (
     CameraInfoResponse,
+    CameraMeta,
     CaptureData,
     CaptureResponse,
     ShutdownResponse,
@@ -50,11 +51,16 @@ def engine_status() -> dict:
     """Return a lightweight readiness status for health checks."""
     if engine is None:
         return {"status": "engine_missing", "ready": False}
-    return {
+    payload = {
         "status": "ok",
         "ready": True,
         "frame_id": getattr(engine, "frame_id", 0),
     }
+    if hasattr(engine, "mode"):
+        payload["mode"] = getattr(engine, "mode", "single")
+    if hasattr(engine, "cameras_meta"):
+        payload["cameras"] = engine.cameras_meta()
+    return payload
 
 
 @realsense_router.post("/capture", response_model=CaptureResponse)
@@ -109,68 +115,115 @@ def capture():
 
 @realsense_router.post("/capture/raw")
 def capture_raw():
-    """采集一帧，返回彩色、深度和红外图的原始编码字节。"""
+    """采集 primary 一帧，返回彩色、深度和红外图的原始编码字节。"""
     if engine is None:
         raise HTTPException(status_code=503, detail="Engine not initialized")
 
     t_start = time.time()
     try:
         data: CaptureData = engine.capture()
-
-        ok_jpg, buf_jpg = cv2.imencode(".jpg", data.color_bgr, [cv2.IMWRITE_JPEG_QUALITY, 90])
-        if not ok_jpg:
-            raise RuntimeError("Failed to encode color image")
-
-        ok_depth, buf_depth = cv2.imencode(
-            ".png", data.depth_u16, [cv2.IMWRITE_PNG_COMPRESSION, 3],
-        )
-        if not ok_depth:
-            raise RuntimeError("Failed to encode depth image")
-
-        binary_parts = [
-            ("color_jpg", buf_jpg.tobytes(), "image/jpeg"),
-            ("depth_png", buf_depth.tobytes(), "image/png"),
-        ]
-
-        if data.ir_left is not None:
-            ok_ir_left, buf_ir_left = cv2.imencode(".jpg", data.ir_left, [cv2.IMWRITE_JPEG_QUALITY, 90])
-            if ok_ir_left:
-                binary_parts.append(("ir_left_jpg", buf_ir_left.tobytes(), "image/jpeg"))
-
-        if data.ir_right is not None:
-            ok_ir_right, buf_ir_right = cv2.imencode(".jpg", data.ir_right, [cv2.IMWRITE_JPEG_QUALITY, 90])
-            if ok_ir_right:
-                binary_parts.append(("ir_right_jpg", buf_ir_right.tobytes(), "image/jpeg"))
-
-        elapsed = round(time.time() - t_start, 4)
+        binary_parts, headers = _build_primary_parts(data)
+        headers["X-Elapsed-Sec"] = str(round(time.time() - t_start, 4))
         body, content_type = build_multipart_response(binary_parts=binary_parts)
-        headers = {
-            "X-Status": "ok",
-            "X-Frame-Id": str(data.frame_id),
-            "X-Baseline": str(data.baseline),
-            "X-K": _json.dumps(data.K.tolist()),
-            "X-IR-Left-K": _json.dumps(data.ir_left_K.tolist()),
-            "X-IR-To-Color-R": _json.dumps(data.ir_to_color_R.tolist()),
-            "X-IR-To-Color-T": _json.dumps(data.ir_to_color_T.tolist()),
-            "X-Color-Width": str(data.color_bgr.shape[1]),
-            "X-Color-Height": str(data.color_bgr.shape[0]),
-            "X-Elapsed-Sec": str(elapsed),
-        }
         return Response(content=body, media_type=content_type, headers=headers)
 
     except Exception as e:
-        elapsed = round(time.time() - t_start, 4)
-        return Response(
-            content=b"",
-            media_type="text/plain",
-            headers={
-                "X-Status": "error",
-                "X-Frame-Id": "0",
-                "X-Error-Message": str(e),
-                "X-Elapsed-Sec": str(elapsed),
-            },
-            status_code=500,
-        )
+        return _error_raw_response(str(e), round(time.time() - t_start, 4))
+
+
+def _build_primary_parts(data: CaptureData) -> tuple[list, dict]:
+    """将 primary 相机一帧编码为 multipart binary_parts 与 X-* headers。"""
+    ok_jpg, buf_jpg = cv2.imencode(".jpg", data.color_bgr, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    if not ok_jpg:
+        raise RuntimeError("Failed to encode color image")
+
+    ok_depth, buf_depth = cv2.imencode(
+        ".png", data.depth_u16, [cv2.IMWRITE_PNG_COMPRESSION, 3],
+    )
+    if not ok_depth:
+        raise RuntimeError("Failed to encode depth image")
+
+    binary_parts = [
+        ("color_jpg", buf_jpg.tobytes(), "image/jpeg"),
+        ("depth_png", buf_depth.tobytes(), "image/png"),
+    ]
+
+    if data.ir_left is not None:
+        ok_ir_left, buf_ir_left = cv2.imencode(".jpg", data.ir_left, [cv2.IMWRITE_JPEG_QUALITY, 90])
+        if ok_ir_left:
+            binary_parts.append(("ir_left_jpg", buf_ir_left.tobytes(), "image/jpeg"))
+
+    if data.ir_right is not None:
+        ok_ir_right, buf_ir_right = cv2.imencode(".jpg", data.ir_right, [cv2.IMWRITE_JPEG_QUALITY, 90])
+        if ok_ir_right:
+            binary_parts.append(("ir_right_jpg", buf_ir_right.tobytes(), "image/jpeg"))
+
+    headers = {
+        "X-Status": "ok",
+        "X-Frame-Id": str(data.frame_id),
+        "X-Baseline": str(data.baseline),
+        "X-K": _json.dumps(data.K.tolist()),
+        "X-IR-Left-K": _json.dumps(data.ir_left_K.tolist()),
+        "X-IR-To-Color-R": _json.dumps(data.ir_to_color_R.tolist()),
+        "X-IR-To-Color-T": _json.dumps(data.ir_to_color_T.tolist()),
+        "X-Color-Width": str(data.color_bgr.shape[1]),
+        "X-Color-Height": str(data.color_bgr.shape[0]),
+    }
+    return binary_parts, headers
+
+
+def _error_raw_response(message: str, elapsed: float) -> Response:
+    return Response(
+        content=b"",
+        media_type="text/plain",
+        headers={
+            "X-Status": "error",
+            "X-Frame-Id": "0",
+            "X-Error-Message": message,
+            "X-Elapsed-Sec": str(elapsed),
+        },
+        status_code=500,
+    )
+
+
+@realsense_router.post("/capture/all/raw")
+def capture_all_raw():
+    """采集 primary（完整）+ 全部 color-only 相机，单次 multipart 返回。
+
+    primary 部分与 /capture/raw 完全一致；每台 color 相机追加一个
+    `aux_<id>_jpg` 二进制部分，并通过 X-Aux-Cameras 头声明顺序与名称。
+    single 模式下没有 color 相机，等价于 /capture/raw。
+    """
+    if engine is None:
+        raise HTTPException(status_code=503, detail="Engine not initialized")
+
+    t_start = time.time()
+    try:
+        data: CaptureData = engine.capture()
+        binary_parts, headers = _build_primary_parts(data)
+
+        aux_meta: list[dict] = []
+        aux_frames = engine.capture_aux() if hasattr(engine, "capture_aux") else {}
+        meta_by_id = {m["id"]: m for m in (engine.aux_meta() if hasattr(engine, "aux_meta") else [])}
+        for cam_id, color_bgr in aux_frames.items():
+            ok_aux, buf_aux = cv2.imencode(".jpg", color_bgr, [cv2.IMWRITE_JPEG_QUALITY, 90])
+            if not ok_aux:
+                continue
+            part_name = f"aux_{cam_id}_jpg"
+            binary_parts.append((part_name, buf_aux.tobytes(), "image/jpeg"))
+            aux_meta.append({
+                "id": cam_id,
+                "name": meta_by_id.get(cam_id, {}).get("name", cam_id),
+                "part": part_name,
+            })
+
+        headers["X-Mode"] = getattr(engine, "mode", "single")
+        headers["X-Aux-Cameras"] = _json.dumps(aux_meta)
+        headers["X-Elapsed-Sec"] = str(round(time.time() - t_start, 4))
+        body, content_type = build_multipart_response(binary_parts=binary_parts)
+        return Response(content=body, media_type=content_type, headers=headers)
+    except Exception as e:
+        return _error_raw_response(str(e), round(time.time() - t_start, 4))
 
 
 @realsense_router.get("/info", response_model=CameraInfoResponse)
@@ -181,10 +234,12 @@ def info():
 
     return CameraInfoResponse(
         status="ok",
+        mode=getattr(engine, "mode", "single"),
         image_size=list(engine.image_size),
         baseline=engine.baseline,
         frame_id=engine.frame_id,
         K=engine.K.tolist(),
+        cameras=[CameraMeta(**m) for m in engine.cameras_meta()] if hasattr(engine, "cameras_meta") else [],
     )
 
 

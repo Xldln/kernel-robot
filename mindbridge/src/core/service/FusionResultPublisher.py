@@ -181,6 +181,24 @@ class FusionResultPublisher:
             f"{self._tf_topic} {json.dumps(tf_payload, ensure_ascii=False)}"
         )
 
+    def publish_siglip(self, *, frame_id: Any, state_result: dict[str, Any] | None) -> None:
+        siglip_payload = build_siglip_payload(state_result, frame_id)
+        self._socket.send_string(
+            f"{self._siglip_topic} {json.dumps(siglip_payload, ensure_ascii=False)}"
+        )
+
+    def publish_tf(self, *, frame_id: Any, flowpose_result: dict[str, Any] | None) -> None:
+        tf_payload = {
+            "frame_id": frame_id,
+            "transforms": build_tf_payload_from_flowpose_result(
+                flowpose_result,
+                frame_id=self._frame_id,
+            ),
+        }
+        self._socket.send_string(
+            f"{self._tf_topic} {json.dumps(tf_payload, ensure_ascii=False)}"
+        )
+
     def close(self) -> None:
         try:
             self._socket.close(0)

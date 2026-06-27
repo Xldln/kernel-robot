@@ -22,6 +22,121 @@ from mindbridge.src.core.tool.image import _draw_detections
 from mindbridge.src.fusion.ui_client import FusionUiClient
 
 
+def _build_multiview_jpg(color_jpg: bytes, aux_jpgs: list[bytes]) -> bytes:
+    """将 primary 彩色帧与各 color 相机帧横向拼接为一张 JPEG（供 SigLIP 多视角）。
+
+    无 aux 帧时原样返回 color_jpg。
+    """
+    imgs = []
+    for raw in [color_jpg, *aux_jpgs]:
+        if not raw:
+            continue
+        arr = np.frombuffer(raw, dtype=np.uint8)
+        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if img is not None:
+            imgs.append(img)
+    if len(imgs) <= 1:
+        return color_jpg
+    h = min(i.shape[0] for i in imgs)
+    resized = [cv2.resize(i, (int(i.shape[1] * h / i.shape[0]), h)) for i in imgs]
+    montage = cv2.hconcat(resized)
+    ok, buf = cv2.imencode(".jpg", montage, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    return buf.tobytes() if ok else color_jpg
+
+
+def _build_labeled_multiview_jpg(views: list[tuple[str, bytes]]) -> bytes:
+    """Build a horizontally stitched JPEG with per-view labels for UI display."""
+    imgs: list[np.ndarray] = []
+    labels: list[str] = []
+    for label, raw in views:
+        if not raw:
+            continue
+        arr = np.frombuffer(raw, dtype=np.uint8)
+        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if img is not None:
+            imgs.append(img)
+            labels.append(label)
+    if not imgs:
+        return b""
+    h = min(i.shape[0] for i in imgs)
+    resized = [cv2.resize(i, (int(i.shape[1] * h / i.shape[0]), h)) for i in imgs]
+    labeled = []
+    for label, img in zip(labels, resized):
+        canvas = img.copy()
+        cv2.rectangle(canvas, (0, 0), (canvas.shape[1], 28), (0, 0, 0), -1)
+        cv2.putText(canvas, label, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+        labeled.append(canvas)
+    montage = cv2.hconcat(labeled)
+    ok, buf = cv2.imencode(".jpg", montage, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    return buf.tobytes() if ok else b""
+
+
+def _build_siglip_multiview_vis_jpg(
+    primary_jpg: bytes,
+    aux_views: list[tuple[str, bytes]],
+    *,
+    expected_views: int = 3,
+) -> bytes:
+    """Build the SigLIP UI montage, including placeholders for missing aux views."""
+    decoded: list[tuple[str, np.ndarray]] = []
+    for label, raw in [("Primary", primary_jpg), *aux_views]:
+        if not raw:
+            continue
+        arr = np.frombuffer(raw, dtype=np.uint8)
+        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+        if img is not None:
+            decoded.append((label, img))
+
+    if not decoded:
+        return b""
+
+    ref_h, ref_w = decoded[0][1].shape[:2]
+    while len(decoded) < expected_views:
+        missing_idx = len(decoded) + 1
+        placeholder = np.zeros((ref_h, ref_w, 3), dtype=np.uint8)
+        cv2.putText(
+            placeholder,
+            f"Missing view {missing_idx}",
+            (24, max(40, ref_h // 2)),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (180, 180, 180),
+            2,
+        )
+        decoded.append((f"Missing {missing_idx}", placeholder))
+
+    h = min(img.shape[0] for _, img in decoded)
+    labeled = []
+    for label, img in decoded[:expected_views]:
+        resized = cv2.resize(img, (int(img.shape[1] * h / img.shape[0]), h))
+        canvas = resized.copy()
+        cv2.rectangle(canvas, (0, 0), (canvas.shape[1], 28), (0, 0, 0), -1)
+        cv2.putText(canvas, label, (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+        labeled.append(canvas)
+
+    montage = cv2.hconcat(labeled)
+    ok, buf = cv2.imencode(".jpg", montage, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    return buf.tobytes() if ok else b""
+
+
+def _ordered_aux_jpgs(cap: dict) -> list[tuple[str, bytes]]:
+    """Return aux camera JPEGs in the order declared by RealSense metadata."""
+    aux_frames = cap.get("aux") or {}
+    aux_meta = cap.get("aux_cameras") or []
+    ordered: list[tuple[str, bytes]] = []
+    seen: set[str] = set()
+    for item in aux_meta:
+        cam_id = str(item.get("id", ""))
+        data = aux_frames.get(cam_id)
+        if data:
+            ordered.append((item.get("name") or cam_id, data))
+            seen.add(cam_id)
+    for cam_id, data in aux_frames.items():
+        if cam_id not in seen and data:
+            ordered.append((cam_id, data))
+    return ordered
+
+
 def run(
     realsense_url: str = "http://127.0.0.1:8000",
     yolo_url: str = "http://127.0.0.1:8001",
@@ -30,6 +145,7 @@ def run(
     fastfoundation_url: str = "http://127.0.0.1:8004",
     flowpose_url: str = "http://127.0.0.1:8006",
     rgb_source: str = "realsense",
+    camera_mode: str = "single",      # "single" | "multi"
     camera_index: int = 0,
     camera_width: Optional[int] = None,
     camera_height: Optional[int] = None,
@@ -45,7 +161,8 @@ def run(
     log_interval: int = 30,
     fastfoundation_interval: int = 3,
     flowpose_interval: int = 3,
-    siglip_interval: int = 3,
+    siglip_interval: int = 1,
+    fusion_ui_interval: int = 3,
     fusion_pub: bool = False,
     fusion_pub_addr: str = "tcp://0.0.0.0:8899",
     fusion_ui_url: Optional[str] = None,
@@ -56,12 +173,18 @@ def run(
     _full = pipeline.lower() == "full"
     _mode = mode.lower()
     _rgb_source = rgb_source.lower()
+    _camera_mode = camera_mode.lower()
     if _detector not in ("yolo", "sam3"):
         raise ValueError(f"detector must be 'yolo' or 'sam3', got '{detector}'")
     if _mode not in ("pipeline", "yolo-only", "sam3-only", "siglip-only", "flowpose-only"):
         raise ValueError(f"mode must be pipeline/yolo-only/sam3-only/siglip-only/flowpose-only, got '{mode}'")
     if _rgb_source not in ("realsense", "usb"):
         raise ValueError(f"rgb_source must be 'realsense' or 'usb', got '{rgb_source}'")
+    if _camera_mode not in ("single", "multi"):
+        raise ValueError(f"camera_mode must be 'single' or 'multi', got '{camera_mode}'")
+    if _camera_mode == "multi" and _rgb_source != "realsense":
+        print("[ControlCenter] camera-mode=multi only applies to realsense source; ignoring")
+        _camera_mode = "single"
     if _rgb_source == "usb" and _full:
         print("[ControlCenter] USB RGB source does not provide stereo/depth; using BASIC pipeline")
         _full = False
@@ -75,9 +198,10 @@ def run(
     elif _mode == "flowpose-only":
         _full = True
 
-    print(f"[ControlCenter] Mode: {_mode} | Pipeline: {'FULL' if _full else 'BASIC'} | Detector: {_detector.upper()}")
+    print(f"[ControlCenter] Mode: {_mode} | Pipeline: {'FULL' if _full else 'BASIC'} | "
+          f"Detector: {_detector.upper()} | Camera: {_camera_mode}")
     if _rgb_source == "realsense":
-        frame_source = RealSenseRGBSource(client)
+        frame_source = RealSenseRGBSource(client, multi=(_camera_mode == "multi"))
         require_rs = True
     else:
         frame_source = OpenCVRGBSource(
@@ -88,13 +212,30 @@ def run(
         )
         require_rs = False
 
+    required_services = set()
+    if require_rs:
+        required_services.add("realsense")
+    if _mode == "yolo-only":
+        required_services.add("yolo")
+    elif _mode == "sam3-only":
+        required_services.add("sam3")
+    elif _mode == "siglip-only":
+        required_services.add("siglip")
+    elif _mode == "flowpose-only":
+        required_services.update({"fastfoundation", "flowpose"})
+    elif _mode == "pipeline":
+        required_services.add(_detector)
+        required_services.add("siglip")
+        if _full:
+            required_services.update({"fastfoundation", "flowpose"})
+
     print("[ControlCenter] Waiting for services ...")
     for attempt in range(60):
-        h = client.health()
+        h = client.health(required_services)
         rs_ok = h.get("realsense", {}).get("status") == "ok" if require_rs else True
-        yolo_ok = h.get("yolo", {}).get("status") == "ok"
-        siglip_ok = h.get("siglip", {}).get("status") == "ok"
-        sam3_ok = h.get("sam3", {}).get("status") == "ok"
+        yolo_ok = h.get("yolo", {}).get("status") == "ok" if "yolo" in required_services else True
+        siglip_ok = h.get("siglip", {}).get("status") == "ok" if "siglip" in required_services else True
+        sam3_ok = h.get("sam3", {}).get("status") == "ok" if "sam3" in required_services else True
 
         ff_ok = h.get("fastfoundation", {}).get("status") == "ok" if _full else True
         fp_ok = h.get("flowpose", {}).get("status") == "ok" if _full else True
@@ -132,9 +273,17 @@ def run(
     fastfoundation_interval = max(1, int(fastfoundation_interval))
     flowpose_interval = max(1, int(flowpose_interval))
     siglip_interval = max(1, int(siglip_interval))
+    fusion_ui_interval = max(1, int(fusion_ui_interval))
     last_depth_png: bytes | None = None
     last_flowpose_result: dict = {}
     last_state_result: dict = {}
+    siglip_win_title = ""
+
+    def _close_flowpose_visualization() -> None:
+        try:
+            client.set_flowpose_visualization(False)
+        except Exception:
+            pass
 
     print("[ControlCenter] Starting capture → inference → classification loop ...")
     if _full:
@@ -152,6 +301,10 @@ def run(
             win_title = f"MindBridge {_mode if _mode != 'pipeline' else _detector.upper()}"
             cv2.namedWindow(win_title, cv2.WINDOW_NORMAL)
             cv2.resizeWindow(win_title, 640, 480)
+            if _camera_mode == "multi":
+                siglip_win_title = "SigLIP MultiView"
+                cv2.namedWindow(siglip_win_title, cv2.WINDOW_NORMAL)
+                cv2.resizeWindow(siglip_win_title, 960, 320)
 
     fusion_publisher = None
     if fusion_pub:
@@ -191,8 +344,48 @@ def run(
             frame_id: int = cap.get("frame_id", 0)
             color_arr = np.frombuffer(color_jpg, dtype=np.uint8)
             original_rgb = cv2.imdecode(color_arr, cv2.IMREAD_COLOR)
+            aux_view_jpgs = _ordered_aux_jpgs(cap) if _camera_mode == "multi" else []
+            if _camera_mode == "multi" and frame_count % log_interval == 0 and len(aux_view_jpgs) < 2:
+                print(
+                    "[ControlCenter] WARNING: Camera=multi but aux views missing "
+                    f"(got {len(aux_view_jpgs)} aux views, expected 2)."
+                )
+            siglip_multiview_jpg = (
+                _build_multiview_jpg(color_jpg, [raw for _, raw in aux_view_jpgs])
+                if aux_view_jpgs else color_jpg
+            )
 
-            # ── Step 2 (full only): FastFoundation stereo depth ──
+            # ── Step 2: SigLIP state classification (run early for low-latency state) ──
+            state_result = last_state_result if _mode == "pipeline" else {}
+            siglip_ms = 0.0
+            run_siglip = (
+                _mode == "siglip-only"
+                or (
+                    _mode == "pipeline"
+                    and (frame_count == 0 or frame_count % siglip_interval == 0 or not last_state_result)
+                )
+            )
+            if run_siglip:
+                t_siglip_start = time.time()
+                siglip_input = siglip_multiview_jpg if _camera_mode == "multi" else color_jpg
+                try:
+                    state_result = client.classify_state(siglip_input, request_id=str(frame_id))
+                    if _mode == "pipeline":
+                        last_state_result = state_result
+                    if fusion_publisher:
+                        try:
+                            fusion_publisher.publish_siglip(
+                                frame_id=frame_id,
+                                state_result=state_result,
+                            )
+                        except Exception as e:
+                            print(f"[ControlCenter] SigLIP publish failed: {e}")
+                except Exception as e:
+                    print(f"[ControlCenter] SigLIP classification failed: {e}")
+                    state_result = {"status": "error", "best_category": "", "best_similarity": 0.0}
+                siglip_ms = (time.time() - t_siglip_start) * 1000
+
+            # ── Step 3 (full only): FastFoundation stereo depth ──
             ff_result: dict = {}
             ff_ms = 0.0
             depth_png_for_flowpose: bytes | None = cap.get("depth_png")
@@ -230,7 +423,7 @@ def run(
                 elif last_depth_png is not None:
                     depth_png_for_flowpose = last_depth_png
 
-            # ── Step 3: Detection (YOLO or SAM3, mutually exclusive) ──
+            # ── Step 4: Detection (YOLO or SAM3, mutually exclusive) ──
             pred: dict = {"status": "ok", "num_detections": 0, "detections": [],
                           "annotated_image": None, "mask_bytes": {}}
             sam3_result: dict = {"status": "ok", "detections": [], "mask_bytes": {}}
@@ -261,7 +454,7 @@ def run(
                     sam3_result = {"status": "error", "detections": [], "mask_bytes": {}}
                 sam3_ms = (time.time() - t_sam3_start) * 1000
 
-            # ── Step 4 (full only): FlowPose 6D pose estimation ──
+            # ── Step 5 (full only): FlowPose 6D pose estimation ──
             flowpose_result: dict = last_flowpose_result if _full else {}
             flowpose_ms = 0.0
             run_flowpose = (
@@ -329,27 +522,6 @@ def run(
                         print(f"[ControlCenter] FlowPose failed: {e}")
                     flowpose_ms = (time.time() - t_fp) * 1000
 
-            # ── Step 5: SigLIP state classification ──
-            state_result = last_state_result if _mode == "pipeline" else {}
-            siglip_ms = 0.0
-            run_siglip = (
-                _mode == "siglip-only"
-                or (
-                    _mode == "pipeline"
-                    and (frame_count == 0 or frame_count % siglip_interval == 0 or not last_state_result)
-                )
-            )
-            if run_siglip:
-                t_siglip_start = time.time()
-                try:
-                    state_result = client.classify_state(color_jpg, request_id=str(frame_id))
-                    if _mode == "pipeline":
-                        last_state_result = state_result
-                except Exception as e:
-                    print(f"[ControlCenter] SigLIP classification failed: {e}")
-                    state_result = {"status": "error", "best_category": "", "best_similarity": 0.0}
-                siglip_ms = (time.time() - t_siglip_start) * 1000
-
             yolo_display = None
 
             if show or fusion_ui_client:
@@ -411,36 +583,36 @@ def run(
 
             if fusion_publisher:
                 try:
-                    fusion_publisher.publish(
+                    fusion_publisher.publish_tf(
                         frame_id=frame_id,
-                        state_result=state_result,
                         flowpose_result=flowpose_result,
                     )
                 except Exception as e:
-                    print(f"[ControlCenter] Fusion publish failed: {e}")
+                    print(f"[ControlCenter] TF publish failed: {e}")
 
-            if fusion_ui_client and yolo_display is not None:
-                try:
-                    ok, jpg = cv2.imencode(".jpg", yolo_display, [cv2.IMWRITE_JPEG_QUALITY, 85])
-                    if ok:
-                        fusion_ui_client.post_video_frame(
-                            jpg.tobytes(),
-                            title=f"{_rgb_source.upper()} + {_detector.upper()}",
-                            metadata={
-                                "frame_id": frame_id,
-                                "detector": _detector,
-                                "pipeline": "full" if _full else "basic",
-                                "mode": _mode,
-                            },
-                        )
-                except Exception:
-                    pass
+            siglip_vis_jpg = b""
+            if _camera_mode == "multi":
+                siglip_vis_jpg = (
+                    _build_siglip_multiview_vis_jpg(
+                        color_jpg,
+                        aux_view_jpgs,
+                        expected_views=3,
+                    )
+                    or siglip_multiview_jpg
+                )
 
             if show:
+                if _camera_mode == "multi" and siglip_vis_jpg:
+                    siglip_arr = np.frombuffer(siglip_vis_jpg, dtype=np.uint8)
+                    siglip_display = cv2.imdecode(siglip_arr, cv2.IMREAD_COLOR)
+                    if siglip_display is not None:
+                        cv2.imshow(siglip_win_title, siglip_display)
                 if yolo_display is not None:
                     cv2.imshow(win_title, yolo_display)
-                    if cv2.waitKey(5) & 0xFF == 27:
-                        running = False
+                key = cv2.waitKey(5)
+                if key >= 0 and (key & 0xFF) == 27:
+                    _close_flowpose_visualization()
+                    running = False
 
             # ── Save ──
             if out_dir and pred.get("status") == "ok" and pred.get("annotated_image"):
@@ -486,6 +658,7 @@ def run(
         frame_source.close()
         if fusion_publisher:
             fusion_publisher.close()
+        _close_flowpose_visualization()
         if show:
             cv2.destroyAllWindows()
         print(f"[ControlCenter] Done. Processed {frame_count} frames.")
@@ -547,6 +720,10 @@ def main() -> None:
         "--rgb-source", choices=["realsense", "usb"], default="realsense",
         help="RGB 来源: realsense(默认) 或 usb",
     )
+    parser.add_argument(
+        "--camera-mode", choices=["single", "multi"], default="single",
+        help="RealSense 相机模式: single(默认) 或 multi(primary 完整 + 其余仅彩色，拼接送 SigLIP)",
+    )
     parser.add_argument("--camera-index", type=int, default=0, help="USB 摄像头编号")
     parser.add_argument("--camera-width", type=int, default=None, help="USB 摄像头宽度")
     parser.add_argument("--camera-height", type=int, default=None, help="USB 摄像头高度")
@@ -593,8 +770,12 @@ def main() -> None:
         help="Full 模式下 FlowPose 运行间隔帧数，默认 3",
     )
     parser.add_argument(
-        "--siglip-interval", type=int, default=5,
-        help="Pipeline 模式下 SigLIP 运行间隔帧数，默认 5",
+        "--siglip-interval", type=int, default=1,
+        help="Pipeline 模式下 SigLIP 运行间隔帧数，默认 1",
+    )
+    parser.add_argument(
+        "--fusion-ui-interval", type=int, default=3,
+        help="Fusion UI 视频推流间隔帧数，默认 3（越大越省带宽/CPU）",
     )
 
     args = parser.parse_args()
@@ -607,6 +788,7 @@ def main() -> None:
         fastfoundation_url=args.fastfoundation_url,
         flowpose_url=args.flowpose_url,
         rgb_source=args.rgb_source,
+        camera_mode=args.camera_mode,
         camera_index=args.camera_index,
         camera_width=args.camera_width,
         camera_height=args.camera_height,
@@ -623,6 +805,7 @@ def main() -> None:
         fastfoundation_interval=args.fastfoundation_interval,
         flowpose_interval=args.flowpose_interval,
         siglip_interval=args.siglip_interval,
+        fusion_ui_interval=args.fusion_ui_interval,
         fusion_pub=args.fusion_pub,
         fusion_pub_addr=args.fusion_pub_addr,
         fusion_ui_url=args.fusion_ui_url,

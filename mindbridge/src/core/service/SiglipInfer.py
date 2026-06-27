@@ -101,6 +101,65 @@ class SingleViewSigLIPModel(nn.Module):
         return fused
 
 
+class MultiViewSigLIPModel(nn.Module):
+    """Frozen SigLIP2 base + per-view positional embedding + cross-view pooler."""
+
+    def __init__(self, base_model, pooler, num_views=3, embed_dim=1152):
+        super().__init__()
+        self.base_model = base_model
+        self.pooler = pooler
+        self.num_views = num_views
+        self.embed_dim = embed_dim
+        self.config = base_model.config
+        self.view_pos_embed = nn.Parameter(torch.zeros(num_views, 1, embed_dim))
+
+    def encode_views(self, pixel_values: torch.Tensor) -> torch.Tensor:
+        """[N=B*V, C, H, W] -> [B, D] (L2-normalized)."""
+        with torch.no_grad():
+            vision_outputs = self.base_model.vision_model(pixel_values=pixel_values)
+            patch_tokens = vision_outputs.last_hidden_state
+
+        n, p, d = patch_tokens.shape
+        if n % self.num_views != 0:
+            raise ValueError(f"view count {n} is not a multiple of num_views={self.num_views}")
+        b = n // self.num_views
+
+        patch_tokens = patch_tokens.view(b, self.num_views, p, d)
+        patch_tokens = patch_tokens + self.view_pos_embed.unsqueeze(0)
+        tokens = patch_tokens.reshape(b, self.num_views * p, d)
+
+        fused = self.pooler(tokens)
+        fused = fused / (fused.norm(dim=-1, keepdim=True) + 1e-12)
+        return fused
+
+
+def _split_image_to_views(image: Image.Image, num_views: int) -> list[Image.Image]:
+    """Split one horizontally stitched image into fixed-width views."""
+    if num_views <= 1:
+        return [image]
+    w, h = image.size
+    view_w = w // num_views
+    if view_w <= 0:
+        return [image]
+    views = []
+    for idx in range(num_views):
+        left = idx * view_w
+        right = w if idx == num_views - 1 else (idx + 1) * view_w
+        views.append(image.crop((left, 0, right, h)))
+    return views
+
+
+def _apply_background_mask(image: Image.Image, ratio: float) -> Image.Image:
+    """Mask the top part of a stitched image, matching the old multiview scripts."""
+    if ratio <= 0:
+        return image
+    arr = np.array(image.convert("RGB"), copy=True)
+    cutoff = int(arr.shape[0] * min(max(ratio, 0.0), 1.0))
+    if cutoff > 0:
+        arr[:cutoff, :, :] = 0
+    return Image.fromarray(arr).convert("RGB")
+
+
 # =============================================================================
 # 可视化输出线程
 # =============================================================================
@@ -226,6 +285,13 @@ class SiglipInfer:
         self.graph_info_path = model_cfg.get("graph_info_file", model_cfg.get("cache_file", ""))
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.topk = int(model_cfg.get("topk", 5))
+        self.num_views = int(model_cfg.get("num_views", 3))
+        self.num_query_tokens = int(model_cfg.get("num_query_tokens", 8))
+        self.pooler_num_layers = int(model_cfg.get("pooler_num_layers", 2))
+        self.pooler_num_heads = int(model_cfg.get("pooler_num_heads", 8))
+        self.background_mask_ratio = float(model_cfg.get("background_mask_ratio", 0))
+        self.force_multiview = bool(model_cfg.get("multiview", False))
+        self.is_multiview = False
 
         # EMA 平滑配置
         self.use_sim_ema = cfg.get("ema", {}).get("enabled", True)
@@ -246,7 +312,7 @@ class SiglipInfer:
     # ── 模型构建 ────────────────────────────────────────────────
 
     def _load_model(self):
-        """加载 SigLIP 基础模型 + 训练权重（支持 V1/V2 checkpoint 自动检测）"""
+        """加载 SigLIP 基础模型 + 训练权重（支持 V1/V2/MultiView checkpoint 自动检测）"""
         print(f"[SiglipInfer] 加载基础模型: {self.model_path}")
         full_model = AutoModel.from_pretrained(self.model_path)
         processor = AutoProcessor.from_pretrained(self.model_path)
@@ -255,12 +321,57 @@ class SiglipInfer:
         checkpoint = torch.load(self.checkpoint_path, map_location="cpu", weights_only=False)
         state_dict = checkpoint.get("model_state_dict", checkpoint)
 
+        is_multiview = self.force_multiview or any(k == "view_pos_embed" for k in state_dict)
         # 检测 V2 单视角 checkpoint: key 以 base_model. 和 pooler. 开头
         sample_key = next(iter(state_dict))
         is_v2 = sample_key.startswith('base_model.') and any(
             k.startswith('pooler.') for k in state_dict)
 
-        if is_v2:
+        if is_multiview:
+            embed_dim = full_model.config.vision_config.hidden_size
+            num_queries = (
+                state_dict["pooler.query_tokens"].shape[1]
+                if "pooler.query_tokens" in state_dict
+                else self.num_query_tokens
+            )
+            num_layers = sum(1 for k in state_dict if k.endswith(".cross_attn.in_proj_weight"))
+            if num_layers <= 0:
+                num_layers = self.pooler_num_layers
+            num_views = (
+                state_dict["view_pos_embed"].shape[0]
+                if "view_pos_embed" in state_dict
+                else self.num_views
+            )
+
+            pooler = CrossViewAttentionPooler(
+                embed_dim=embed_dim,
+                num_queries=num_queries,
+                num_heads=self.pooler_num_heads,
+                num_layers=num_layers,
+                dropout=0.0,
+            )
+            model = MultiViewSigLIPModel(
+                full_model,
+                pooler,
+                num_views=num_views,
+                embed_dim=embed_dim,
+            )
+            incompatible = model.load_state_dict(state_dict, strict=False)
+            missing = getattr(incompatible, "missing_keys", []) or []
+            unexpected = getattr(incompatible, "unexpected_keys", []) or []
+            if missing:
+                print(f"[SiglipInfer] MultiView 缺失键: {missing}")
+            if unexpected:
+                print(f"[SiglipInfer] MultiView 多余键: {unexpected}")
+            model = model.to(self.device)
+            model.eval()
+            self.num_views = num_views
+            self.is_multiview = True
+            print(
+                "[SiglipInfer] MultiView 模型加载完成 "
+                f"(views={num_views}, queries={num_queries}, layers={num_layers})"
+            )
+        elif is_v2:
             embed_dim = full_model.config.vision_config.hidden_size
             # 从 checkpoint 推断 pooler 参数
             num_queries = state_dict['pooler.query_tokens'].shape[1]
@@ -333,13 +444,23 @@ class SiglipInfer:
 
     @torch.inference_mode()
     def _encode_image(self, image: Image.Image) -> np.ndarray:
-        inputs = self.processor(images=[image], return_tensors="pt")
-        pixel_values = inputs["pixel_values"].to(self.device)
+        if self.is_multiview and hasattr(self.model, "encode_views"):
+            if self.background_mask_ratio > 0:
+                image = _apply_background_mask(image, self.background_mask_ratio)
+            views = _split_image_to_views(image, self.num_views)
+            if len(views) != self.num_views:
+                print(f"[SiglipInfer] multiview split got {len(views)} views, expected {self.num_views}")
+            inputs = self.processor(images=views, return_tensors="pt")
+            pixel_values = inputs["pixel_values"].to(self.device)
+            feature = self.model.encode_views(pixel_values)
+        else:
+            inputs = self.processor(images=[image], return_tensors="pt")
+            pixel_values = inputs["pixel_values"].to(self.device)
 
         # V2: model.encode() / V1: model.vision_model()
-        if hasattr(self.model, 'encode'):
+        if not self.is_multiview and hasattr(self.model, 'encode'):
             feature = self.model.encode(pixel_values)  # [1, D] already L2-normalized
-        else:
+        elif not self.is_multiview:
             outputs = self.model.vision_model(pixel_values=pixel_values)
             feature = outputs.pooler_output
             feature = feature / (feature.norm(dim=-1, keepdim=True) + 1e-12)

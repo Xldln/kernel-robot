@@ -13,7 +13,16 @@ if [ -n "${MARVIN_HOST_ROOT_DIR:-}" ]; then
 elif [ -n "${HOST_WORKSPACE_ROOT:-}" ]; then
   DOCKER_ROOT_DIR="${HOST_WORKSPACE_ROOT}/MarvinDocker"
 else
-  DOCKER_ROOT_DIR="${ROOT_DIR}"
+  CURRENT_CONTAINER="${FUSION_CONTAINER_NAME:-${HOSTNAME:-}}"
+  HOST_WORKSPACE_FROM_DOCKER=""
+  if [ -n "${CURRENT_CONTAINER}" ] && command -v docker >/dev/null 2>&1; then
+    HOST_WORKSPACE_FROM_DOCKER="$(docker inspect "${CURRENT_CONTAINER}" --format '{{range .Mounts}}{{if eq .Destination "/workspace"}}{{.Source}}{{end}}{{end}}' 2>/dev/null || true)"
+  fi
+  if [ -n "${HOST_WORKSPACE_FROM_DOCKER}" ]; then
+    DOCKER_ROOT_DIR="${HOST_WORKSPACE_FROM_DOCKER}/MarvinDocker"
+  else
+    DOCKER_ROOT_DIR="${ROOT_DIR}"
+  fi
 fi
 
 if [ ! -f "${ROOT_DIR}/ros2_ws/install/setup.bash" ]; then

@@ -49,13 +49,25 @@ class CaptureResponse(BaseModel):
     message: Optional[str] = Field(None, description="错误时携带错误信息")
 
 
+class CameraMeta(BaseModel):
+    """单台相机元信息（multi 模式）"""
+    id: str = Field(..., description="相机 ID")
+    name: str = Field(default="", description="相机名称")
+    serial: str = Field(default="", description="设备序列号")
+    role: str = Field(..., description="primary（彩色+深度+IR）或 color（仅彩色）")
+
+
 class CameraInfoResponse(BaseModel):
     """相机参数响应"""
     status: str = Field(..., description="状态")
-    image_size: list[int] = Field(..., description="图像宽高 [width, height]")
+    mode: str = Field(default="single", description="single 或 multi")
+    image_size: list[int] = Field(..., description="图像宽高 [width, height]（指 primary）")
     baseline: float = Field(..., description="立体相机基线（米）")
-    frame_id: int = Field(..., description="当前帧编号")
+    frame_id: int = Field(..., description="当前帧编号（指 primary）")
     K: list[list[float]] = Field(..., description="左 IR 相机内参矩阵 (3x3)")
+    cameras: list[CameraMeta] = Field(
+        default_factory=list, description="全部相机元信息（primary + color）",
+    )
 
 
 class ShutdownResponse(BaseModel):

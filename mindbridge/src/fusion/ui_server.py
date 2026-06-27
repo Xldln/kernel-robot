@@ -86,41 +86,46 @@ class FusionPipelineController:
         self.service_controller = service_controller
         self.proc: subprocess.Popen | None = None
         self.mode = ""
+        self.camera_mode = "single"
         self.started_at = 0.0
         self.lock = threading.RLock()
 
-    def start(self, detector: str) -> dict[str, Any]:
+    def start(self, detector: str, camera_mode: str = "single") -> dict[str, Any]:
         detector = detector.lower()
+        camera_mode = self._normalize_camera_mode(camera_mode)
         if detector not in {"sam3", "yolo"}:
             raise ValueError("detector must be sam3 or yolo")
         main_args = (
-            f"--detector {detector} --pipeline full --show --fusion-pub "
-            "--fastfoundation-interval 3 --flowpose-interval 3 --siglip-interval 5"
+            f"--detector {detector} --pipeline full --show --fusion-pub --camera-mode {camera_mode} "
+            "--fastfoundation-interval 3 --flowpose-interval 3 --siglip-interval 1 --fusion-ui-interval 3 "
+            f"--fusion-ui-url {self.ui_url}"
         )
         return self._start_run(
             mode=f"{detector}-full",
+            camera_mode=camera_mode,
             services=["realsense", "fastfoundation", detector, "flowpose", "siglip"],
             main_args=main_args,
         )
 
-    def start_mode(self, mode: str) -> dict[str, Any]:
+    def start_mode(self, mode: str, camera_mode: str = "single") -> dict[str, Any]:
         mode = mode.lower()
+        camera_mode = self._normalize_camera_mode(camera_mode)
         modes = {
             "yolo-only": {
                 "services": ["realsense", "yolo"],
-                "main_args": "--mode yolo-only --detector yolo --pipeline basic --show --fusion-pub",
+                "main_args": f"--mode yolo-only --detector yolo --pipeline basic --show --fusion-pub --camera-mode {camera_mode} --fusion-ui-interval 3 --fusion-ui-url {self.ui_url}",
             },
             "sam3-only": {
                 "services": ["realsense", "sam3"],
-                "main_args": "--mode sam3-only --detector sam3 --pipeline basic --show --fusion-pub",
+                "main_args": f"--mode sam3-only --detector sam3 --pipeline basic --show --fusion-pub --camera-mode {camera_mode} --fusion-ui-interval 3 --fusion-ui-url {self.ui_url}",
             },
             "siglip-only": {
                 "services": ["realsense", "siglip"],
-                "main_args": "--mode siglip-only --pipeline basic --show --fusion-pub",
+                "main_args": f"--mode siglip-only --pipeline basic --show --fusion-pub --camera-mode {camera_mode} --fusion-ui-interval 3 --fusion-ui-url {self.ui_url}",
             },
             "flowpose-only": {
                 "services": ["realsense", "fastfoundation", "flowpose"],
-                "main_args": "--mode flowpose-only --pipeline full --show --fusion-pub",
+                "main_args": f"--mode flowpose-only --pipeline full --show --fusion-pub --camera-mode {camera_mode} --fusion-ui-interval 3 --fusion-ui-url {self.ui_url}",
             },
         }
         if mode not in modes:
@@ -128,38 +133,29 @@ class FusionPipelineController:
         spec = modes[mode]
         return self._start_run(
             mode=mode,
+            camera_mode=camera_mode,
             services=spec["services"],
             main_args=spec["main_args"],
         )
 
-    def _start_run(self, *, mode: str, services: list[str], main_args: str) -> dict[str, Any]:
+    def _start_run(self, *, mode: str, camera_mode: str, services: list[str], main_args: str) -> dict[str, Any]:
         with self.lock:
             self._reap_locked()
             if self.proc and self.proc.poll() is None:
-                if self.mode == mode:
+                if self.mode == mode and self.camera_mode == camera_mode:
                     return self.status()
                 self._stop_proc_locked()
 
             if self.service_controller:
-                self.service_controller.start_group(services)
-                service_status = self.service_controller.wait_ready(services, timeout=60)
-                not_ready = [item for item in service_status if not item.get("running")]
-                if not_ready:
-                    details = ", ".join(
-                        f"{item.get('name')}={item.get('health', {}).get('status', 'unknown')}"
-                        for item in not_ready
-                    )
-                    raise RuntimeError(f"services not ready: {details}")
-                if "flowpose" in services:
-                    self.service_controller.enable_flowpose_visualization()
+                self.service_controller.start_group(services, camera_mode=camera_mode)
                 service_cmd = "true"
             else:
                 group = self._service_group(services)
                 if group:
-                    service_cmd = f"bash {self.root_dir}/scripts/start_service.sh {group}"
+                    service_cmd = f"REALSENSE_MODE={camera_mode} bash {self.root_dir}/scripts/start_service.sh {group}"
                 else:
                     service_cmd = " && ".join(
-                        f"bash {self.root_dir}/scripts/start_service.sh {name}"
+                        f"REALSENSE_MODE={camera_mode} bash {self.root_dir}/scripts/start_service.sh {name}"
                         for name in services
                     )
             cmd = (
@@ -175,6 +171,7 @@ class FusionPipelineController:
                 start_new_session=True,
             )
             self.mode = mode
+            self.camera_mode = camera_mode
             self.started_at = time.time()
             return self.status()
 
@@ -198,6 +195,7 @@ class FusionPipelineController:
             self._stop_proc_locked()
             self.proc = None
             self.mode = ""
+            self.camera_mode = "single"
             self.started_at = 0.0
             return self.status()
 
@@ -209,14 +207,23 @@ class FusionPipelineController:
                 "enabled": True,
                 "running": running,
                 "mode": self.mode if running else "",
+                "camera_mode": self.camera_mode if running else "single",
                 "pid": self.proc.pid if running and self.proc else None,
                 "started_at": self.started_at if running else 0.0,
             }
+
+    @staticmethod
+    def _normalize_camera_mode(camera_mode: str) -> str:
+        value = (camera_mode or "single").lower()
+        if value not in {"single", "multi"}:
+            raise ValueError("camera_mode must be single or multi")
+        return value
 
     def _reap_locked(self) -> None:
         if self.proc and self.proc.poll() is not None:
             self.proc = None
             self.mode = ""
+            self.camera_mode = "single"
             self.started_at = 0.0
 
     def _stop_proc_locked(self) -> None:
@@ -229,6 +236,7 @@ class FusionPipelineController:
                 self.proc.wait(timeout=5)
         self.proc = None
         self.mode = ""
+        self.camera_mode = "single"
         self.started_at = 0.0
 
 
@@ -254,19 +262,29 @@ class ServiceController:
         with ThreadPoolExecutor(max_workers=max(1, len(names))) as pool:
             return list(pool.map(self.status, names))
 
-    def start(self, name: str) -> dict[str, Any]:
+    def start(self, name: str, camera_mode: str = "single") -> dict[str, Any]:
         self._require_name(name)
         with self.lock:
+            env = os.environ.copy()
+            if name == "realsense" and camera_mode in {"single", "multi"}:
+                env["REALSENSE_MODE"] = camera_mode
             subprocess.Popen(
                 ["bash", f"{self.root_dir}/scripts/start_service.sh", name],
                 cwd=self.root_dir,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 start_new_session=True,
+                env=env,
             )
             return self.status(name)
 
-    def start_group(self, services: list[str]) -> list[dict[str, Any]]:
+    def start_group(self, services: list[str], camera_mode: str = "single") -> list[dict[str, Any]]:
+        if "realsense" in services and camera_mode in {"single", "multi"}:
+            current = self.status("realsense")
+            current_mode = current.get("health", {}).get("mode")
+            if current.get("running") and current_mode != camera_mode:
+                self.stop("realsense")
+
         group = self._service_group(services)
         if group:
             with self.lock:
@@ -275,11 +293,12 @@ class ServiceController:
                     cwd=self.root_dir,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
+                    env={**os.environ, "REALSENSE_MODE": camera_mode},
                     check=False,
                 )
             return [self.status(name) for name in services]
 
-        return [self.start(name) for name in services]
+        return [self.start(name, camera_mode=camera_mode) for name in services]
 
     def wait_ready(self, services: list[str], *, timeout: float = 60.0) -> list[dict[str, Any]]:
         deadline = time.time() + timeout
@@ -321,6 +340,10 @@ class ServiceController:
     def restart(self, name: str) -> dict[str, Any]:
         self.stop(name)
         return self.start(name)
+
+    def restart_with_mode(self, name: str, camera_mode: str = "single") -> dict[str, Any]:
+        self.stop(name)
+        return self.start(name, camera_mode=camera_mode)
 
     def enable_flowpose_visualization(self) -> dict[str, Any]:
         deadline = time.time() + 15
@@ -385,7 +408,10 @@ class ServiceController:
             if port == 8000 and payload.get("status") == "ok":
                 try:
                     with urlopen("http://127.0.0.1:8000/realsense/info", timeout=0.25) as response:
-                        response.read()
+                        info = json.loads(response.read().decode("utf-8"))
+                    if isinstance(info, dict):
+                        payload["mode"] = info.get("mode", "single")
+                        payload["cameras"] = info.get("cameras", [])
                 except Exception as exc:
                     return {"status": "engine_missing", "error": str(exc)}
             return payload
@@ -444,6 +470,7 @@ class MarvinDockerController:
         self.root_dir = root_dir
         self.robot_ip = robot_ip
         self.script = os.path.join(root_dir, "MarvinDocker", "run.sh")
+        self.last_message = ""
         self.lock = threading.RLock()
 
     def start_base(self, robot_ip: str | None = None) -> dict[str, Any]:
@@ -509,26 +536,64 @@ class MarvinDockerController:
             "tmux": tmux,
             "robot_action": robot_action,
             "robot_ip": self.robot_ip,
-            "message": docker["stderr"] if not docker["ok"] else "",
+            "message": docker["stderr"] if not docker["ok"] else self.last_message,
         }
 
     def _run(self, mode: str, robot_ip: str | None = None) -> dict[str, Any]:
         ip = (robot_ip or self.robot_ip).strip() or self.robot_ip
-        with self.lock:
-            if not os.path.exists(self.script):
-                raise FileNotFoundError(self.script)
-            if not self._docker_available():
+        try:
+            with self.lock:
+                if not os.path.exists(self.script):
+                    raise FileNotFoundError(self.script)
+                if not self._docker_available():
+                    self.robot_ip = ip
+                    return self.status()
+                os.makedirs(os.path.join(self.root_dir, "logs"), exist_ok=True)
+                env = os.environ.copy()
+                if env.get("HOST_WORKSPACE_ROOT") and not env.get("MARVIN_HOST_ROOT_DIR"):
+                    env["MARVIN_HOST_ROOT_DIR"] = os.path.join(env["HOST_WORKSPACE_ROOT"], "MarvinDocker")
+                proc = subprocess.run(
+                    ["bash", self.script, ip, mode, "--no-attach"],
+                    cwd=self.root_dir,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=20,
+                    check=False,
+                    env=env,
+                )
+                output = "\n".join(part.strip() for part in (proc.stdout, proc.stderr) if part.strip())
+                log_path = os.path.join(self.root_dir, "logs", "marvin-start.log")
+                with open(log_path, "a", encoding="utf-8") as f:
+                    f.write(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] mode={mode} ip={ip} rc={proc.returncode}\n")
+                    if output:
+                        f.write(output)
+                        f.write("\n")
                 self.robot_ip = ip
-                return self.status()
-            subprocess.Popen(
-                ["bash", self.script, ip, mode, "--no-attach"],
-                cwd=self.root_dir,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True,
-            )
+                self.last_message = output.splitlines()[-1] if output else f"started {mode}"
+                if proc.returncode != 0:
+                    status = self.status()
+                    status["message"] = self.last_message
+                    return status
+                time.sleep(0.5)
+                status = self.status()
+                if not status.get("message"):
+                    status["message"] = self.last_message
+                return status
+        except subprocess.TimeoutExpired as exc:
             self.robot_ip = ip
-            return self.status()
+            self.last_message = f"MarvinDocker start timed out; see logs/marvin-start.log"
+            log_path = os.path.join(self.root_dir, "logs", "marvin-start.log")
+            os.makedirs(os.path.dirname(log_path), exist_ok=True)
+            with open(log_path, "a", encoding="utf-8") as f:
+                f.write(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] mode={mode} ip={ip} timeout\n")
+                if exc.stdout:
+                    f.write(str(exc.stdout))
+                if exc.stderr:
+                    f.write(str(exc.stderr))
+            status = self.status()
+            status["message"] = self.last_message
+            return status
 
     def _docker_available(self) -> bool:
         return (
@@ -594,14 +659,12 @@ HTML = """<!doctype html>
 	    .field { display: grid; gap: 5px; }
 	    .field label { color: #b6c0cf; font-size: 12px; font-weight: 700; text-transform: uppercase; }
 	    input { background: #0f1217; color: #eef2f7; border: 1px solid #3c4858; border-radius: 6px; padding: 7px 9px; min-width: 0; }
+	    select { background: #0f1217; color: #eef2f7; border: 1px solid #3c4858; border-radius: 6px; padding: 7px 9px; font-weight: 700; }
 	    .badge { display: inline-block; min-width: 74px; padding: 3px 7px; border-radius: 999px; text-align: center; font-size: 12px; border: 1px solid #3b4656; }
 	    .badge.ok { color: #8cffbe; border-color: #2f7655; background: #143425; }
     .badge.warn { color: #ffd56d; border-color: #6f5d2a; background: #342b14; }
     .badge.bad { color: #ff98a4; border-color: #714050; background: #341923; }
     .actions { display: flex; justify-content: flex-start; gap: 6px; flex-wrap: wrap; }
-    .videos { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; padding: 12px; }
-    .video { background: #0f1217; border: 1px solid #2a2f3a; border-radius: 6px; overflow: hidden; }
-    .video img { width: 100%; display: block; background: #080a0d; }
     .meta { padding: 8px 10px; font-size: 12px; color: #b6c0cf; display: flex; justify-content: space-between; gap: 8px; }
     .events { max-height: calc(100vh - 120px); overflow: auto; padding: 8px; }
     .event { border-bottom: 1px solid #2a2f3a; padding: 8px 4px; font-size: 12px; }
@@ -618,6 +681,11 @@ HTML = """<!doctype html>
     <strong>MindBridge Fusion</strong>
     <span id="status" class="muted">connecting...</span>
     <div class="controls">
+      <label class="muted" for="cameraMode">Camera</label>
+      <select id="cameraMode">
+        <option value="single">Single</option>
+        <option value="multi">Multi</option>
+      </select>
       <button data-start="sam3">SAM3 Full</button>
       <button data-start="yolo">YOLO Full</button>
       <button id="stop" class="danger">Stop</button>
@@ -670,10 +738,12 @@ HTML = """<!doctype html>
         </table>
       </section>
     </div>
-    <section>
-      <h2>ZMQ Events</h2>
-      <div id="events" class="events"></div>
-    </section>
+    <div class="stack">
+      <section>
+        <h2>ZMQ Events</h2>
+        <div id="events" class="events"></div>
+      </section>
+    </div>
   </main>
   <script>
     const eventsEl = document.getElementById("events");
@@ -682,6 +752,7 @@ HTML = """<!doctype html>
 	    const marvinStatusEl = document.getElementById("marvinStatus");
 	    const marvinDockerReadyEl = document.getElementById("marvinDockerReady");
 	    const marvinIpEl = document.getElementById("marvinIp");
+	    const cameraModeEl = document.getElementById("cameraMode");
     const viewModes = {
       yolo: "yolo-only",
       sam3: "sam3-only",
@@ -707,14 +778,19 @@ HTML = """<!doctype html>
     for (const button of document.querySelectorAll("[data-start]")) {
       button.addEventListener("click", async () => {
         statusEl.textContent = "starting " + button.dataset.start + "...";
-        try { await postJson("/api/control/start", {detector: button.dataset.start}); }
+        try {
+          await postJson("/api/control/start", {
+            detector: button.dataset.start,
+            camera_mode: cameraModeEl.value
+          });
+        }
         catch (err) { statusEl.textContent = err.message || "start failed"; }
       });
     }
     async function startMode(mode) {
       statusEl.textContent = "starting " + mode + "...";
       try {
-        await postJson("/api/control/start", {mode});
+        await postJson("/api/control/start", {mode, camera_mode: cameraModeEl.value});
         await refresh();
       } catch (err) {
         statusEl.textContent = err.message || "start failed";
@@ -758,7 +834,7 @@ HTML = """<!doctype html>
     async function serviceAction(name, action) {
       statusEl.textContent = `${action} ${name}...`;
       try {
-        await postJson(`/api/services/${name}/${action}`, {});
+        await postJson(`/api/services/${name}/${action}`, {camera_mode: cameraModeEl.value});
         await refresh();
       } catch (err) {
         statusEl.textContent = `${action} failed`;
@@ -779,10 +855,14 @@ HTML = """<!doctype html>
 	        const marvin = data.marvin || {};
 	        const runningServices = (data.services || []).filter((service) => service.running).length;
 	        const totalServices = (data.services || []).length;
+	        const cameraText = control.camera_mode ? ` | camera ${control.camera_mode}` : "";
 	        const runText = control.running
-	          ? `pipeline running ${control.mode.toUpperCase()}`
+	          ? `pipeline running ${control.mode.toUpperCase()}${cameraText}`
 	          : (runningServices > 0 ? `pipeline idle | services ${runningServices}/${totalServices} running` : "idle");
 	        statusEl.textContent = `${runText} | updated ${fmtTime(data.server_time)}`;
+	        if (control.running && control.camera_mode && document.activeElement !== cameraModeEl) {
+	          cameraModeEl.value = control.camera_mode;
+	        }
 	        if (marvin.robot_ip && document.activeElement !== marvinIpEl) {
 	          marvinIpEl.value = marvin.robot_ip;
 	        }
@@ -896,12 +976,14 @@ def make_handler(
                 service_name = parts[2]
                 action = parts[3]
                 try:
+                    payload = self._read_json()
+                    camera_mode = str(payload.get("camera_mode", "single"))
                     if action == "start":
-                        result = service_controller.start(service_name)
+                        result = service_controller.start(service_name, camera_mode=camera_mode)
                     elif action == "stop":
                         result = service_controller.stop(service_name)
                     elif action == "restart":
-                        result = service_controller.restart(service_name)
+                        result = service_controller.restart_with_mode(service_name, camera_mode=camera_mode)
                     elif action == "refresh":
                         result = service_controller.status(service_name)
                     else:
@@ -916,10 +998,11 @@ def make_handler(
                     return
                 try:
                     payload = self._read_json()
+                    camera_mode = str(payload.get("camera_mode", "single"))
                     if payload.get("mode"):
-                        self._send_json(controller.start_mode(str(payload["mode"])))
+                        self._send_json(controller.start_mode(str(payload["mode"]), camera_mode=camera_mode))
                     else:
-                        self._send_json(controller.start(str(payload.get("detector", "sam3"))))
+                        self._send_json(controller.start(str(payload.get("detector", "sam3")), camera_mode=camera_mode))
                 except Exception as exc:
                     self._send_error_json(HTTPStatus.BAD_REQUEST, str(exc))
                 return

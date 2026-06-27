@@ -7,12 +7,14 @@ sam3:
   # ── 模型权重路径 ──
   # checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3_quantized.pt
   checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3.1_multiplex.pt
+  # checkpoint_path: /workspace/mindbridge/models/weights/sam3/sam3.pt
   # ── 推理参数 ──
   prompts:
     - gift bag
     - small toy
     - yellow tassel
     - cuboid box
+    - black box
     # - tiny object
     # - object
   score_threshold: 0.2

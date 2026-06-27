@@ -7,7 +7,7 @@ import requests
 
 
 class FusionUiClient:
-    def __init__(self, base_url: str, *, timeout_sec: float = 0.2) -> None:
+    def __init__(self, base_url: str, *, timeout_sec: float = 1.0) -> None:
         self.base_url = base_url.rstrip("/")
         self.timeout_sec = timeout_sec
 

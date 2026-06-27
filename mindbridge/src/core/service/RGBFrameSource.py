@@ -21,13 +21,17 @@ class RGBFrameSource(Protocol):
 
 
 class RealSenseRGBSource:
-    """RGB source backed by the existing RealSense service."""
+    """RGB source backed by the existing RealSense service.
 
-    def __init__(self, client: MindBridgeClient):
+    multi=True 时使用 /capture/all/raw，返回帧中附带 aux（color-only 相机彩色帧）。
+    """
+
+    def __init__(self, client: MindBridgeClient, multi: bool = False):
         self.client = client
+        self.multi = multi
 
     def capture(self) -> dict:
-        frame = self.client.capture()
+        frame = self.client.capture_all() if self.multi else self.client.capture()
         frame["source"] = "realsense"
         frame.setdefault("timestamp", time.time())
         return frame

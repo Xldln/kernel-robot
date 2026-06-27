@@ -19,6 +19,7 @@ def main() -> None:
     run_parser.add_argument("--detector", choices=["sam3", "yolo"], default="sam3")
     run_parser.add_argument("--pipeline", choices=["basic", "full"], default="full")
     run_parser.add_argument("--rgb-source", choices=["realsense", "usb"], default="realsense")
+    run_parser.add_argument("--camera-mode", choices=["single", "multi"], default="single")
     run_parser.add_argument("--camera-index", type=int, default=0)
     run_parser.add_argument("--camera-width", type=int, default=None)
     run_parser.add_argument("--camera-height", type=int, default=None)
@@ -28,6 +29,7 @@ def main() -> None:
     run_parser.add_argument("--show", action="store_true", help="Also show the OpenCV window")
     run_parser.add_argument("--max-frames", type=int, default=None)
     run_parser.add_argument("--log-interval", type=int, default=30)
+    run_parser.add_argument("--fusion-ui-interval", type=int, default=3)
     run_parser.add_argument("--realsense-url", default="http://127.0.0.1:8000")
     run_parser.add_argument("--yolo-url", default="http://127.0.0.1:8001")
     run_parser.add_argument("--siglip-url", default="http://127.0.0.1:8002")
@@ -83,6 +85,7 @@ def _run_with_ui(args: argparse.Namespace) -> None:
         fastfoundation_url=args.fastfoundation_url,
         flowpose_url=args.flowpose_url,
         rgb_source=args.rgb_source,
+        camera_mode=args.camera_mode,
         camera_index=args.camera_index,
         camera_width=args.camera_width,
         camera_height=args.camera_height,
@@ -94,6 +97,7 @@ def _run_with_ui(args: argparse.Namespace) -> None:
         show=args.show,
         max_frames=args.max_frames,
         log_interval=args.log_interval,
+        fusion_ui_interval=args.fusion_ui_interval,
         fusion_pub=True,
         fusion_pub_addr=args.zmq_pub_addr,
         fusion_ui_url=f"http://{args.ui_host}:{args.ui_port}",
