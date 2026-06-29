@@ -157,6 +157,7 @@ class _ColorCamera:
         self.cam_name = cam_name or cam_id
         self.serial = str(cam_cfg.get("serial", "") or "")
         self._frame_id = 0
+        self.capture_timeout_ms = int(cam_cfg.get("capture_timeout_ms", 300))
         self._init_camera(cam_cfg)
 
     def _init_camera(self, cfg: dict) -> None:

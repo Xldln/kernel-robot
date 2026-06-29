@@ -1,10 +1,10 @@
 model:
   path: /workspace/mindbridge/models/siglip2-so400m-patch14-224
-  # checkpoint: /workspace/mindbridge/models/weights/siglip/gift_m8_ego_0623.pt
+  checkpoint: /workspace/mindbridge/models/weights/siglip/siglip_0629/gift_multi_m8_0629.pt
   # # graph_info_file: /workspace/mindbridge/models/weights/siglip/graph_info_epoch20.json
-  # graph_info_file: /workspace/mindbridge/models/weights/siglip/gift_m8_ego_0623.json
-  checkpoint: /workspace/mindbridge/models/weights/siglip/siglip_multi_626/siglip_gift_multi_m8_0625.pt
-  graph_info_file: /workspace/mindbridge/models/weights/siglip/siglip_multi_626/siglip_gift_multi_m8_0625.json
+  graph_info_file: /workspace/mindbridge/models/weights/siglip/siglip_0629/gift_multi_m8_0629.json
+  # checkpoint: /workspace/mindbridge/models/weights/siglip/siglip_multi_626/siglip_gift_multi_m8_0625.pt
+  # graph_info_file: /workspace/mindbridge/models/weights/siglip/siglip_multi_626/siglip_gift_multi_m8_0625.json
   # ── 多视角参数：网页 Camera=Multi 时会把三路图横向拼接后送入 SigLIP ──
   # checkpoint 中存在 view_pos_embed 时会自动启用 MultiViewSigLIPModel。
   # 若多视角权重没有该 key 但仍需强制多视角，可设 multiview: true。
@@ -14,4 +14,3 @@ model:
   pooler_num_layers: 2
   pooler_num_heads: 8
   background_mask_ratio: 0
- 
