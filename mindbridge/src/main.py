@@ -372,18 +372,20 @@ def run(
                     state_result = client.classify_state(siglip_input, request_id=str(frame_id))
                     if _mode == "pipeline":
                         last_state_result = state_result
-                    if fusion_publisher:
-                        try:
-                            fusion_publisher.publish_siglip(
-                                frame_id=frame_id,
-                                state_result=state_result,
-                            )
-                        except Exception as e:
-                            print(f"[ControlCenter] SigLIP publish failed: {e}")
                 except Exception as e:
                     print(f"[ControlCenter] SigLIP classification failed: {e}")
                     state_result = {"status": "error", "best_category": "", "best_similarity": 0.0}
                 siglip_ms = (time.time() - t_siglip_start) * 1000
+
+            # 每帧都发布 siglip 结果（含跳帧时的缓存值），避免 ZMQ 空洞导致 watcher 断流
+            if fusion_publisher and state_result:
+                try:
+                    fusion_publisher.publish_siglip(
+                        frame_id=frame_id,
+                        state_result=state_result,
+                    )
+                except Exception as e:
+                    print(f"[ControlCenter] SigLIP publish failed: {e}")
 
             # ── Step 3 (full only): FastFoundation stereo depth ──
             ff_result: dict = {}

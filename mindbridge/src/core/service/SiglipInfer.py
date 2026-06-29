@@ -296,13 +296,16 @@ class SiglipInfer:
         # EMA 平滑配置
         self.use_sim_ema = cfg.get("ema", {}).get("enabled", True)
         self.ema_beta = cfg.get("ema", {}).get("beta", 0.7)
+        self.ema_adaptive = cfg.get("ema", {}).get("adaptive", False)
+        self.ema_adaptive_beta = cfg.get("ema", {}).get("adaptive_beta", 0.2)
 
         print(f"[SiglipInfer] 设备: {self.device}")
         print(f"[SiglipInfer] 加载基础模型: {self.model_path}")
         self.model, self.processor = self._load_model()
         print(f"[SiglipInfer] 加载训练权重: {self.checkpoint_path}")
         print(f"[SiglipInfer] EMA 平滑: {'开启' if self.use_sim_ema else '关闭'}"
-              + (f", beta={self.ema_beta}" if self.use_sim_ema else ""))
+              + (f", beta={self.ema_beta}" if self.use_sim_ema else "")
+              + (f", adaptive_beta={self.ema_adaptive_beta}" if self.use_sim_ema and self.ema_adaptive else ""))
         print("[SiglipInfer] 模型加载完成")
 
         print(f"[SiglipInfer] 加载类别中心: {self.graph_info_path}")
@@ -469,17 +472,31 @@ class SiglipInfer:
 
     def _calculate_similarity(self, feat_np: np.ndarray,
                                ema_state: np.ndarray | None = None):
-        """计算相似度，支持 EMA 平滑。返回 (result_dict, updated_ema_state)。"""
+        """计算相似度，支持自适应 EMA 平滑。
+
+        自适应策略：当原始 top-1 类别与平滑后 top-1 类别不一致时（状态切换），
+        使用更低的 adaptive_beta 加速过渡；状态稳定时保持正常 beta 以过滤噪声。
+        """
         sim_keys = list(self.centers.keys())
         sim_vals = np.array([float(np.dot(feat_np, self.centers[k])) for k in sim_keys],
                             dtype=np.float32)
 
-        # EMA 平滑
         if self.use_sim_ema:
             if ema_state is None:
                 ema_state = sim_vals.copy()
+                beta_used = self.ema_beta
             else:
-                ema_state = self.ema_beta * ema_state + (1 - self.ema_beta) * sim_vals
+                # 自适应 beta：检测 top-1 类别是否发生变化
+                if self.ema_adaptive:
+                    raw_best_idx = int(np.argmax(sim_vals))
+                    smooth_best_idx = int(np.argmax(ema_state))
+                    if raw_best_idx != smooth_best_idx:
+                        beta_used = self.ema_adaptive_beta
+                    else:
+                        beta_used = self.ema_beta
+                else:
+                    beta_used = self.ema_beta
+                ema_state = beta_used * ema_state + (1 - beta_used) * sim_vals
             smoothed = ema_state
         else:
             smoothed = sim_vals

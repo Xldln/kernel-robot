@@ -40,7 +40,7 @@ class MeanFlow(nn.Module):
         if self.args.is_train:
             self.writer = SummaryWriter(writer_path)  
 
-        self.dino : nn.Module = torch.hub.load('/workspace/model/facebookresearch_dinov2_main/', MeanFlow.dino_name, source='local', pretrained=False).to(args.device)
+        self.dino : nn.Module = torch.hub.load('/workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main/', MeanFlow.dino_name, source='local', pretrained=False).to(args.device)
         # dino
         # try:
         #     self.dino : nn.Module = torch.hub.load('/workspace/model/facebookresearch_dinov2_main/', MeanFlow.dino_name, source='local').to(args.device)

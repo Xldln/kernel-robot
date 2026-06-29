@@ -25,6 +25,7 @@ class StatusWatcher:
         self._lock = threading.Lock()
         self._stable_frames = stable_frames
         self._recent_states = deque(maxlen=stable_frames)
+        self._state_event = threading.Event()
         self._sub = node.create_subscription(
             String,
             topic,
@@ -49,6 +50,10 @@ class StatusWatcher:
                 return
             with self._lock:
                 self._recent_states.append(normalized)
+                if len(self._recent_states) >= self._stable_frames:
+                    values = list(self._recent_states)
+                    if len(set(values)) == 1:
+                        self._state_event.set()
         except Exception as e:
             self._node.get_logger().warning(f"[StatusWatcher] parse fail: {e}")
 
@@ -62,14 +67,23 @@ class StatusWatcher:
         return None
 
     def wait_stable_state(self, timeout=2.0, poll_interval=0.1):
+        """事件驱动等待状态稳定，poll_interval 仅保留兼容不做轮询。"""
         start = time.time()
+        stable = self.get_stable_state()
+        if stable is not None:
+            return stable
         while rclpy.ok():
+            remaining = timeout - (time.time() - start)
+            if remaining <= 0:
+                return None
+            self._state_event.clear()
+            if self._state_event.wait(timeout=min(remaining, 1.0)):
+                stable = self.get_stable_state()
+                if stable is not None:
+                    return stable
             stable = self.get_stable_state()
             if stable is not None:
                 return stable
-            if (time.time() - start) >= timeout:
-                return None
-            time.sleep(poll_interval)
 
 
 class TaskProgressWatcher:

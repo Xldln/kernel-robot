@@ -46,17 +46,12 @@ class FlowPoseInfer:
             sys.path.insert(0, py_runner_path)
 
         # ── DINOv2 本地配置 ──
-        # meanflow_inference.py 硬编码了 /workspace/model/facebookresearch_dinov2_main/
-        # 用软链接指向实际位置，避免修改 FlowPose 源码
-        dinov2_code_path = paths_cfg.get("dinov2_code_path", "")
-        hardcoded_dino = "/workspace/model/facebookresearch_dinov2_main"
-        if dinov2_code_path:
-            os.makedirs("/workspace/model", exist_ok=True)
-            if not os.path.islink(hardcoded_dino) and not os.path.isdir(hardcoded_dino):
-                os.symlink(dinov2_code_path, hardcoded_dino)
-                print(f"[FlowPoseInfer] DINOv2 软链接: {dinov2_code_path} → {hardcoded_dino}")
-            else:
-                print(f"[FlowPoseInfer] DINOv2 软链接已存在")
+        dinov2_code_path = paths_cfg.get(
+            "dinov2_code_path",
+            "/workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main",
+        )
+        if dinov2_code_path and not os.path.isdir(dinov2_code_path):
+            print(f"[FlowPoseInfer] WARNING: DINOv2 路径不存在: {dinov2_code_path}")
 
         # ── 模型路径 ──
         self.pretrained_flow_model_path = paths_cfg.get("pretrained_flow_model_path", "")

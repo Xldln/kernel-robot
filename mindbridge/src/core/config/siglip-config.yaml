@@ -14,3 +14,9 @@ model:
   pooler_num_layers: 2
   pooler_num_heads: 8
   background_mask_ratio: 0
+
+ema:
+  enabled: true
+  beta: 0.7             # 稳定状态时的平滑系数
+  adaptive: true         # 开启自适应 EMA：状态切换时自动加速
+  adaptive_beta: 0.2     # 状态切换时的快速响应系数（越低响应越快）
