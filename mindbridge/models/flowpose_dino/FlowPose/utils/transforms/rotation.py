@@ -320,6 +320,56 @@ def euler_angles_to_matrix(euler_angles: torch.Tensor, convention: str) -> torch
     # return functools.reduce(torch.matmul, matrices)
     return torch.matmul(torch.matmul(matrices[0], matrices[1]), matrices[2])
 
+def eulerZYX_to_matrix(euler_zyx: torch.Tensor) -> torch.Tensor:
+    """
+    Convert ZYX Euler angles to rotation matrices explicitly.
+
+    Builds R = Rz @ Ry @ Rx, where angles are given in [Z, Y, X] order.
+
+    Args:
+        euler_zyx: tensor of shape (..., 3) where
+                   [..., 0] = yaw   (rotation around Z)
+                   [..., 1] = pitch (rotation around Y)
+                   [..., 2] = roll  (rotation around X)
+                   Units: radians.
+
+    Returns:
+        Rotation matrices of shape (..., 3, 3).
+    """
+    z = euler_zyx[..., 0]
+    y = euler_zyx[..., 1]
+    x = euler_zyx[..., 2]
+
+    cz, sz = torch.cos(z), torch.sin(z)
+    cy, sy = torch.cos(y), torch.sin(y)
+    cx, sx = torch.cos(x), torch.sin(x)
+
+    # Rz
+    O = torch.zeros_like(cz)
+    I = torch.ones_like(cz)
+    Rz = torch.stack([
+        torch.stack([ cz, -sz,  O], dim=-1),
+        torch.stack([ sz,  cz,  O], dim=-1),
+        torch.stack([  O,   O,  I], dim=-1),
+    ], dim=-2)  # (..., 3, 3)
+
+    # Ry
+    Ry = torch.stack([
+        torch.stack([ cy,  O, sy], dim=-1),
+        torch.stack([  O,  I,  O], dim=-1),
+        torch.stack([-sy,  O, cy], dim=-1),
+    ], dim=-2)
+
+    # Rx
+    Rx = torch.stack([
+        torch.stack([ I,  O,  O], dim=-1),
+        torch.stack([ O, cx, -sx], dim=-1),
+        torch.stack([ O, sx,  cx], dim=-1),
+    ], dim=-2)
+
+    return torch.matmul(torch.matmul(Rz, Ry), Rx)
+
+
 def get_rot_matrix(batch_pose, pose_mode):
     """
     pose_mode: 

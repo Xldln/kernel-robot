@@ -7,10 +7,6 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from networks.pts_encoder.pointnet2_utils.pointnet2.pointnet2_modules import PointnetFPModule, PointnetSAModuleMSG
 import networks.pts_encoder.pointnet2_utils.pointnet2.pytorch_utils as pt_utils
 from ipdb import set_trace
-from args import parse_arguments
-
-
-cfg = parse_arguments()
 
 
 def get_model(input_channels=0):
@@ -79,14 +75,7 @@ ClsMSG_CFG_Lighter= {
 }
 
 
-if cfg.pointnet2_params == 'light':
-    SELECTED_PARAMS = ClsMSG_CFG_Light
-elif cfg.pointnet2_params == 'lighter':
-    SELECTED_PARAMS = ClsMSG_CFG_Lighter
-elif cfg.pointnet2_params == 'dense':
-    SELECTED_PARAMS = ClsMSG_CFG_Dense
-else:
-    raise NotImplementedError
+SELECTED_PARAMS = ClsMSG_CFG_Light
 
 
 class Pointnet2MSG(nn.Module):

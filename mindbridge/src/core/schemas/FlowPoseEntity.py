@@ -40,3 +40,4 @@ class FlowPosePredictResponse(BaseModel):
     objects: list[ObjectPose] = Field(default_factory=list, description="物体姿态列表")
     elapsed_sec: float = Field(0.0, description="服务端推理耗时（秒）")
     message: Optional[str] = Field(None, description="错误时携带错误信息")
+    traceback: Optional[str] = Field(None, description="错误时携带 traceback 信息")

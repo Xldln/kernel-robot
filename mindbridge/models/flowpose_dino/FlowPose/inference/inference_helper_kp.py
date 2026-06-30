@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from configs import instantiate_model
 from networks.flow.meanflow_inference import MeanFlow
 from networks.scale.scalenet import ScaleNet
+from networks.keypoint.decoder import DenseKeypointHead
 from utils.transforms.rotation import get_rot_matrix, matrix_to_quaternion, quaternion_to_matrix, get_pose_representation
 from utils.misc import average_quaternion_batch
 from dataset.dataset import OmniXInferDataset
@@ -40,6 +41,21 @@ class Flow:
         self.scale_model = instantiate_model(self.args)
         self.scale_model.load_ckpt(model_dir=self.args.pretrained_scale_model_path, load_model_only=True)
         self.scale_model.eval()
+
+        self.args.arch = 'keypoint'
+        from types import SimpleNamespace
+        temp_args = SimpleNamespace(
+            arch='keypoint',
+            is_train=False,
+            num_classes=getattr(self.args, 'num_classes', 2),
+            dino=getattr(self.args, 'dino', 'pointwise'),
+            img_size=getattr(self.args, 'img_size', 224),
+        )
+        self.kp_model = instantiate_model(temp_args)
+        self.kp_model.args = self.args
+        self.kp_model.load_ckpt(model_dir=self.args.pretrained_kp_model_path, load_model_only=True)
+        self.kp_model.to(self.args.device)
+        self.kp_model.eval()
 
         Flow.FRAME_GAP_THRESHOLD = self.args.frame_gap_threshold
 
@@ -73,7 +89,7 @@ class Flow:
                         if frame_idx - Flow.prev_pose_dict[box_id]['last_seen_frame'] > Flow.FRAME_GAP_THRESHOLD]
             for stale_id in stale_ids:
                 del Flow.prev_pose_dict[stale_id]
-
+                
         return tracking_poses, valid_prev_label
     
     def _inference_flow(self, batch_sample, flow_model:MeanFlow, obj_ids=None, frame_idx=0, enable_tracking=False):
@@ -221,19 +237,33 @@ class Flow:
                 gc.collect()
         
         return all_final_pose, all_final_length
+    
+    def _inference_key_points(self, batch_sample, kp_model:DenseKeypointHead):
+        # print("DINO feature shape in KP inference: ", batch_sample['dino_feat'].shape)
+        kp_feat = batch_sample['original_dino_feat']
+        kpnet_result = kp_model(kp_feat)
+        keypoint_result = kp_model.extract_keypoints(kpnet_result, 0.4)
+        return keypoint_result
 
-    def inference(self, data:OmniXInferDataset, dino_loader=None, obj_ids=None, frame_idx=0, enable_tracking=False):
-        batch_sample = data.get_objects() # where obj_idx = obj_idx[(obj_idx != 0) & (obj_idx != 255)]
+    def inference(self, data:OmniXInferDataset, dino_loader=None, obj_ids=None, frame_idx=0, enable_tracking=False, mode='rgb'):
+        batch_sample = data.get_objects(mode=mode) # where obj_idx = obj_idx[(obj_idx != 0) & (obj_idx != 255)]
         if batch_sample is None:
             print("Warning: InferDataset.get_objects() returned None — no valid objects to infer.")
-            return [], []
+            return [], [], [], []
         dino_loader.extract_features(batch_sample['roi_rgb'])  # Extract DINO features and store in DinoLoader.feat
-        batch_sample['dino_feat'] = dino_loader.get_feature()   # Add 'dino_feat' to batch_sample
+        batch_sample['dino_feat'] = dino_loader.get_feature()   # Add 'dino_feat' to batch_sample (intermediate/unnormed, for flow model)
+        batch_sample['original_dino_feat'] = batch_sample['dino_feat'].clone()
         
-        all_pred_pose, all_flow_feature = self._inference_flow(batch_sample, self.flow_model, obj_ids=obj_ids, frame_idx=frame_idx, enable_tracking=enable_tracking)
+        if mode != 'rgb':
+            all_pred_pose, all_flow_feature = self._inference_flow(batch_sample, self.flow_model, obj_ids=obj_ids, frame_idx=frame_idx, enable_tracking=enable_tracking)
 
-        all_aggregated_pose = self._aggregate_pose(all_pred_pose)
+            all_aggregated_pose = self._aggregate_pose(all_pred_pose)
 
-        all_final_pose, all_final_length = self._inference_scale(batch_sample, self.scale_model, all_flow_feature, all_aggregated_pose)
+            all_final_pose, all_final_length = self._inference_scale(batch_sample, self.scale_model, all_flow_feature, all_aggregated_pose)
 
-        return all_final_pose, all_final_length
+            key_points = self._inference_key_points(batch_sample, self.kp_model)
+        else:
+            all_final_pose, all_final_length = None, None
+            key_points = self._inference_key_points(batch_sample, self.kp_model)
+
+        return all_final_pose, all_final_length, key_points, batch_sample

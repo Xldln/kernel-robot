@@ -3,8 +3,9 @@ import sys, os
 import torch
 import gc
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from dataset.train_loader import get_train_dataloader
+from dataset.train_loader import get_train_dataloader, get_train_dataloader_raw
 from dataset.augmentation import ProcessBatch
+from networks.dino.dino import DinoLoader
 from args import parse_arguments
 from configs import instantiate_model
 
@@ -13,7 +14,7 @@ def train_step(model, data, *args, **kwargs):
     loss.backward(create_graph=False)
     return loss
 
-def train_flow(args, train_loader, flow_model, batch_processor, teacher_model=None):
+def train_flow(args, train_loader, flow_model, dino_loader, batch_processor, teacher_model=None):
 
     flow_model.clock.epoch = 0
     # Training loop
@@ -28,6 +29,9 @@ def train_flow(args, train_loader, flow_model, batch_processor, teacher_model=No
                 flow_model.update_learning_rate()
             # Process batch - move to device and compute derived quantities
             processed_batch = batch_processor(batch)
+
+            dino_loader.extract_features(processed_batch['roi_rgb'])  # Extract DINO features and store in DinoLoader.feat
+            processed_batch['dino_feat'] = dino_loader.get_feature()   # Add 'dino_feat' to processed_batch
 
             flow_model.encode_func(processed_batch)  # Adds 'pts_feat' to processed_batch
             
@@ -50,7 +54,7 @@ def train_flow(args, train_loader, flow_model, batch_processor, teacher_model=No
         flow_model.clock.tock()
         flow_model.save_ckpt()
 
-def train_scale(args, train_loader, scale_model, batch_processor, flow_model):
+def train_scale(args, train_loader, scale_model, dino_loader, batch_processor, flow_model):
 
     flow_model.eval()
     scale_model.clock.epoch = 0
@@ -66,6 +70,9 @@ def train_scale(args, train_loader, scale_model, batch_processor, flow_model):
                 scale_model.update_learning_rate()
             # Process batch - move to device and compute derived quantities
             processed_batch = batch_processor(batch)
+
+            dino_loader.extract_features(processed_batch['roi_rgb'])  # Extract DINO features and store in DinoLoader.feat
+            processed_batch['dino_feat'] = dino_loader.get_feature()   # Add 'dino_feat' to processed_batch
             
             with torch.no_grad():
                 flow_model.encode_func(data=processed_batch)
@@ -85,14 +92,22 @@ def main():
     args = parse_arguments()
     device = 'cuda'
     shard_path = args.shard_path
-    
+
     # Create dataloader
-    train_loader = get_train_dataloader(
-        args=args,
-        shard_path=shard_path,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers
-    )
+    if getattr(args, 'raw', False):
+        train_loader = get_train_dataloader_raw(
+            args=args,
+            data_path=args.data_path,
+            batch_size=args.batch_size,
+            num_workers=args.num_workers
+        )
+    else:
+        train_loader = get_train_dataloader(
+            args=args,
+            shard_path=shard_path,
+            batch_size=args.batch_size,
+            num_workers=args.num_workers
+        )
 
     # Create batch processor
     batch_processor = ProcessBatch(
@@ -102,6 +117,9 @@ def main():
 
     # Load flow model
     model = instantiate_model(args) # instantiate meanflow or scalenet
+    # Load DINO model
+    dino_loader = DinoLoader(model_name='dinov2_vits14', device=device)
+
     flow_model = None
 
     # flow model
@@ -112,7 +130,7 @@ def main():
                 flow_model = model
         else:
             flow_model = None
-        train_flow(args, train_loader, model, batch_processor, teacher_model=flow_model)
+        train_flow(args, train_loader, model, dino_loader, batch_processor, teacher_model=flow_model)
 
     # scale model
     elif args.arch == 'scalenet':
@@ -120,16 +138,11 @@ def main():
         args.arch = 'pointnet'  # temp set arch to pointnet to load flow model
         flow_model = instantiate_model(args)
         flow_model.load_ckpt(model_dir=args.pretrained_flow_model_path, load_model_only=True)
-        
-        # state_dict = flow_model.state_dict()
-        # for name, tensor in state_dict.items():
-        #     print(name)
-        # quit()
 
         args.arch = 'scalenet'  # reset arch to scalenet
         if args.pretrained_scale_model_path is not None:
                 model.load_ckpt(model_dir=args.pretrained_scale_model_path, load_model_only=False)
-        train_scale(args, train_loader, model, batch_processor, flow_model)
+        train_scale(args, train_loader, model, dino_loader, batch_processor, flow_model)
     
     else:
         print("Wut are you doing???")

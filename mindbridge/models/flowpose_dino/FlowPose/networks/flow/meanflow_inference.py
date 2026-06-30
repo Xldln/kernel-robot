@@ -25,7 +25,6 @@ eps = 1e-4
 # also add dino
 # shit mountain starts from here
 class MeanFlow(nn.Module):
-    dino_name = 'dinov2_vits14'
     dino_dim = 384
     embedding_dim = 60
 
@@ -40,22 +39,11 @@ class MeanFlow(nn.Module):
         if self.args.is_train:
             self.writer = SummaryWriter(writer_path)  
 
-        self.dino : nn.Module = torch.hub.load('/workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main/', MeanFlow.dino_name, source='local', pretrained=False).to(args.device)
-        # dino
-        # try:
-        #     self.dino : nn.Module = torch.hub.load('/workspace/model/facebookresearch_dinov2_main/', MeanFlow.dino_name, source='local').to(args.device)
-        # except:
-        #     self.dino : nn.Module = torch.hub.load('facebookresearch/dinov2', MeanFlow.dino_name).to(args.device)
-
-        self.dino.requires_grad_(False)
-        self.dino.eval()
         self.dino_dim = MeanFlow.dino_dim
         self.embedding_dim = MeanFlow.embedding_dim
 
         self.pts_encoder = Pointnet2ClsMSGFus(self.dino_dim)
-        
-        ###
-        self.pose_act = nn.ReLU(True)
+        self.pts_encoder.requires_grad_(False)
 
         # pose encoder
         self.ang_encoder = nn.Sequential(
@@ -75,67 +63,43 @@ class MeanFlow(nn.Module):
         # time encoder
         self.t_encoder = nn.Sequential(
             GaussianFourierProjection(embed_dim=128),
-            # self.act, # M4D26 update
             nn.Linear(128, 128),
             nn.ReLU(),
         )
 
         # fusion tail - rotation x and y regress head 
-        # xxxx
         self.fusion_tail_rot_x = nn.Sequential(
             nn.Linear(128+256+256+1024, 256),
             nn.ReLU(),
             nn.Linear(256, 3),
         )
-        # yyyy
         self.fusion_tail_rot_y = nn.Sequential(
             nn.Linear(128+256+256+1024, 256),
             nn.ReLU(),
             nn.Linear(256, 3),
         )
-            
-        # translation regress head 
         self.fusion_tail_trans = nn.Sequential(
             nn.Linear(128+256+256+1024, 256),
             nn.ReLU(),
             nn.Linear(256, 3),
         )
 
-        # ---- modules that participate in EMA (FlowNet part) ----
-        self.ema_modules = nn.ModuleList([
-            # self.pts_encoder,
-            self.ang_encoder,
-            self.pos_encoder,
-            self.t_encoder,
-            self.fusion_tail_rot_x,
-            self.fusion_tail_rot_y,
-            self.fusion_tail_trans,
-        ])
-
         self.to(args.device)
         self.optimizer = self.set_optimizer()
         self.scheduler = self.set_scheduler()
-        self.ema = ExponentialMovingAverage(self.ema_parameters(self.ema_modules), 
+        self.ema = ExponentialMovingAverage(self.parameters(), 
                                             decay=0.999, 
                                             use_num_updates=True,
                                             period=1,  # periodic update
                                             use_double_precision=True # MeanFlow's numerical stability
                                             )  
 
-    def ema_parameters(self, modules):
-            for m in modules:
-                for p in m.parameters():
-                    yield p
-
     def extract_pts_feature(self, data):
         pts = data['pts']  # [bs, N, 3]
-        # pts = data['zero_mean_pts']
 
-        roi_rgb = data['roi_rgb']
         # Only freeze DINO gradients
         with torch.no_grad():
-            feat = self.dino.get_intermediate_layers(roi_rgb)[0]
-            feat = self.dino.get_intermediate_layers(roi_rgb)[0]
+            feat = data['dino_feat']
             xs = data['roi_xs'] // 14
             ys = data['roi_ys'] // 14
             pos = xs * 16 + ys
@@ -143,7 +107,6 @@ class MeanFlow(nn.Module):
             rgb_feat = torch.gather(feat, 1, pos)
 
             # freeze dino weights
-            rgb_feat.requires_grad_(False)
             data['dino_feat'] = feat.mean(dim=1, keepdim=True).squeeze(1)  # [bs, dino_dim]
 
         
@@ -208,7 +171,7 @@ class MeanFlow(nn.Module):
         else:
             x = init_pose.clone().to(device)
             num_steps = 10
-            t_seq = torch.linspace(eps, 0.5-eps, num_steps + 1, device=device)
+            t_seq = torch.linspace(0.75, 1.0-eps, num_steps + 1, device=device)
 
         # ------------------------------------------------
         # 3. Heun (RK2) integration
@@ -220,7 +183,6 @@ class MeanFlow(nn.Module):
 
             # ---- k1 ----
             data['sampled_pose'] = x
-            # sigma = sigma_min * (sigma_max / sigma_min) ** (1-t)
             sigma = sigma_min * torch.exp(torch.log(torch.tensor(sigma_max / sigma_min, device=t.device)) * (1-t))
             diffusion_coeff = sigma * torch.sqrt(torch.tensor(2 * (np.log(sigma_max) - np.log(sigma_min)), device=t.device))
             diffusion = diffusion_coeff.cpu().numpy()
@@ -264,12 +226,12 @@ class MeanFlow(nn.Module):
             data['pts_feat'] = self.extract_pts_feature(data)
 
         pts_feat = data['pts_feat']
-        dino_feat = data['dino_feat']
         bs = pts_feat.shape[0]
 
         # ------------------------------------------------
         # 2. Handle previous pose logic
         # ------------------------------------------------
+        # valid_prev_label = None
         if valid_prev_label and init_pose is not None:
             # compute indices of items that have previous poses
             prev_indices = [i for i, lbl in enumerate(data.get('labels', [])) if lbl in init_pose]
@@ -387,13 +349,13 @@ class MeanFlow(nn.Module):
         print("Loading checkpoint from {} ...".format(model_dir))
 
         # Load model state
-        self.load_state_dict(ckpt['model_state_dict'])
+        self.load_state_dict(ckpt['model_state_dict'], strict=False)
             
         # Restore EMA state if available
         if 'ema_state_dict' in ckpt:
             self.ema.load_state_dict(ckpt['ema_state_dict'])
             # 切到 EMA 权重
-            self.ema.copy_to(self.ema_parameters(self.ema_modules))   
+            self.ema.copy_to(self.parameters())   
 
     # called from trainer
     def encode_func(self, data):

@@ -32,6 +32,7 @@ from dataset.infer_loader import get_infer_dataloader
 from utils.infer_utils import draw_frame_info, show_frame
 from utils.yomni_vis import visualize_detections
 from args import parse_arguments
+from networks.dino.dino import DinoLoader
 
 # ── Non-blocking Open3D point-cloud viewer ──────────────────────────────────
 _pcl_vis = None
@@ -106,7 +107,7 @@ def visualize_segmented_pcl(data):
     _pcl_vis.update_renderer()
 
 
-def process_frame(frame, depth_raw, flow, yolo, args, writer, frame_idx, depth_scale):
+def process_frame(frame, depth_raw, dino_loader, flow, yolo, args, writer, frame_idx, depth_scale):
     # run YOLO
     results = yolo.track(frame, persist=True, tracker="bytetrack.yaml", verbose=False)
     boxes = results[0].boxes
@@ -164,9 +165,9 @@ def process_frame(frame, depth_raw, flow, yolo, args, writer, frame_idx, depth_s
 
     t0 = time.time()
     if args.tracking:
-        pose, length = flow.inference(data, obj_ids=obj_ids, frame_idx=frame_idx, enable_tracking=True)
+        pose, length = flow.inference(data, dino_loader, obj_ids=obj_ids, frame_idx=frame_idx, enable_tracking=True)
     else:
-        pose, length = flow.inference(data, obj_ids=obj_ids, frame_idx=frame_idx, enable_tracking=False)
+        pose, length = flow.inference(data, dino_loader, obj_ids=obj_ids, frame_idx=frame_idx, enable_tracking=False)
     t1 = time.time()
     # print(f'Pose inference time for frame {frame_idx}: {t1 - t0:.3f} seconds')
 
@@ -180,7 +181,7 @@ def process_frame(frame, depth_raw, flow, yolo, args, writer, frame_idx, depth_s
     if valid_output:
         all_final_pose = pose[0].to(torch.float32).cpu().numpy()
         all_final_length = length[0].to(torch.float32).cpu().numpy()
-        vis = visualize_detections(vis, all_final_pose, all_final_length, data.cam_intrinsics, color=(0, 255, 0), thickness=2, alpha=0.1)
+        vis = visualize_detections(vis, all_final_pose, all_final_length, data.cam_intrinsics, thickness=1)
 
     num_detections = len(masks.data) if masks is not None else 0
     draw_frame_info(vis, frame_idx, t1-t0, num_detections)
@@ -195,8 +196,8 @@ def main():
     set_logging_format()
     set_seed(0)
     torch.autograd.set_grad_enabled(False)
-    
-    device = args.device if torch.cuda.is_available() and 'cuda' in args.device else 'cpu'
+
+    dino_loader = DinoLoader(model_name='dinov2_vits14', device='cuda')
 
     # 1. Initialize Flow and YOLO
     flow = Flow(args)
@@ -375,6 +376,7 @@ def main():
             pose, length, infer_time = process_frame(
                 frame=color_img, 
                 depth_raw=depth_aligned, 
+                dino_loader=dino_loader, 
                 flow=flow, 
                 yolo=yolo, 
                 args=args, 

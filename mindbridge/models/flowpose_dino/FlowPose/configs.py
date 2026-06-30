@@ -4,7 +4,8 @@ from networks.scale.scalenet import ScaleNet
 
 MODEL_ARCHS = {
     "pointnet": Pointnet2ClsMSGFus,
-    "scalenet": ScaleNet
+    "scalenet": ScaleNet,
+    "keypoint": None
 }
 
 MODEL_CONFIGS = {
@@ -14,6 +15,9 @@ MODEL_CONFIGS = {
     "scalenet": {
         # TODO
     },
+    "keypoint": {
+        # TODO
+    }
 }
 
 def instantiate_model(args) -> nn.Module:
@@ -30,6 +34,22 @@ def instantiate_model(args) -> nn.Module:
                          args.num_points,
                          dino_dim=0, # use pointwise dino
                          embedding_dim=args.scale_embedding)
+    
+    elif architechture == "keypoint":
+        if getattr(args, "is_train", False):
+            from networks.keypoint.keypoint import KeypointModel
+            model = KeypointModel(
+                args,
+                num_classes=args.num_classes,
+                dino=args.dino,
+                img_size=args.img_size,
+            )
+        else:
+            from networks.keypoint.decoder import DenseKeypointHead
+            model = DenseKeypointHead(
+                d_model=384,
+                num_classes=args.num_classes
+            )
 
     elif architechture == "pointnet":
         configs['dropout'] = args.dropout
@@ -38,7 +58,7 @@ def instantiate_model(args) -> nn.Module:
             configs['augment_dim'] = 6
 
         if getattr(args, "is_train", False):
-            from networks.flow.meanflow_v1 import MeanFlow
+            from networks.flow.meanflow_train import MeanFlow
         else:
             from networks.flow.meanflow_inference import MeanFlow
 

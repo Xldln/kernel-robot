@@ -88,9 +88,9 @@ class ParseMetaData:
         
         # Check for valid objects
         valid_objects = [obj for obj in gts.objects if obj.is_valid]
+
         if not valid_objects:
             return None
-        
         if self.per_object:
             # Return list of samples, one per object (for evaluation)
             samples = []
@@ -104,7 +104,6 @@ class ParseMetaData:
         else:
             # Select one object randomly (for training)
             obj = random.choice(valid_objects)
-            
             sample['gts'] = gts
             sample['selected_object'] = obj
             sample['inst_name'] = obj.meta.oid
