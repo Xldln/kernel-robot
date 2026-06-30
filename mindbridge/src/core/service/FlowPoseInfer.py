@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import sys
 import time
-import traceback
 from argparse import Namespace
 from pathlib import Path
 from types import SimpleNamespace
@@ -46,13 +45,27 @@ class FlowPoseInfer:
         if py_runner_path not in sys.path:
             sys.path.insert(0, py_runner_path)
 
-        # ── DINOv2 本地配置 ──
-        dinov2_code_path = paths_cfg.get(
+        flowpose_root = os.path.dirname(py_runner_path)
+        if flowpose_root not in sys.path:
+            sys.path.insert(0, flowpose_root)
+
+        # ── DINOv2 配置 ──
+        dino_cfg = fp_cfg.get("dino", {})
+        self.dino_repo_path = dino_cfg.get(
             "dinov2_code_path",
-            "/workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main",
+            paths_cfg.get(
+                "dinov2_code_path",
+                "/workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main",
+            ),
         )
-        if dinov2_code_path and not os.path.isdir(dinov2_code_path):
-            print(f"[FlowPoseInfer] WARNING: DINOv2 路径不存在: {dinov2_code_path}")
+        self.dino_ckpt_path = dino_cfg.get(
+            "dinov2_ckpt_path",
+            "/workspace/mindbridge/models/weights/flowpose_dino/dinov2_vits14_pretrain.pth",
+        )
+        if self.dino_repo_path and not os.path.isdir(self.dino_repo_path):
+            print(f"[FlowPoseInfer] WARNING: DINOv2 路径不存在: {self.dino_repo_path}")
+        if not os.path.exists(self.dino_ckpt_path):
+            print(f"[FlowPoseInfer] WARNING: DINO ckpt 不存在: {self.dino_ckpt_path}")
 
         # ── 模型路径 ──
         self.pretrained_flow_model_path = paths_cfg.get("pretrained_flow_model_path", "")
@@ -90,6 +103,17 @@ class FlowPoseInfer:
         sys.argv = safe_argv
         self.visualize_detections_func = visualize_detections
 
+        # ── 加载 DINO ──
+        print(f"[FlowPoseInfer] Loading DINOv2...")
+        t_dino = time.time()
+        self.dino_loader = DinoLoader(
+            model_name="dinov2_vits14",
+            device=fp_cfg.get("inference", {}).get("device", "cuda"),
+            local_repo_path=self.dino_repo_path,
+            ckpt_path=self.dino_ckpt_path,
+        )
+        print(f"[FlowPoseInfer] DINOv2 loaded ({time.time() - t_dino:.2f}s)")
+
         # ── 构建 args ──
         model_cfg = fp_cfg.get("model", {})
         inference_cfg = fp_cfg.get("inference", {})
@@ -122,6 +146,7 @@ class FlowPoseInfer:
             clustering=int(fp_cfg.get("clustering", 1)),
             clustering_eps=float(fp_cfg.get("clustering_eps", 0.05)),
             clustering_minpts=float(fp_cfg.get("clustering_minpts", 0.1667)),
+            enable_calibration=bool(fp_cfg.get("enable_calibration", True)),
         )
 
         # ── 加载模型 ──
@@ -134,11 +159,15 @@ class FlowPoseInfer:
         self.flow = Flow(args)
 
         print("[FlowPoseInfer] Creating PoseInferenceSession...")
-        self.inferencer = PoseInferenceSession(self.flow, args)
-
-        dinov2_model_name = model_cfg.get("dinov2_model_name", "dinov2_vits14")
-        print("[FlowPoseInfer] Loading DINO...")
-        self.dino_loader = DinoLoader(model_name=dinov2_model_name, device=args.device)
+        self.inferencer = PoseInferenceSession(
+            self.flow,
+            args,
+            intrinsics={
+                "fx": self.fx, "fy": self.fy,
+                "cx": self.cx, "cy": self.cy,
+                "width": self.width, "height": self.height,
+            },
+        )
 
         print(f"[FlowPoseInfer] 模型加载完成 ({time.time() - t0:.2f}s)")
 
@@ -200,13 +229,7 @@ class FlowPoseInfer:
 
         try:
             # 推理
-            pose_out, length_out = self.inferencer.infer(
-                dino_loader=self.dino_loader,
-                rgb=rgb,
-                depth=depth,
-                mask=combined_mask,
-                obj_ids=obj_ids,
-            )
+            pose_out, length_out = self.inferencer.infer(self.dino_loader, rgb, depth, combined_mask, obj_ids)
             pose_all, length_all = unpack_infer_output(pose_out, length_out)
 
             # 可视化（可选）
@@ -222,19 +245,6 @@ class FlowPoseInfer:
                     if valid_output:
                         all_final_pose = np.asarray(pose_all, dtype=np.float32)
                         all_final_length = np.asarray(length_all, dtype=np.float32)
-
-                        raw_pose = getattr(self.inferencer, "last_raw_pose", None)
-                        bbox_pose = None
-                        if raw_pose is not None:
-                            try:
-                                if hasattr(raw_pose, "detach"):
-                                    raw_pose = raw_pose.detach().cpu().numpy()
-                                bbox_pose = np.asarray(raw_pose, dtype=np.float32)
-                                if bbox_pose.shape[0] != all_final_pose.shape[0]:
-                                    bbox_pose = None
-                            except Exception:
-                                bbox_pose = None
-
                         cam_intrinsics = self._build_cam_intrinsics()
 
                         vis = self.visualize_detections_func(
@@ -244,8 +254,7 @@ class FlowPoseInfer:
                             cam_intrinsics,
                             color=(0, 255, 0),
                             thickness=2,
-                            axes_length=self.axis_len,
-                            bbox_poses=bbox_pose,
+                            alpha=0.1,
                         )
                     if request_id:
                         cv2.putText(
@@ -328,7 +337,6 @@ class FlowPoseInfer:
                 status="error",
                 request_id=request_id,
                 message=str(e),
-                traceback=traceback.format_exc(),
                 elapsed_sec=elapsed,
             )
 

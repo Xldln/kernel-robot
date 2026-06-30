@@ -1,9 +1,5 @@
 *.pyc
-0000_meta.json
-/results/*
+results/
 .vscode/
-utils.py
-webdataset_creation.py
-Fast-FoundationStereo
-*.bak
-requirements.txt
+checkpoints_dense/
+utils/MoGe/

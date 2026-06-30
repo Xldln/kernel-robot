@@ -118,6 +118,7 @@ class PoseInferenceSession:
         }
         self.intrinsics = intrinsics or default_intrinsics
         self.enable_tracking = self.args.enable_tracking
+        self.enable_calibration = getattr(self.args, 'enable_calibration', True)
         self.frame_idx = 0
         self.last_raw_pose = None
 
@@ -166,6 +167,7 @@ class PoseInferenceSession:
             return None, None
 
         self.last_raw_pose = pose[0].detach().clone() if isinstance(pose[0], torch.Tensor) else pose[0].copy()
-        pose[0] = _calibrate_pose(pose[0])
+        if self.enable_calibration:
+            pose[0] = _calibrate_pose(pose[0])
 
         return pose, length

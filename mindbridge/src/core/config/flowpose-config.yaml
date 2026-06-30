@@ -8,6 +8,11 @@ flowpose:
     pretrained_flow_model_path: /workspace/mindbridge/models/weights/flowpose_dino/flowpose.pth
     pretrained_scale_model_path: /workspace/mindbridge/models/weights/flowpose_dino/scalenet0423.pth
 
+  # ── DINOv2 配置 ──
+  dino:
+    dinov2_code_path: /workspace/mindbridge/models/flowpose_dino/facebookresearch_dinov2_main
+    dinov2_ckpt_path: /workspace/mindbridge/models/weights/flowpose_dino/dinov2_vits14_pretrain.pth
+
   # ── 模型参数 ──
   model:
     flow_model_path: results/ckpts/FlowNet/rope_fixed_v2.pth
@@ -59,6 +64,9 @@ flowpose:
     seed: 0
     log_dir: debug
     result_dir: results
+
+  # ── 姿态校准 (新版本坐标系校准, 如朝向不对可关闭) ──
+  enable_calibration: true
 
   save_response: false
   response_save_path: latest_response.json
