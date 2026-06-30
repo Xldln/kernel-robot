@@ -44,6 +44,58 @@ def _build_multiview_jpg(color_jpg: bytes, aux_jpgs: list[bytes]) -> bytes:
     return buf.tobytes() if ok else color_jpg
 
 
+def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float = 0.5):
+    """NMS for SAM3 detections: keep highest-score box for overlapping pairs.
+
+    Returns filtered (detections, mask_bytes).
+    """
+    if len(detections) <= 1:
+        return detections, mask_bytes
+
+    boxes = []
+    scores = []
+    for det in detections:
+        bbox = det.get("bbox", [])
+        if len(bbox) == 4:
+            boxes.append([float(b) for b in bbox])
+        else:
+            boxes.append([0.0, 0.0, 0.0, 0.0])
+        scores.append(float(det.get("score", 0.0)))
+
+    boxes = np.array(boxes)
+    scores = np.array(scores)
+
+    # Sort by score descending
+    order = scores.argsort()[::-1]
+    keep = []
+
+    while len(order) > 0:
+        idx = order[0]
+        keep.append(idx)
+        if len(order) == 1:
+            break
+        # Compute IoU of best box with rest
+        x1 = np.maximum(boxes[idx, 0], boxes[order[1:], 0])
+        y1 = np.maximum(boxes[idx, 1], boxes[order[1:], 1])
+        x2 = np.minimum(boxes[idx, 2], boxes[order[1:], 2])
+        y2 = np.minimum(boxes[idx, 3], boxes[order[1:], 3])
+        inter = np.maximum(0, x2 - x1) * np.maximum(0, y2 - y1)
+        area = (boxes[order[1:], 2] - boxes[order[1:], 0]) * (boxes[order[1:], 3] - boxes[order[1:], 1])
+        area_idx = (boxes[idx, 2] - boxes[idx, 0]) * (boxes[idx, 3] - boxes[idx, 1])
+        iou = inter / (area + area_idx - inter + 1e-6)
+        order = order[1:][iou <= iou_thresh]
+
+    # Filter detections and masks
+    filtered_dets = [detections[i] for i in keep]
+    filtered_masks = {}
+    for det in filtered_dets:
+        mf = det.get("mask_file", "")
+        if mf and mf in mask_bytes:
+            filtered_masks[mf] = mask_bytes[mf]
+
+    return filtered_dets, filtered_masks
+
+
 def _build_labeled_multiview_jpg(views: list[tuple[str, bytes]]) -> bytes:
     """Build a horizontally stitched JPEG with per-view labels for UI display."""
     imgs: list[np.ndarray] = []
@@ -416,14 +468,17 @@ def run(
                             ir_to_color_R=cap.get("ir_to_color_R"),
                             ir_to_color_T=cap.get("ir_to_color_T"),
                         )
-                        if ff_result.get("status") == "ok" and ff_result.get("depth_png"):
-                            depth_png_for_flowpose = ff_result["depth_png"]
-                            last_depth_png = depth_png_for_flowpose
+                        # NOTE: RealSense hardware depth is already aligned to color and
+                        # more complete than FastFoundation's stereo depth for FlowPose.
+                        # If you want to use FastFoundation depth instead, uncomment below:
+                        # if ff_result.get("status") == "ok" and ff_result.get("depth_png"):
+                        #     depth_png_for_flowpose = ff_result["depth_png"]
+                        #     last_depth_png = depth_png_for_flowpose
                     except Exception as e:
                         print(f"[ControlCenter] FastFoundation failed: {e}")
                     ff_ms = (time.time() - t_ff) * 1000
-                elif last_depth_png is not None:
-                    depth_png_for_flowpose = last_depth_png
+                # elif last_depth_png is not None:
+                #     depth_png_for_flowpose = last_depth_png
 
             # ── Step 4: Detection (YOLO or SAM3, mutually exclusive) ──
             pred: dict = {"status": "ok", "num_detections": 0, "detections": [],
@@ -495,7 +550,14 @@ def run(
                         obj_ids_for_flowpose.append([1, 1])
                         class_names_for_flowpose.append("object")
                 elif _detector == "sam3" and sam3_result.get("status") == "ok":
-                    _collect_masks(sam3_result.get("detections", []), sam3_result.get("mask_bytes", {}))
+                    # NMS dedup: keep highest-score box for overlapping detections
+                    sam3_dets = sam3_result.get("detections", [])
+                    sam3_masks = sam3_result.get("mask_bytes", {})
+                    if len(sam3_dets) > 1:
+                        sam3_dets, sam3_masks = _nms_sam3_detections(sam3_dets, sam3_masks)
+                        sam3_result["detections"] = sam3_dets
+                        sam3_result["mask_bytes"] = sam3_masks
+                    _collect_masks(sam3_dets, sam3_masks)
                 elif _detector == "yolo" and pred.get("status") == "ok":
                     _collect_masks(pred.get("detections", []), pred.get("mask_bytes", {}), is_yolo=True)
 

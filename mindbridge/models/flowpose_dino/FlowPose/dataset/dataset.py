@@ -167,7 +167,7 @@ class OmniXInferDataset(object):
         """
         meta = None
         if isinstance(data, dict):
-            depth = load_depth(data.get("depth"))/1000
+            depth = load_depth(data.get("depth")).astype(np.float32) / 1000.0
             color = load_color(data.get("color"))
             mask = load_mask(data.get("mask"))
             if mask is not None:
@@ -182,7 +182,7 @@ class OmniXInferDataset(object):
             meta_file = prefix + "meta.json"
             # Verify depth file exists before loading
             if depth_file is not None and os.path.exists(depth_file):
-                depth = load_depth(depth_file)
+                depth = load_depth(depth_file).astype(np.float32) / 1000.0
             else:
                 print(f"Warning: Depth file not found at {depth_file}")
                 depth = None

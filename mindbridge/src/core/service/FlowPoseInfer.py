@@ -229,7 +229,7 @@ class FlowPoseInfer:
 
         try:
             # 推理
-            pose_out, length_out = self.inferencer.infer(self.dino_loader, rgb, depth, combined_mask, obj_ids)
+            pose_out, length_out, obj_ids = self.inferencer.infer(self.dino_loader, rgb, depth, combined_mask, obj_ids)
             pose_all, length_all = unpack_infer_output(pose_out, length_out)
 
             # 可视化（可选）
@@ -254,7 +254,6 @@ class FlowPoseInfer:
                             cam_intrinsics,
                             color=(0, 255, 0),
                             thickness=2,
-                            alpha=0.1,
                         )
                     if request_id:
                         cv2.putText(

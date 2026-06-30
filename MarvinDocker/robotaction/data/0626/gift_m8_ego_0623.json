@@ -90,48 +90,18 @@
     },
     {
       "node_id": "006",
-      "state_description": "The right gripper moves to grasp the bag.",
+      "state_description": "All steps finish.",
       "next_action": [
         { 
-          "target": "gift bag",
-          "action_name": "catch",
-          "arm": "right",
-          "speed": 0.8,
-          "correction_mode": "reverse"
-        }
-      ],
-      "center_feature": null
-    },
-    {
-      "node_id": "007",
-      "state_description": "The left gripper lifts the box above the bag and release it.",
-      "next_action": [
-        { 
-          "target": "gift bag",
-          "action_name": "near",
+          "target": "home",
+          "action_name": "location_end",
           "arm": "left",
           "speed": 0.8,
-          "correction_mode": "reverse"
-        },
-        { 
-          "target": "gift bag",
-          "action_name": "place",
-          "arm": "left",
-          "speed": 0.8,
-          "correction_mode": "reverse",
-          "finish_home": true
+          "correction_mode": "forward"
         }
-      ],
-      "center_feature": null
-    },
-    {
-      "node_id": "008",
-      "state_description": "Both grippers move away.",
-      "next_action": "home",
-      "parents": [
-        "007"
       ],
       "center_feature": null
     }
+  
   ]
 }
