@@ -1,95 +1,94 @@
 # MindBridge / TJfusion
 
-MindBridge 是一套面向 RealSense + 视觉模型 + 机器人执行的本地推理管线。当前推荐的部署方式是：**一个主镜像 `tjfusion:latest`，一个主容器 `TJfusion`，所有 MindBridge 服务都在这个容器里运行**。
-## 架构
+MindBridge is a local inference pipeline for RealSense + vision models + robot execution. The recommended deployment: **one main image `tjfusion:latest`, one main container `TJfusion`**, running all MindBridge services inside.
+
+## Architecture
 
 ```text
-TJfusion 容器
+TJfusion container
 ├── Fusion Web UI              :8765
-├── RealSense 服务             :8000
-├── YOLO 服务                  :8001
-├── SigLIP 服务                :8002
-├── FastFoundation 服务        :8004
-├── SAM3 服务                  :8005
-└── FlowPose 服务              :8006
+├── RealSense service          :8000
+├── YOLO service               :8001
+├── SigLIP service             :8002
+├── FastFoundation service     :8004
+├── SAM3 service               :8005
+└── FlowPose service           :8006
 ```
 
-服务日志在：
+Service logs:
 
 ```text
 logs/*.log
 ```
 
-服务 PID 在容器内：
+Service PIDs inside the container:
 
 ```text
 /tmp/mindbridge/*.pid
 ```
 
-## 快速启动
+## Quick Start
 
-在仓库根目录运行：
+From the repo root:
 
 ```bash
 ./run.sh
 ```
 
-打开网页：
+Open:
 
 ```text
 http://127.0.0.1:8765
 ```
 
-`./run.sh` 会启动或复用 `TJfusion` 容器，并在容器里启动 Fusion Web UI。
+`./run.sh` starts or reuses the `TJfusion` container and launches Fusion Web UI inside it.
 
-## 进入容器
-
-推荐直接输入：
+## Enter the Container
 
 ```bash
 tjfusion
 ```
 
-等价于：
+Equivalent to:
 
 ```bash
 docker exec -it TJfusion bash
 ```
 
-如果提示 `tjfusion` 命令不存在，确认 `~/.local/bin` 在 `PATH` 中：
+If `tjfusion` is not found, make sure `~/.local/bin` is in your `PATH`:
 
 ```bash
 echo "$PATH"
 ```
 
-## 常用管线
+## Pipelines
 
-以下命令在 `TJfusion` 容器内执行。
+Run inside the `TJfusion` container.
 
 ```bash
 mind
 ```
 
-默认启动完整 SAM3 管线：
+Starts the default full SAM3 pipeline:
 
 ```text
 RealSense + FastFoundation + SAM3 + FlowPose + SigLIP
 ```
 
-启动完整 YOLO 管线：
+Full YOLO pipeline:
 
 ```bash
 mind --yolo
 ```
 
-启动基础管线：
+Basic pipelines (no FastFoundation + FlowPose):
 
 ```bash
 mind --basic-sam3
 mind --basic-yolo
 ```
 
-单独模式：
+Standalone modes:
 
 ```bash
 mind --yolo-only
@@ -99,26 +98,63 @@ mind --flowpose-only
 mind --rs-only
 ```
 
-无窗口运行：
+Headless mode:
 
 ```bash
 mind --yolo --no-show
 ```
 
-## 服务管理
+### Extra Arguments
 
-在 `TJfusion` 容器内执行：
+All pipeline commands accept additional arguments:
+
+```bash
+mind --show                         # show OpenCV windows (default)
+mind --no-show                      # headless, no display
+mind --rgb-source usb               # use USB webcam instead of RealSense
+mind --fusion-pub                   # publish Fusion ZMQ results to :8899
+mind --fusion-ui-url http://127.0.0.1:8765  # push video frames to Fusion UI
+```
+
+## Multi-Camera Mode
+
+When multiple RealSense cameras are connected (1 primary + N aux color-only cameras), use `--camera-mode multi`:
+
+```bash
+mind --camera-mode multi
+```
+
+In this mode:
+- **Primary camera**: full capture (color + depth + IR) — used for detection, depth estimation, and pose estimation
+- **Aux cameras**: color-only frames — used to enrich SigLIP multi-view state classification
+- **SigLIP**: all camera views are horizontally stitched into a single multi-view image for joint classification, improving accuracy
+- **Visualization**: an additional `SigLIP MultiView` window shows the stitched multi-view feed
+
+Single camera mode (default):
+
+```bash
+mind --camera-mode single
+```
+
+Note: `multi` mode only works with `--rgb-source realsense` (the default). USB cameras do not support multi-camera mode.
+
+## Service Management
+
+Inside the `TJfusion` container:
 
 ```bash
 bash scripts/start_service.sh status
-bash scripts/start_service.sh yolo-full
-bash scripts/start_service.sh sam3-full
-bash scripts/start_service.sh basic-yolo
-bash scripts/start_service.sh basic-sam3
-bash scripts/start_service.sh stop
+bash scripts/start_service.sh yolo-full          # YOLO full pipeline dependencies
+bash scripts/start_service.sh sam3-full          # SAM3 full pipeline dependencies
+bash scripts/start_service.sh basic-yolo         # YOLO basic pipeline dependencies
+bash scripts/start_service.sh basic-sam3         # SAM3 basic pipeline dependencies
+bash scripts/start_service.sh flowpose-stack     # FlowPose pipeline dependencies
+bash scripts/start_service.sh all                # all services
+bash scripts/start_service.sh stop               # stop all
+bash scripts/start_service.sh restart            # restart all
 ```
 
-单独启动服务：
+Start individual services:
 
 ```bash
 bash scripts/start_service.sh realsense
@@ -129,96 +165,91 @@ bash scripts/start_service.sh fastfoundation
 bash scripts/start_service.sh flowpose
 ```
 
-## RealSense 检查
+## RealSense Health Check
 
-RealSense 不只要 `/health` 正常，还要相机 engine 正常：
+RealSense requires both `/health` and the camera engine to be healthy:
 
 ```bash
 curl http://127.0.0.1:8000/health
 curl http://127.0.0.1:8000/realsense/info
 ```
 
-正常时 `/realsense/info` 会返回相机内参。  
-如果出现 `engine_missing` 或 `Engine not initialized`，需要重启 RealSense 服务：
+A healthy `/realsense/info` returns camera intrinsics.  
+If you see `engine_missing` or `Engine not initialized`, restart the RealSense service:
 
 ```bash
 bash scripts/start_service.sh realsense
 ```
 
-## FlowPose 可视化
+## FlowPose Visualization
 
-FlowPose 可视化窗口大小配置在：
+The FlowPose visualization window size is configured in:
 
 ```text
 mindbridge/src/core/config/flowpose-config.yaml
 ```
 
-当前默认：
+When the window is focused, press `ESC` or `q` to close the visualization window (the FlowPose service keeps running).
 
-窗口聚焦时按 `ESC` 或 `q` 会关闭 FlowPose 可视化窗口，但不会停止 FlowPose 服务。
-
-也可以用接口关闭：
+Toggle visualization via API:
 
 ```bash
+# disable
 curl -X POST 'http://127.0.0.1:8006/infer/visualization?enabled=false'
-```
-
-重新打开：
-
-```bash
+# enable
 curl -X POST 'http://127.0.0.1:8006/infer/visualization?enabled=true'
 ```
 
-## Docker 说明
+## Docker Notes
 
-查看运行中的容器：
+List running containers:
 
 ```bash
 docker ps
 ```
 
-你应该看到：
+You should see:
 
 ```text
 TJfusion
 ```
 
-`TJfusion` 是容器名，不是镜像名。  
-`docker images` 显示的是镜像，例如：
+`TJfusion` is the container name, not the image name.  
+`docker images` shows images, e.g.:
 
 ```text
 tjfusion:latest
 mindtest:with-envs
 ```
 
-如果 `docker ps` 里 `TJfusion` 的 IMAGE 显示成镜像 ID，例如 `f759...`，说明这个容器创建时使用的是镜像 ID。功能不受影响。要让它显示 `tjfusion:latest`，需要重建容器，但不需要删除镜像。
+If `docker ps` shows `TJfusion`'s IMAGE as an image ID (e.g. `f759...`), the container was created using the image ID. Functionality is unaffected. To have it display `tjfusion:latest`, recreate the container (no need to delete the image).
 
 ## mindtest
 
-`mindtest` 现在只作为旧环境保留，不作为推荐运行入口。
+`mindtest` is kept as a legacy environment. It is not the recommended runtime.
 
-不要让 `mindtest` 和 `TJfusion` 同时运行 MindBridge 服务。  
-如果需要保留但避免端口冲突：
+Do not run MindBridge services in both `mindtest` and `TJfusion` simultaneously.  
+To keep it without port conflicts:
 
 ```bash
 docker stop mindtest
 ```
 
-不要删除：
+Do not remove:
 
 ```bash
 docker rm mindtest
 ```
 
-除非你明确确认不再需要旧容器。
+unless you are certain you no longer need the old container.
 
-## 更新代码
+## Updating Code
 
-代码挂载到容器的 `/workspace`。普通代码修改后通常不需要重建镜像，只需要重启相关服务：
+The repo is mounted at `/workspace` inside the container. Code changes usually do not require an image rebuild — just restart the relevant services:
 
 ```bash
 bash scripts/start_service.sh stop
 bash scripts/start_service.sh yolo-full
 ```
 
-只有镜像依赖、Conda 环境或系统包变化时，才需要重建镜像或重新构建环境。
+Only rebuild the image or re-create the conda environment when image dependencies, conda environments, or system packages change.
