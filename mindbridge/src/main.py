@@ -44,37 +44,121 @@ def _build_multiview_jpg(color_jpg: bytes, aux_jpgs: list[bytes]) -> bytes:
     return buf.tobytes() if ok else color_jpg
 
 
-def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float = 0.5):
-    """NMS for SAM3 detections: keep highest-score box for overlapping pairs.
+# Per-label EMA state: label -> list of {"bbox": (x1,y1,x2,y2), "ema_score": float}
+_prev_label_dets: dict[str, list[dict]] = {}
 
-    Returns filtered (detections, mask_bytes).
+
+def _box_iou(a, b):
+    """IoU of two boxes [x1,y1,x2,y2]."""
+    x1 = max(a[0], b[0])
+    y1 = max(a[1], b[1])
+    x2 = min(a[2], b[2])
+    y2 = min(a[3], b[3])
+    inter = max(0, x2 - x1) * max(0, y2 - y1)
+    area_a = (a[2] - a[0]) * (a[3] - a[1])
+    area_b = (b[2] - b[0]) * (b[3] - b[1])
+    return inter / (area_a + area_b - inter + 1e-6)
+
+
+def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float = 0.5,
+                         ema_alpha: float = 0.3, match_iou_thresh: float = 0.3):
+    """Global NMS with per-label EMA score smoothing to prevent class-flipping.
+
+    1. Within-label NMS to deduplicate same-prompt detections.
+    2. Match against previous-frame detections (by IoU within same label) and
+       smooth scores via EMA. A new object starts with its raw score.
+    3. Global cross-label NMS using ema_score so overlapping regions keep
+       only the best-smoothed label — no duplicate boxes.
     """
-    if len(detections) <= 1:
-        return detections, mask_bytes
+    global _prev_label_dets
 
-    boxes = []
-    scores = []
-    for det in detections:
-        bbox = det.get("bbox", [])
-        if len(bbox) == 4:
-            boxes.append([float(b) for b in bbox])
-        else:
-            boxes.append([0.0, 0.0, 0.0, 0.0])
-        scores.append(float(det.get("score", 0.0)))
+    if not detections:
+        return [], mask_bytes
 
-    boxes = np.array(boxes)
-    scores = np.array(scores)
+    # ---- step 1: within-label NMS ----
+    label_indices: dict[str, list[int]] = {}
+    for i, det in enumerate(detections):
+        label_indices.setdefault(det.get("label", ""), []).append(i)
 
-    # Sort by score descending
+    kept_by_label: dict[str, list[dict]] = {}
+    for label, indices in label_indices.items():
+        if len(indices) == 1:
+            kept_by_label[label] = [detections[indices[0]]]
+            continue
+        group_boxes = np.array([[
+            float(detections[i].get("bbox", [0, 0, 0, 0])[j]) for j in range(4)
+        ] for i in indices])
+        group_scores = np.array([float(detections[i].get("score", 0.0)) for i in indices])
+        order = group_scores.argsort()[::-1]
+        keep_idx = []
+        while len(order) > 0:
+            idx = order[0]
+            keep_idx.append(indices[idx])
+            if len(order) == 1:
+                break
+            x1 = np.maximum(group_boxes[idx, 0], group_boxes[order[1:], 0])
+            y1 = np.maximum(group_boxes[idx, 1], group_boxes[order[1:], 1])
+            x2 = np.minimum(group_boxes[idx, 2], group_boxes[order[1:], 2])
+            y2 = np.minimum(group_boxes[idx, 3], group_boxes[order[1:], 3])
+            inter = np.maximum(0, x2 - x1) * np.maximum(0, y2 - y1)
+            area = (group_boxes[order[1:], 2] - group_boxes[order[1:], 0]) * (group_boxes[order[1:], 3] - group_boxes[order[1:], 1])
+            area_idx = (group_boxes[idx, 2] - group_boxes[idx, 0]) * (group_boxes[idx, 3] - group_boxes[idx, 1])
+            iou = inter / (area + area_idx - inter + 1e-6)
+            order = order[1:][iou <= iou_thresh]
+        kept_by_label[label] = [detections[i] for i in keep_idx]
+
+    # ---- step 2: match with previous frame & EMA smooth scores ----
+    prev_all = dict(_prev_label_dets)  # shallow copy, enough for our use
+    next_state: dict[str, list[dict]] = {}
+
+    for label, dets in kept_by_label.items():
+        prev_list = prev_all.get(label, [])
+        next_state[label] = []
+        for det in dets:
+            bbox = tuple(det.get("bbox", [0, 0, 0, 0]))
+            raw_score = float(det.get("score", 0.0))
+            # find best-matching previous detection of same label
+            best_iou = 0.0
+            best_ema = raw_score
+            for prev in prev_list:
+                iou = _box_iou(bbox, prev["bbox"])
+                if iou > best_iou:
+                    best_iou = iou
+                    best_ema = prev["ema_score"]
+            if best_iou >= match_iou_thresh:
+                ema_score = ema_alpha * raw_score + (1 - ema_alpha) * best_ema
+            else:
+                ema_score = raw_score
+            det["ema_score"] = ema_score
+            next_state[label].append({"bbox": tuple(bbox), "ema_score": ema_score})
+
+    _prev_label_dets = next_state
+
+    # ---- step 3: global cross-label NMS using ema_score ----
+    all_dets = []
+    for dets in kept_by_label.values():
+        all_dets.extend(dets)
+
+    if len(all_dets) <= 1:
+        filtered_masks = {}
+        for det in all_dets:
+            mf = det.get("mask_file", "")
+            if mf and mf in mask_bytes:
+                filtered_masks[mf] = mask_bytes[mf]
+        return all_dets, filtered_masks
+
+    boxes = np.array([[
+        float(d.get("bbox", [0, 0, 0, 0])[j]) for j in range(4)
+    ] for d in all_dets])
+    scores = np.array([float(d.get("ema_score", d.get("score", 0.0))) for d in all_dets])
+
     order = scores.argsort()[::-1]
     keep = []
-
     while len(order) > 0:
         idx = order[0]
         keep.append(idx)
         if len(order) == 1:
             break
-        # Compute IoU of best box with rest
         x1 = np.maximum(boxes[idx, 0], boxes[order[1:], 0])
         y1 = np.maximum(boxes[idx, 1], boxes[order[1:], 1])
         x2 = np.minimum(boxes[idx, 2], boxes[order[1:], 2])
@@ -85,8 +169,7 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
         iou = inter / (area + area_idx - inter + 1e-6)
         order = order[1:][iou <= iou_thresh]
 
-    # Filter detections and masks
-    filtered_dets = [detections[i] for i in keep]
+    filtered_dets = [all_dets[i] for i in keep]
     filtered_masks = {}
     for det in filtered_dets:
         mf = det.get("mask_file", "")
