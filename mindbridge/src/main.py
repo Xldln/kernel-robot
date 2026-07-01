@@ -46,6 +46,8 @@ def _build_multiview_jpg(color_jpg: bytes, aux_jpgs: list[bytes]) -> bytes:
 
 # Per-label EMA state: label -> list of {"bbox": (x1,y1,x2,y2), "ema_score": float}
 _prev_label_dets: dict[str, list[dict]] = {}
+# Previous NMS winners (survivors): list of {"bbox": tuple, "label": str}
+_prev_winners: list[dict] = []
 
 
 def _box_iou(a, b):
@@ -61,18 +63,20 @@ def _box_iou(a, b):
 
 
 def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float = 0.5,
-                         ema_alpha: float = 0.3, match_iou_thresh: float = 0.3):
-    """Global NMS with per-label EMA score smoothing to prevent class-flipping.
+                         ema_alpha: float = 0.3, match_iou_thresh: float = 0.3,
+                         hysteresis_margin: float = 0.08):
+    """Global NMS with per-label EMA + hysteresis to prevent class-flipping.
 
     1. Within-label NMS to deduplicate same-prompt detections.
     2. Match against previous-frame detections (by IoU within same label) and
-       smooth scores via EMA. A new object starts with its raw score.
-    3. Global cross-label NMS using ema_score so overlapping regions keep
-       only the best-smoothed label — no duplicate boxes.
+       smooth scores via EMA.
+    3. Global cross-label NMS: a label that *survived* NMS last frame gets a
+       hysteresis bonus, so a challenger must consistently beat it to flip.
     """
-    global _prev_label_dets
+    global _prev_label_dets, _prev_winners
 
     if not detections:
+        _prev_winners = []
         return [], mask_bytes
 
     # ---- step 1: within-label NMS ----
@@ -107,8 +111,8 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
             order = order[1:][iou <= iou_thresh]
         kept_by_label[label] = [detections[i] for i in keep_idx]
 
-    # ---- step 2: match with previous frame & EMA smooth scores ----
-    prev_all = dict(_prev_label_dets)  # shallow copy, enough for our use
+    # ---- step 2: match with previous frame, EMA smooth scores ----
+    prev_all = dict(_prev_label_dets)
     next_state: dict[str, list[dict]] = {}
 
     for label, dets in kept_by_label.items():
@@ -117,7 +121,6 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
         for det in dets:
             bbox = tuple(det.get("bbox", [0, 0, 0, 0]))
             raw_score = float(det.get("score", 0.0))
-            # find best-matching previous detection of same label
             best_iou = 0.0
             best_ema = raw_score
             for prev in prev_list:
@@ -134,12 +137,14 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
 
     _prev_label_dets = next_state
 
-    # ---- step 3: global cross-label NMS using ema_score ----
+    # ---- step 3: global cross-label NMS with hysteresis ----
     all_dets = []
     for dets in kept_by_label.values():
         all_dets.extend(dets)
 
     if len(all_dets) <= 1:
+        _prev_winners = [{"bbox": tuple(d.get("bbox", [0, 0, 0, 0])), "label": d.get("label", "")}
+                         for d in all_dets]
         filtered_masks = {}
         for det in all_dets:
             mf = det.get("mask_file", "")
@@ -150,9 +155,23 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
     boxes = np.array([[
         float(d.get("bbox", [0, 0, 0, 0])[j]) for j in range(4)
     ] for d in all_dets])
-    scores = np.array([float(d.get("ema_score", d.get("score", 0.0))) for d in all_dets])
+    ema_scores = np.array([float(d.get("ema_score", d.get("score", 0.0))) for d in all_dets])
 
-    order = scores.argsort()[::-1]
+    # Only the label that SURVIVED NMS last frame gets a hysteresis bonus.
+    # Match each detection against _prev_winners: if same label + overlapping
+    # region, it's the reigning label and gets the margin advantage.
+    bonuses = np.zeros(len(all_dets))
+    for i, d in enumerate(all_dets):
+        bbox = tuple(d.get("bbox", [0, 0, 0, 0]))
+        label = d.get("label", "")
+        for pw in _prev_winners:
+            if pw["label"] == label and _box_iou(bbox, pw["bbox"]) >= match_iou_thresh:
+                bonuses[i] = hysteresis_margin
+                break
+
+    active_scores = ema_scores + bonuses
+
+    order = active_scores.argsort()[::-1]
     keep = []
     while len(order) > 0:
         idx = order[0]
@@ -170,6 +189,11 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
         order = order[1:][iou <= iou_thresh]
 
     filtered_dets = [all_dets[i] for i in keep]
+
+    # Record this frame's NMS winners for next frame's hysteresis
+    _prev_winners = [{"bbox": tuple(d.get("bbox", [0, 0, 0, 0])), "label": d.get("label", "")}
+                     for d in filtered_dets]
+
     filtered_masks = {}
     for det in filtered_dets:
         mf = det.get("mask_file", "")
