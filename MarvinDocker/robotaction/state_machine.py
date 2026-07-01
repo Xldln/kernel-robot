@@ -238,7 +238,7 @@ class FusionStateMixin:
 
             if self.task_progress_watcher.is_finished(
                 silence_after_zero=silence_after_zero,
-                finish_percentage=0.99,
+                finish_percentage=0.98,
             ):
                 self.get_logger().info("[Progress] 当前机械臂动作结束")
                 return TaskStatus.SUCCESS, None
@@ -506,7 +506,7 @@ class FusionStateMixin:
 
             finished_state = self.active_state
             self.get_logger().info(f"[State] '{finished_state}' 全部动作已完成，开始检查状态")
-            # time.sleep(1)
+            time.sleep(2)
             next_state = self.status_watcher.wait_stable_state(timeout=0.5, poll_interval=0.01)
 
             self.active_state = None

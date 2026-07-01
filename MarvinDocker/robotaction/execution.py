@@ -218,7 +218,7 @@ class FusionExecutionMixin:
 
             if self.task_progress_watcher.is_finished(
                 silence_after_zero=0.3,
-                finish_percentage=0.99,
+                finish_percentage=0.98,
             ):
                 self.get_logger().info(f"[Home] 检测到 home 完成 arm='{arm}'")
                 return TaskStatus.SUCCESS, None

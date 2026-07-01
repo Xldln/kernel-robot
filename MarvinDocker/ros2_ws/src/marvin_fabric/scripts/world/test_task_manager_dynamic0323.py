@@ -79,8 +79,10 @@ class KeypointMarkerPublisher(Node):
         self.home_future = None
 
         # home目标点
-        self.HOME_LEFT = np.array([0.276091, 0.26508057, 0.85])
-        self.HOME_RIGHT = np.array([0.276091, -0.26508057, 0.85])
+        # self.HOME_LEFT = np.array([0.276091, 0.26508057, 0.85])
+        # self.HOME_RIGHT = np.array([0.276091, -0.26508057, 0.85])
+        self.HOME_LEFT = np.array([0.32765, 0.27023, 0.89629])
+        self.HOME_RIGHT = np.array([0.3279, -0.26771, 0.89651])
         self.home_start_dist = None
         self.home_arm = None
 
