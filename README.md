@@ -219,29 +219,9 @@ TJfusion
 
 ```text
 tjfusion:latest
-mindtest:with-envs
 ```
 
 If `docker ps` shows `TJfusion`'s IMAGE as an image ID (e.g. `f759...`), the container was created using the image ID. Functionality is unaffected. To have it display `tjfusion:latest`, recreate the container (no need to delete the image).
-
-## mindtest
-
-`mindtest` is kept as a legacy environment. It is not the recommended runtime.
-
-Do not run MindBridge services in both `mindtest` and `TJfusion` simultaneously.  
-To keep it without port conflicts:
-
-```bash
-docker stop mindtest
-```
-
-Do not remove:
-
-```bash
-docker rm mindtest
-```
-
-unless you are certain you no longer need the old container.
 
 ## Updating Code
 

@@ -226,29 +226,9 @@ TJfusion
 
 ```text
 tjfusion:latest
-mindtest:with-envs
 ```
 
 如果 `docker ps` 里 `TJfusion` 的 IMAGE 显示成镜像 ID，例如 `f759...`，说明这个容器创建时使用的是镜像 ID。功能不受影响。要让它显示 `tjfusion:latest`，需要重建容器，但不需要删除镜像。
-
-## mindtest
-
-`mindtest` 现在只作为旧环境保留，不作为推荐运行入口。
-
-不要让 `mindtest` 和 `TJfusion` 同时运行 MindBridge 服务。  
-如果需要保留但避免端口冲突：
-
-```bash
-docker stop mindtest
-```
-
-不要删除：
-
-```bash
-docker rm mindtest
-```
-
-除非你明确确认不再需要旧容器。
 
 ## 更新代码
 
