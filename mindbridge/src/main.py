@@ -197,7 +197,7 @@ def run(
     fastfoundation_url: str = "http://127.0.0.1:8004",
     flowpose_url: str = "http://127.0.0.1:8006",
     rgb_source: str = "realsense",
-    camera_mode: str = "single",      # "single" | "multi"
+    camera_mode: str = "multi",      # "single" | "multi"
     camera_index: int = 0,
     camera_width: Optional[int] = None,
     camera_height: Optional[int] = None,
@@ -785,7 +785,7 @@ def main() -> None:
         help="RGB 来源: realsense(默认) 或 usb",
     )
     parser.add_argument(
-        "--camera-mode", choices=["single", "multi"], default="single",
+        "--camera-mode", choices=["single", "multi"], default="multi",
         help="RealSense 相机模式: single(默认) 或 multi(primary 完整 + 其余仅彩色，拼接送 SigLIP)",
     )
     parser.add_argument("--camera-index", type=int, default=0, help="USB 摄像头编号")
