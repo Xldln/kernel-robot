@@ -251,22 +251,27 @@ class MindBridgeClient:
     # ── SAM3 Detect (raw bytes) ──────────────────────────────────────
 
     def sam3_detect(self, image_bytes: bytes, prompts: list[str] | None = None,
-                    score_threshold: float | None = None, request_id: str = "") -> dict:
+                    score_threshold: float | None = None, request_id: str = "",
+                    box_prompts: dict[str, list[float]] | None = None) -> dict:
         """SAM3 目标检测/分割（raw bytes 传输）。
 
         Args:
             image_bytes: JPEG/PNG 图像原始字节
+            box_prompts: {label: [x1, y1, x2, y2]} 用于追踪模式，box prompt 比文本匹配更鲁棒
 
         Returns:
             dict with keys: status, detections (list of dicts with mask_file keys),
             mask_bytes (dict {name: bytes}), elapsed_sec
         """
+        import json as _json
         files = {"image": ("image.jpg", image_bytes, "image/jpeg")}
         data = {"request_id": request_id}
         if prompts is not None:
             data["prompts"] = ",".join(prompts)
         if score_threshold is not None:
             data["score_threshold"] = str(score_threshold)
+        if box_prompts is not None:
+            data["box_prompts"] = _json.dumps(box_prompts)
 
         r = requests.post(f"{self.sam3_url}/infer/detect/raw", files=files, data=data, timeout=30)
 

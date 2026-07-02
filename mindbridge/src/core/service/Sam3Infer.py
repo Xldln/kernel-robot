@@ -125,8 +125,13 @@ class Sam3Infer:
         prompts: list[str] | None = None,
         score_threshold: float | None = None,
         request_id: str = "",
+        box_prompts: dict[str, list[float]] | None = None,
     ) -> dict:
         """直接接受 PIL Image 推理（无 base64 开销）。
+
+        Args:
+            prompts: 文本提示列表
+            box_prompts: {label: [x1, y1, x2, y2]} 用于 box-prompt 追踪，比文本匹配更鲁棒
 
         Returns:
             dict with keys: status, request_id, detections (list of dicts),
@@ -135,52 +140,53 @@ class Sam3Infer:
         import cv2
         t_start = time.time()
 
-        if not prompts:
+        if not prompts and not box_prompts:
             prompts = self.default_prompts
 
         try:
             _threshold = score_threshold if score_threshold is not None else self.score_threshold
 
-            # 提取图像特征
+            # 提取图像特征（只做一次）
             inference_state = self.processor.set_image(image)
+            img_h = inference_state["original_height"]
+            img_w = inference_state["original_width"]
 
-            # 遍历 prompts 进行推理
             detections: list[dict] = []
             mask_bytes_dict: dict[str, bytes] = {}
             global_det_id = 1
 
-            for prompt in prompts:
-                output = self.processor.set_text_prompt(state=inference_state, prompt=prompt)
+            # ── 文本 prompt 检测 ──
+            text_prompts = prompts or []
+            for prompt in text_prompts:
+                self.processor.reset_all_prompts(inference_state)
+                output = self.processor.set_text_prompt(prompt=prompt, state=inference_state)
+                self._extract_detections(
+                    output, str(prompt), _threshold, global_det_id,
+                    detections, mask_bytes_dict,
+                )
+                global_det_id = len(detections) + 1
 
-                current_masks = output["masks"].cpu().numpy()
-                current_boxes = output["boxes"].cpu().numpy()
-                current_scores = output["scores"].cpu().numpy()
-
-                for i in range(len(current_scores)):
-                    score = float(current_scores[i])
-                    if score <= _threshold:
+            # ── box prompt 检测（追踪模式，不依赖文本匹配）──
+            if box_prompts:
+                for label, bbox in box_prompts.items():
+                    if len(bbox) != 4:
                         continue
+                    # [x1, y1, x2, y2] → [cx, cy, w, h] normalized to [0, 1]
+                    cx = (bbox[0] + bbox[2]) / 2.0 / img_w
+                    cy = (bbox[1] + bbox[3]) / 2.0 / img_h
+                    w = max((bbox[2] - bbox[0]) / img_w, 0.01)
+                    h = max((bbox[3] - bbox[1]) / img_h, 0.01)
+                    box_norm = [cx, cy, w, h]
 
-                    box = current_boxes[i]
-                    mask = current_masks[i].squeeze()
-
-                    # 二值化掩码
-                    binary_mask = (mask > 0.5).astype(np.uint8) * 255
-
-                    # Encode mask to PNG bytes
-                    ok, png_buf = cv2.imencode(".png", binary_mask, [cv2.IMWRITE_PNG_COMPRESSION, 3])
-                    mask_name = f"mask_{global_det_id - 1}"
-                    if ok:
-                        mask_bytes_dict[mask_name] = png_buf.tobytes()
-
-                    detections.append({
-                        "id": global_det_id,
-                        "label": str(prompt),
-                        "score": score,
-                        "bbox": [float(v) for v in box.tolist()],
-                        "mask_file": mask_name if ok else "",
-                    })
-                    global_det_id += 1
+                    self.processor.reset_all_prompts(inference_state)
+                    output = self.processor.add_geometric_prompt(
+                        box=box_norm, label=True, state=inference_state,
+                    )
+                    self._extract_detections(
+                        output, label, _threshold, global_det_id,
+                        detections, mask_bytes_dict,
+                    )
+                    global_det_id = len(detections) + 1
 
             elapsed = round(time.time() - t_start, 4)
             return {
@@ -199,3 +205,35 @@ class Sam3Infer:
                 "message": str(e),
                 "elapsed_sec": elapsed,
             }
+
+    def _extract_detections(self, output: dict, label: str, threshold: float,
+                            start_id: int, detections: list, mask_bytes_dict: dict):
+        """Extract masks/boxes/scores from a processor output into detections list."""
+        import cv2
+
+        current_masks = output["masks"].cpu().numpy()
+        current_boxes = output["boxes"].cpu().numpy()
+        current_scores = output["scores"].cpu().numpy()
+
+        for i in range(len(current_scores)):
+            score = float(current_scores[i])
+            if score <= threshold:
+                continue
+
+            box = current_boxes[i]
+            mask = current_masks[i].squeeze()
+
+            binary_mask = (mask > 0.5).astype(np.uint8) * 255
+            ok, png_buf = cv2.imencode(".png", binary_mask, [cv2.IMWRITE_PNG_COMPRESSION, 3])
+            det_id = start_id + len(detections)
+            mask_name = f"mask_{det_id - 1}"
+            if ok:
+                mask_bytes_dict[mask_name] = png_buf.tobytes()
+
+            detections.append({
+                "id": det_id,
+                "label": label,
+                "score": score,
+                "bbox": [float(v) for v in box.tolist()],
+                "mask_file": mask_name if ok else "",
+            })

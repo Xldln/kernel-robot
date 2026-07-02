@@ -38,6 +38,7 @@ async def detect_raw(
     prompts: str | None = Form(default=None, description="文本提示，逗号分隔；不传则使用配置默认值"),
     score_threshold: float | None = Form(None, ge=0.0, le=1.0),
     request_id: str = Form(default=""),
+    box_prompts: str | None = Form(default=None, description='JSON {label: [x1,y1,x2,y2]}'),
 ):
     """Raw bytes 目标检测 / 分割推理（无 base64 开销）。
 
@@ -49,12 +50,14 @@ async def detect_raw(
     image_bytes = await image.read()
     pil_image = Image.open(BytesIO(image_bytes)).convert("RGB")
     prompt_list = [p.strip() for p in prompts.split(",") if p.strip()] if prompts else None
+    box_prompts_dict = _json.loads(box_prompts) if box_prompts else None
 
     result = infer_engine.predict_from_pil(
         pil_image,
         prompts=prompt_list,
         score_threshold=score_threshold,
         request_id=request_id,
+        box_prompts=box_prompts_dict,
     )
 
     if result["status"] == "error":

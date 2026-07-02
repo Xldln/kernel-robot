@@ -44,134 +44,52 @@ def _build_multiview_jpg(color_jpg: bytes, aux_jpgs: list[bytes]) -> bytes:
     return buf.tobytes() if ok else color_jpg
 
 
-# Per-label EMA state: label -> list of {"bbox": (x1,y1,x2,y2), "ema_score": float}
-_prev_label_dets: dict[str, list[dict]] = {}
-# Previous NMS winners (survivors): list of {"bbox": tuple, "label": str}
-_prev_winners: list[dict] = []
+# Object tracking for box-prompt mode: label -> {"bbox": [x1,y1,x2,y2], "miss_count": int}
+_tracked_objects: dict[str, dict] = {}
+_TRACK_MAX_MISS = 5  # revert to text prompt after this many consecutive misses
 
 
-def _box_iou(a, b):
-    """IoU of two boxes [x1,y1,x2,y2]."""
-    x1 = max(a[0], b[0])
-    y1 = max(a[1], b[1])
-    x2 = min(a[2], b[2])
-    y2 = min(a[3], b[3])
-    inter = max(0, x2 - x1) * max(0, y2 - y1)
-    area_a = (a[2] - a[0]) * (a[3] - a[1])
-    area_b = (b[2] - b[0]) * (b[3] - b[1])
-    return inter / (area_a + area_b - inter + 1e-6)
+def _get_sam3_prompts(labels: list[str]) -> tuple[list[str], dict[str, list[float]]]:
+    """Tracked labels get BOTH text and box prompts.
 
-
-def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float = 0.5,
-                         ema_alpha: float = 0.3, match_iou_thresh: float = 0.3,
-                         hysteresis_margin: float = 0.08):
-    """Global NMS with per-label EMA + hysteresis to prevent class-flipping.
-
-    1. Within-label NMS to deduplicate same-prompt detections.
-    2. Match against previous-frame detections (by IoU within same label) and
-       smooth scores via EMA.
-    3. Global cross-label NMS: a label that *survived* NMS last frame gets a
-       hysteresis bonus, so a challenger must consistently beat it to flip.
+    Box prompt is spatially constrained and robust to rotation.
+    Text prompt runs in parallel — if the object moved beyond the box region,
+    text can re-discover it and update the tracking bbox.
+    NMS naturally deduplicates overlapping text/box results.
     """
-    global _prev_label_dets, _prev_winners
+    text_prompts = list(labels)
+    box_prompts = {label: _tracked_objects[label]["bbox"]
+                   for label in labels if label in _tracked_objects}
+    return text_prompts, box_prompts
 
-    if not detections:
-        _prev_winners = []
-        return [], mask_bytes
 
-    # ---- step 1: within-label NMS ----
-    label_indices: dict[str, list[int]] = {}
-    for i, det in enumerate(detections):
-        label_indices.setdefault(det.get("label", ""), []).append(i)
+def _update_tracking(detections: list[dict]):
+    """Keep tracking state from current frame detections, age out lost objects."""
+    seen = set()
+    for det in detections:
+        label = det.get("label", "")
+        bbox = det.get("bbox", [])
+        if len(bbox) == 4:
+            _tracked_objects[label] = {"bbox": [float(v) for v in bbox], "miss_count": 0}
+            seen.add(label)
+    for label in list(_tracked_objects.keys()):
+        if label not in seen:
+            _tracked_objects[label]["miss_count"] += 1
+            if _tracked_objects[label]["miss_count"] > _TRACK_MAX_MISS:
+                del _tracked_objects[label]
 
-    kept_by_label: dict[str, list[dict]] = {}
-    for label, indices in label_indices.items():
-        if len(indices) == 1:
-            kept_by_label[label] = [detections[indices[0]]]
-            continue
-        group_boxes = np.array([[
-            float(detections[i].get("bbox", [0, 0, 0, 0])[j]) for j in range(4)
-        ] for i in indices])
-        group_scores = np.array([float(detections[i].get("score", 0.0)) for i in indices])
-        order = group_scores.argsort()[::-1]
-        keep_idx = []
-        while len(order) > 0:
-            idx = order[0]
-            keep_idx.append(indices[idx])
-            if len(order) == 1:
-                break
-            x1 = np.maximum(group_boxes[idx, 0], group_boxes[order[1:], 0])
-            y1 = np.maximum(group_boxes[idx, 1], group_boxes[order[1:], 1])
-            x2 = np.minimum(group_boxes[idx, 2], group_boxes[order[1:], 2])
-            y2 = np.minimum(group_boxes[idx, 3], group_boxes[order[1:], 3])
-            inter = np.maximum(0, x2 - x1) * np.maximum(0, y2 - y1)
-            area = (group_boxes[order[1:], 2] - group_boxes[order[1:], 0]) * (group_boxes[order[1:], 3] - group_boxes[order[1:], 1])
-            area_idx = (group_boxes[idx, 2] - group_boxes[idx, 0]) * (group_boxes[idx, 3] - group_boxes[idx, 1])
-            iou = inter / (area + area_idx - inter + 1e-6)
-            order = order[1:][iou <= iou_thresh]
-        kept_by_label[label] = [detections[i] for i in keep_idx]
 
-    # ---- step 2: match with previous frame, EMA smooth scores ----
-    prev_all = dict(_prev_label_dets)
-    next_state: dict[str, list[dict]] = {}
-
-    for label, dets in kept_by_label.items():
-        prev_list = prev_all.get(label, [])
-        next_state[label] = []
-        for det in dets:
-            bbox = tuple(det.get("bbox", [0, 0, 0, 0]))
-            raw_score = float(det.get("score", 0.0))
-            best_iou = 0.0
-            best_ema = raw_score
-            for prev in prev_list:
-                iou = _box_iou(bbox, prev["bbox"])
-                if iou > best_iou:
-                    best_iou = iou
-                    best_ema = prev["ema_score"]
-            if best_iou >= match_iou_thresh:
-                ema_score = ema_alpha * raw_score + (1 - ema_alpha) * best_ema
-            else:
-                ema_score = raw_score
-            det["ema_score"] = ema_score
-            next_state[label].append({"bbox": tuple(bbox), "ema_score": ema_score})
-
-    _prev_label_dets = next_state
-
-    # ---- step 3: global cross-label NMS with hysteresis ----
-    all_dets = []
-    for dets in kept_by_label.values():
-        all_dets.extend(dets)
-
-    if len(all_dets) <= 1:
-        _prev_winners = [{"bbox": tuple(d.get("bbox", [0, 0, 0, 0])), "label": d.get("label", "")}
-                         for d in all_dets]
-        filtered_masks = {}
-        for det in all_dets:
-            mf = det.get("mask_file", "")
-            if mf and mf in mask_bytes:
-                filtered_masks[mf] = mask_bytes[mf]
-        return all_dets, filtered_masks
+def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float = 0.5):
+    """Simple NMS: keep highest-score box for overlapping pairs across all labels."""
+    if len(detections) <= 1:
+        return detections, mask_bytes
 
     boxes = np.array([[
         float(d.get("bbox", [0, 0, 0, 0])[j]) for j in range(4)
-    ] for d in all_dets])
-    ema_scores = np.array([float(d.get("ema_score", d.get("score", 0.0))) for d in all_dets])
+    ] for d in detections])
+    scores = np.array([float(d.get("score", 0.0)) for d in detections])
 
-    # Only the label that SURVIVED NMS last frame gets a hysteresis bonus.
-    # Match each detection against _prev_winners: if same label + overlapping
-    # region, it's the reigning label and gets the margin advantage.
-    bonuses = np.zeros(len(all_dets))
-    for i, d in enumerate(all_dets):
-        bbox = tuple(d.get("bbox", [0, 0, 0, 0]))
-        label = d.get("label", "")
-        for pw in _prev_winners:
-            if pw["label"] == label and _box_iou(bbox, pw["bbox"]) >= match_iou_thresh:
-                bonuses[i] = hysteresis_margin
-                break
-
-    active_scores = ema_scores + bonuses
-
-    order = active_scores.argsort()[::-1]
+    order = scores.argsort()[::-1]
     keep = []
     while len(order) > 0:
         idx = order[0]
@@ -188,12 +106,7 @@ def _nms_sam3_detections(detections: list, mask_bytes: dict, iou_thresh: float =
         iou = inter / (area + area_idx - inter + 1e-6)
         order = order[1:][iou <= iou_thresh]
 
-    filtered_dets = [all_dets[i] for i in keep]
-
-    # Record this frame's NMS winners for next frame's hysteresis
-    _prev_winners = [{"bbox": tuple(d.get("bbox", [0, 0, 0, 0])), "label": d.get("label", "")}
-                     for d in filtered_dets]
-
+    filtered_dets = [detections[i] for i in keep]
     filtered_masks = {}
     for det in filtered_dets:
         mf = det.get("mask_file", "")
@@ -607,12 +520,16 @@ def run(
             elif _mode in ("pipeline", "sam3-only") and _detector == "sam3":
                 t_sam3_start = time.time()
                 try:
+                    text_prompts, box_prompts = _get_sam3_prompts(_sam3_prompts)
                     sam3_result = client.sam3_detect(
                         color_jpg,
-                        prompts=_sam3_prompts,
+                        prompts=text_prompts,
                         score_threshold=sam3_threshold,
                         request_id=str(frame_id),
+                        box_prompts=box_prompts if box_prompts else None,
                     )
+                    if sam3_result.get("status") == "ok":
+                        _update_tracking(sam3_result.get("detections", []))
                 except Exception as e:
                     print(f"[ControlCenter] SAM3 inference failed: {e}")
                     sam3_result = {"status": "error", "detections": [], "mask_bytes": {}}

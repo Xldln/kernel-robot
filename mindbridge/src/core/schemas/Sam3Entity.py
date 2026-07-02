@@ -15,6 +15,9 @@ class Sam3PredictRequest(BaseModel):
     image_b64: str = Field(..., description="RGB 图像 base64 编码")
     prompts: list[str] = Field(default_factory=list, description="文本提示列表，如 ['cat', 'dog']")
     score_threshold: Optional[float] = Field(None, ge=0.0, le=1.0, description="置信度阈值（不传则使用配置默认值）")
+    box_prompts: Optional[dict[str, list[float]]] = Field(
+        None, description="box 提示 {label: [x1, y1, x2, y2]}，用 bbox 替代文本匹配更鲁棒"
+    )
 
 
 # ─── 检测结果 ────────────────────────────────────────────────────
