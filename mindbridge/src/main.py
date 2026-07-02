@@ -49,18 +49,22 @@ _tracked_objects: dict[str, dict] = {}
 _TRACK_MAX_MISS = 5  # revert to text prompt after this many consecutive misses
 
 
-def _get_sam3_prompts(labels: list[str]) -> tuple[list[str], dict[str, list[float]]]:
+def _get_sam3_prompts(labels: list[str] | None) -> tuple[list[str] | None, dict[str, list[float]] | None]:
     """Tracked labels get BOTH text and box prompts.
 
     Box prompt is spatially constrained and robust to rotation.
     Text prompt runs in parallel — if the object moved beyond the box region,
     text can re-discover it and update the tracking bbox.
     NMS naturally deduplicates overlapping text/box results.
+
+    Returns (None, None) when labels is None/empty → service uses its default prompts.
     """
+    if not labels:
+        return None, None
     text_prompts = list(labels)
     box_prompts = {label: _tracked_objects[label]["bbox"]
                    for label in labels if label in _tracked_objects}
-    return text_prompts, box_prompts
+    return text_prompts, box_prompts if box_prompts else None
 
 
 def _update_tracking(detections: list[dict]):
@@ -634,7 +638,7 @@ def run(
                         if len(bbox) == 4:
                             x1, y1, x2, y2 = [int(v) for v in bbox]
                             cv2.rectangle(yolo_display, (x1, y1), (x2, y2), (255, 0, 0), 2)
-                            cv2.putText(yolo_display, f"SAM3:{label} {score:.2f}",
+                            cv2.putText(yolo_display, f"{label} {score:.2f}",
                                         (x1, y1 - 8), cv2.FONT_HERSHEY_SIMPLEX,
                                         0.5, (255, 0, 0), 2)
 

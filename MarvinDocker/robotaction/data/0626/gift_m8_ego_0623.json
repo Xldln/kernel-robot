@@ -9,7 +9,7 @@
           "action_name": "pick",
           "arm": "left",
           "speed": 0.8,
-          "correction_mode": "forward"
+          "correction_mode": "reverse"
         },
         { 
           "target": "home",
@@ -27,7 +27,7 @@
       "state_description": "The left gripper holds the box; the right gripper grasps the tassel to open it.",
       "next_action": [
         { 
-          "target": "yellow tassel",
+          "target": "yellow long tassel",
           "action_name": "pull",
           "arm": "right",
           "speed": 0.8,
@@ -42,7 +42,7 @@
       "state_description": "The box is open; the right gripper moves toward the toy.",
       "next_action": [
         { 
-          "target": "small toy",
+          "target": "yellow figurine",
           "action_name": "pick",
           "arm": "right",
           "speed": 0.8,

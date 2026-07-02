@@ -41,6 +41,9 @@ class Sam3Infer:
         # ── 模型参数 ──
         self.checkpoint_path = sam3_cfg["checkpoint_path"]
         self.score_threshold = float(sam3_cfg.get("score_threshold", 0.4))
+        self.processor_confidence_threshold = float(
+            sam3_cfg.get("processor_confidence_threshold", self.score_threshold)
+        )
         self.default_prompts = [
             str(prompt).strip()
             for prompt in sam3_cfg.get("prompts", ["object"])
@@ -52,9 +55,12 @@ class Sam3Infer:
         print(f"[Sam3Infer] 模型路径: {self.checkpoint_path}")
         print(f"[Sam3Infer] 默认提示词: {self.default_prompts}")
         print(f"[Sam3Infer] 置信度阈值: {self.score_threshold}")
+        print(f"[Sam3Infer] 处理器内部阈值: {self.processor_confidence_threshold}")
 
         t0 = time.time()
         self.model, self.processor = self._load_model()
+        # 降低 SAM3 内部阈值，否则默认 0.5 会拦截低分检测
+        self.processor.set_confidence_threshold(self.processor_confidence_threshold)
         print(f"[Sam3Infer] 模型加载完成 ({time.time() - t0:.2f}s)")
 
     # ── 模型加载 ────────────────────────────────────────────────

@@ -26,7 +26,7 @@ def correct_orientation(pos, quat, mode="none", arm=None,
     
     # mode == "forward": 返回单位四元数
     if mode == "forward":
-        R_mat = R.from_quat(q).as_matrix()
+        R_mat = R.from_quat(q).as_matrix() 
         z_axis = R_mat[:, 2]
         z_axis /= np.linalg.norm(z_axis)
         z_up_norm = z_up / np.linalg.norm(z_up)

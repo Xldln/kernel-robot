@@ -11,11 +11,13 @@ sam3:
   # ── 推理参数 ──
   prompts:
     - gift bag
-    - small toy
-    - yellow tassel
+    - yellow figurine
+    - yellow long tassel
     - cuboid box
     - black box
-    - 
+    # - black rectangle
+    
     # - tiny object
     # - object
-  score_threshold: 0.2
+  score_threshold: 0.45
+  processor_confidence_threshold: 0.45 # SAM3 内部阈值，默认 0.5 太高会漏检

@@ -254,6 +254,7 @@ class ServiceController:
     def __init__(self, *, root_dir: str = "/workspace", pid_dir: str = "/tmp/mindbridge") -> None:
         self.root_dir = root_dir
         self.pid_dir = pid_dir
+        os.makedirs(self.pid_dir, exist_ok=True)
         self.specs = {str(item["name"]): item for item in SERVICE_SPECS}
         self.lock = threading.RLock()
 
@@ -372,6 +373,18 @@ class ServiceController:
         stale = bool(pid and not pid_alive)
         if stale:
             self._pid_path(name).unlink(missing_ok=True)
+
+        # PID file missing but service is running → discover PID from process name
+        if running and not pid_alive:
+            discovered = self._discover_pid(spec.get("script", ""))
+            if discovered:
+                pid = discovered
+                pid_alive = True
+                try:
+                    self._pid_path(name).write_text(str(discovered))
+                except Exception:
+                    pass
+
         return {
             "name": spec["name"],
             "label": spec["label"],
@@ -448,15 +461,28 @@ class ServiceController:
             return None
 
     def _pid_alive(self, pid: int) -> bool:
-        try:
-            os.kill(pid, 0)
-            return True
-        except OSError:
-            return False
+        return os.path.isdir(f"/proc/{pid}")
 
     def _pid_path(self, name: str):
         from pathlib import Path
         return Path(self.pid_dir) / f"{name}.pid"
+
+    @staticmethod
+    def _discover_pid(script: str) -> int | None:
+        """Discover PID by process script name, as fallback when PID file is lost."""
+        if not script:
+            return None
+        import subprocess
+        try:
+            out = subprocess.check_output(
+                ["pgrep", "-x", "-f", f"python.*{script}"],
+                stderr=subprocess.DEVNULL, timeout=2,
+            ).decode().strip()
+            if out:
+                return int(out.split()[0])  # first match
+        except Exception:
+            pass
+        return None
 
     def _require_name(self, name: str) -> dict[str, Any]:
         key = name.lower()
