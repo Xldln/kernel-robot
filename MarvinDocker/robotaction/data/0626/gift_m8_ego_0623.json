@@ -24,7 +24,7 @@
     },
     {
       "node_id": "002",
-      "state_description": "The left gripper holds the box; the tasselight gripper grasps the tassel to open it.",
+      "state_description": "The left gripper holds the box; the right gripper grasps the tassel to open it.",
       "next_action": [
         { 
           "target": "yellow tassel",
